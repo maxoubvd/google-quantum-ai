@@ -33,6 +33,7 @@ file (Fiat-Shamir heuristic), so there is no hidden test set.
 ```text
 .
 ├── README.md
+├── Instructions/                       Competition instructions copied from Kaggle (overview, data, rules, discussion)
 ├── Notebooks/                          Kaggle notebooks (analyses and submission portfolios)
 ├── Scientific Papers/                  Reference papers (PDF)
 └── google-verifiable-quantum-circuit-compilation/   Official competition data
