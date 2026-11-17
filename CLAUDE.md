@@ -32,6 +32,18 @@ is "correct" when its verifier prints `"status": "PASS"`.
 - `Scientific Papers/`: the background papers. The competition paper itself is
   `google-verifiable-quantum-circuit-compilation/verifiable_circuit_compilation.pdf`.
 
+## Researching competitors and the state of the art
+
+Whenever the user asks what other competitors did, for new ideas, or for an audit comparing our
+results with other teams or with state-of-the-art methods, start from the live list of public
+Kaggle notebooks for this competition:
+https://www.kaggle.com/competitions/google-verifiable-quantum-circuit-compilation/code
+
+It is more current than the local snapshots. This link is only the starting point, not the only
+source: continue with any other relevant source, such as the live forum, the forum snapshot in
+`Instructions/discussion/`, the pinned notebooks in `Notebooks/` (via `git show`), `Analysis/`,
+`Scientific Papers/`, and papers or code found on the web. Record the author, license and SHA-256 of any public circuit worth reusing.
+
 ## Environment setup
 
 The user works on Windows, with two Python environments built from the same pinned `requirements.txt`
