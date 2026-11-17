@@ -1,0 +1,31 @@
+Google Quantum AI — Verifiable Quantum Circuit Compilation: competition workspace
+Copyright 2026 Maxime Bendavid (Kaggle: maxouUu)
+
+Licensed under the Apache License, Version 2.0 (see LICENSE).
+
+Scope of the license
+--------------------
+The Apache License 2.0 in LICENSE covers the original code and documents written for this
+project: generators, tools, notebooks and analysis documents authored by the copyright holder above.
+
+It does not cover the following third-party material, which keeps its own terms:
+
+- google-verifiable-quantum-circuit-compilation/: official competition data (verifiers, kickmix,
+  sample submission, paper) by Google Quantum AI, Apache License 2.0 (see the LICENSE.txt files
+  in that tree).
+- third_party/: code and circuits by other competition participants, each kept with its original
+  LICENSE and NOTICE files. third_party/PROVENANCE.md lists the author, source, version, license
+  and SHA-256 of every reused file. Files we changed carry a header saying so.
+- Scientific Papers/: published papers, copyright of their authors and publishers.
+- Instructions/: copies of Kaggle competition pages and forum posts, copyright of Kaggle and of
+  the post authors.
+- Analysis/Gemini Analysis.pdf: third-party analysis.
+
+Third-party attributions
+------------------------
+This product includes software developed by the following authors, under the licenses stated
+in third_party/PROVENANCE.md:
+
+- Google Quantum AI: kickmix and the competition verifiers (Apache License 2.0).
+
+(Entries are added here as third-party work is included.)

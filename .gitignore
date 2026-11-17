@@ -7,3 +7,6 @@ google-verifiable-quantum-circuit-compilation/verifiers/dfthcsos/FeMoCo76o113e.f
 __pycache__/
 *.py[cod]
 .ipynb_checkpoints/
+
+# Raw downloads from Kaggle (untrusted, re-downloadable); curated copies go to third_party/
+downloads/
