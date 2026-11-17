@@ -152,125 +152,147 @@ Apache-2.0 §4 requires keeping their license and NOTICE files and marking files
 | Chemistry refits in float64 (JAX/PyTorch) | **Kaggle P100** | The RTX 4060 Laptop and the T4 run float64 at 1/32–1/64 of float32; the P100 runs it at 1/2 |
 | TPU | Not useful | No float64, and kickmix does not run on it |
 
-## 5. Phase 1 — a first good, eligible submission (17 → 20 Nov)
+## 5. How we work: one step at a time
 
-Goal: a submission **at the public plateau** (≈ 28.18 on 17 Nov, bronze-to-silver zone) whose three parts
-are rebuilt from source by our own scripts, verified locally at several salts, and documented for
-eligibility. This is the base everything else forks.
+The work is split into small **steps** (half a day to a day each), worked one at a time, in order,
+like the stories of an agile sprint.
 
-| Day | Work | Done when |
-|---|---|---|
-| Tue 17 | `LICENSE`, `NOTICE`, `third_party/` skeleton (section 4.1). Pull the sources behind the three best files: Syed Asad Ali's dataset `syed3000/vqcc-own-circuit-portfolio` (invsqrt and dqi builders), maoxin123's notebooks (44-qubit invsqrt, 4,022-Toffoli loaders), GrantPrater's `grantprater/vqcc-dqi-61c8348d-merged-closings` and notebook, Balram Srinivasan's and boristown's dqi patches, Atakan Aldemir's `atakanaldemir/qcc-shared-4022-loaders-and-own703-weights`, Lera's `marculera/dfthc-c44-build`, prvsiyan's refit code. Asterios Panoras's QCC Circuit Atlas and manwithacat's circuits dataset serve as SHA-256 cross-checks. | Sources in `third_party/` with `PROVENANCE.md`; for each best file we know whether a generator exists |
-| Wed 18 | Run each generator in WSL and check the output SHA-256 against the published one. Wrap them in our own `build/` scripts. dfthcsos verifier (1 min); full invsqrt verification (1 h). | Byte-identical rebuilds; dfthcsos PASS at the expected cost |
-| Thu 19 | dqi on the default salt plus 7 extra salts (`--max-workers 2`); pick the dqi file with the fewest failed shots across salts, not the cheapest on one draw. `tools/package.py` builds `submission.zip` and runs the metric-only checks of topic 751951 (one copy of each task, `angle_k_*` without gaps, named registers, little-endian `.npz` arrays, `max(qubits, bits) − 1 < 699,050`). **Submit (you) by Thursday evening.** | Kaggle score at the plateau of the day, matching the local estimate |
-| Fri 20 | Buffer for queue delays or a failed submission. If time remains, swap in any newer public part that beats ours and is rebuildable from source. | Phase 1 base frozen |
+- **Each step has** an ID (`S<phase>.<n>`), a goal, a "done when" test and a status:
+  `TODO`, `IN PROGRESS`, `DONE`, `DROPPED` (with the reason) or `WAITING` (on a decision or a run).
+- **Start of a step:** state its goal and its "done when" in the chat; split it further if it looks
+  bigger than a day.
+- **End of a step:** a `changelog/` entry (what, why, results), the status updated here, and a short
+  review with the user: what we got, what we learned, and which step comes next. The user can reorder,
+  add or drop steps at every review.
+- **Speed is a deliverable.** Every tool is written for minimal run time (algorithmic complexity
+  first, then vectorization and the 12 cores; rule in `CLAUDE.md`), and its measured run time is
+  part of its "done when", but never at the cost of exactness: a faster tool must reproduce the
+  reference results before it replaces it. The full official verifiers run only at gates; iteration uses static
+  costs, reduced runs and the generators' exact proofs.
+- **Experiments are time-boxed.** An idea gets one step; if it shows no measurable gain by the end, it is
+  logged as a null and dropped, not stretched.
+- **Backlog:** ideas that come up mid-step go to the backlog (section 11) instead of interrupting the
+  step in progress.
+- **Phase review:** at the end of each phase, a short retrospective (what worked, what to change), a
+  fresh board snapshot (section 1), and the next phase's steps rewritten.
 
-Decision rule: if a part cannot be rebuilt from source by 19 Nov, submit the published file anyway to get
-a score, and list it in `PROVENANCE.md` as "not yet eligible" to fix in Phase 2. dqi lines built by
-patching a compiled file need special care: the patch script plus the pinned input must reproduce the
-file (topic 752010 asks the hosts exactly this; no answer yet).
+## 6. Phase 1 — our own reproducible base, submitted (17 → 20 Nov)
 
-## 6. Phase 2 — improvement sprint (21 → 30 Nov)
+Goal: the public generators rebuilt in our repo, byte for byte, verified, and submitted as our first
+score. This is the base all later work forks. **Decision S1.3 (user, 17 Nov): track B only**, no
+submission of compiled third-party files. Consequence: our first score (≈ 27.08) starts about 1.1
+points under the public plateau (≈ 28.18); Phase 2 closes that gap by porting the public improvements
+into our generators, then goes beyond.
+
+| Step | Goal | Done when | Status |
+|---|---|---|---|
+| S1.1 | Licensing: `LICENSE`, `NOTICE`, `third_party/PROVENANCE.md` | Files in place, scope stated | DONE (17 Nov) |
+| S1.2 | Source inventory: who published what, with or without a generator | `PROVENANCE.md` lists the 5 key sources and their generator status | DONE (17 Nov): only Syed Asad Ali's v12 builders (≈ 27.08 level) ship full source; the 28.18 parts are compiled files or patches of compiled files |
+| S1.3 | Decision: track A (credited public frontier) and/or track B (own base from the v12 builders) | User decision recorded here | DONE (17 Nov): **track B only** |
+| S1.4 | Unpack Syed Asad Ali's v12 builders into `third_party/`, read them, run their `build.sh` in WSL | Outputs byte-identical to the published SHA-256 | DONE (17 Nov): all 17 files byte-identical (CPython 3.13.18, numpy 2.2.4, WSL; 3 min in all) |
+| S1.5 | Verify the v12 outputs with the official verifiers (dfthcsos, full invsqrt, dqi on 8 salts); record our baseline costs | All PASS; baseline table in the changelog | DONE (17 Nov): all PASS; expected score 27.06 (27.08 clean dqi draw, 27.00 worst of 8 salts) |
+| S1.6 | Our build entry point `build/` (one command rebuilds all three tasks) and packaging tool `tools/package.py` (builds `submission.zip`, runs the metric-only checks of topic 751951) | The tool rejects a planted bad zip and accepts the good one | TODO |
+| S1.7 | First submission (user) and comparison with the local estimate | Kaggle score ≈ 27.0, matching the local estimate | TODO |
+| S1.8 | Phase 1 review: retrospective, board snapshot, Phase 2 steps adjusted (porting the public improvements first) | Plan updated | TODO |
+
+Submit by 19 Nov evening at the latest; never miss the 24 h buffer before a deadline.
+
+## 7. Phase 2 — improvement sprint (21 → 30 Nov)
 
 Goal: **strictly above the public plateau, aiming for the gold line of the day** (on 17 Nov: 28.71,
 +1.9% over the plateau), with every gain coming from our own generator changes. Effort split by
 exchange rate, revised as the board moves: **invsqrt ~50%, dqi ~25%, chemistry ~25%** to start.
-If a new public jump lands during the sprint, rebase on it first, then keep improving on top of it.
+If a new public jump lands during the sprint, rebase on it first (a new step), then keep improving.
 
-### 6.1 Infrastructure first (21–22 Nov)
+### Tooling steps (first)
 
-- **Fast evaluator per task** (`tools/eval_*.py`): static cost from `operation_statistics()` and qubit
-  count in seconds; a reduced verifier run in about a minute (`--shots-per-x 1 --batch-size 12`,
-  `--num-shots`); the full verifier only before a submission.
-- **invsqrt exhaustive checker**: every x and every measurement branch, as Syed Asad Ali does, so that
-  a local PASS is a proof and the private salt cannot fail us.
-- **dqi robustness harness**: N salts (16 for screening, 48 for finalists), ranked by mean cost; plus the
-  adversarial low-weight inputs published by Atakan Aldemir.
-- **Experiment ledger** (`experiments/LEDGER.md`): one line per attempt with the idea, the measured
-  cost and the verdict, including nulls. Check the forum null lists first (topic 753185, manwithacat's
-  negative-results dataset, alex chilton's gold notebook) to avoid repeating them.
-- **Agent loop**: Claude Code works on the generators against the evaluator, several families in
-  parallel (Gu et al., arXiv:2610.22367). One task per session, with the ledger as shared memory.
+| Step | Goal | Done when |
+|---|---|---|
+| S2.1 | Fast evaluator per task (`tools/eval_*.py`): static cost from `operation_statistics()` and qubit count in seconds; reduced verifier run in about a minute | One command per task prints cost, qubits and Toffolis; agrees with the full verifier on the baseline |
+| S2.2 | invsqrt exhaustive checker: every x and every measurement branch | Proves the baseline; catches a planted one-input error |
+| S2.3 | dqi robustness harness: N salts (16 screening, 48 finalists) plus Atakan Aldemir's adversarial low-weight inputs | Expected cost and failure spread for the baseline |
+| S2.4 | Experiment ledger `experiments/LEDGER.md` (one line per attempt, linking its changelog entry), seeded with the forum nulls (topic 753185, manwithacat's negative-results dataset, alex chilton's notebook) | Ledger exists; known nulls listed |
 
-### 6.2 invsqrt (main track)
+### invsqrt steps (main track)
 
-Starting point: the 44-qubit line (in-place square root, table plus correction, 24-row divider, phase per
-quotient bit, measure-then-rebuild at width peaks, 33 fine rotations, worst error/tolerance 0.99956).
+| Step | Goal | Done when |
+|---|---|---|
+| S2.5 | Port the public 46 → 44 qubit improvements (64-row table, rescheduling, angle refit) into our generator | Our build reaches 44 qubits at ≤ the public cost, from source |
+| S2.6 | Width profile: map live qubits per stage, list every point where 44 are live | Profile and a ranked list of narrowing candidates |
+| S2.7 | Error budget: re-split the 2^-24/√x tolerance (table, divider truncation, Z_POW precision) | Measured cost of each split; best kept or logged as null |
+| S2.8 | Narrowing attempts (measure-then-rebuild on remaining peaks, table re-synthesis): one candidate per step | 43 qubits within ~39 extra Toffoli-equivalents, or null |
+| S2.9 | One wild idea per step (low-degree phase-bit synthesis, impossible x values): time-boxed to one day | Gain measured or null logged |
 
-1. Map the width profile per stage and list every point where 44 qubits are live. A 43-qubit build is
-   worth +0.77% and can afford up to ~39 extra Toffoli-equivalents.
-2. Error budget: the margin is nearly used up (0.99956), so any saving must come with a re-split of
-   the 2^-24/√x tolerance between the table, the divider truncation and the Z_POW synthesis precision.
-   Fewer divider rows or a coarser table with a better correction may pay.
-3. Measure-then-rebuild on the remaining peaks; table re-synthesis (ANF, don't-cares) on the loaders.
-4. Wilder ideas, one day at most each: direct synthesis of the phase bits as low-degree Boolean functions
-   of x; exploiting x values that cannot occur (topic 753451, check the host answer first). The 31.4
-   teams suggest a structural change exists; invsqrt is the likeliest place.
+### dqi steps
 
-### 6.3 dqi
+| Step | Goal | Done when |
+|---|---|---|
+| S2.10 | Port the public 889 → 890 improvements (cutoff, retained products, GF(2^24) closings) into our pipeline from source | Our decoder at ≤ the public expected cost |
+| S2.11 | Failure budget: sweep the extractor cutoff against multi-salt expected cost | Best cutoff by expected cost and by robustness |
+| S2.12 | Toffoli cuts on GF multiplications and retained products (topic 756476) | Gain measured or null |
 
-1. Robustness first: a decoder that fails on fewer salts is worth more on the private board than one
-   that is 0.1% cheaper.
-2. Failure budget: sweep the extractor cutoff and other "rare case" branches against the multi-salt
-   expected cost.
-3. Toffoli cuts on the GF(2^12)/GF(2^24) multiplications and retained products (topic 756476 for exact
-   multiplication complexities).
-4. Width: 50 working qubits above the 840 syndrome qubits; one qubit is worth ~830 Toffolis.
+### Chemistry steps
 
-### 6.4 Chemistry
+| Step | Goal | Done when |
+|---|---|---|
+| S2.13 | Cost-model study: what makes up T_total = 14,706 and Q_total = 427, which knob moves which term | A written breakdown; a list of terms nobody has attacked |
+| S2.14 | Loader Toffolis (4,022/pass): gauges, don't-cares, ANF banking, tree order | Gain measured or null |
+| S2.15 | Final weight refit at the 20 mHa edge (P100 on Kaggle) | Refit applied to our best loaders |
 
-1. Read `scoreinfra/costs_prepare.py` and `SCORING_README.md` until we can say exactly what makes up
-   T_total = 14,706 and Q_total = 427, and which term each knob (R, B, C, brot, J) moves. Look for a term
-   that the forum has not attacked ("the verifier's own cost model fixes most of the qubits").
-2. Loader Toffolis (4,022 per pass): gauge choices (±θ, π − θ), dead addresses as don't-cares, ANF
-   banking, joint choice of tree order and word coding.
-3. Weight refits are already at the 20 mHa edge (gates at 0.0199999985); only as final polish.
+### Closing steps
 
-### 6.5 Submissions and wrap-up
+| Step | Goal | Done when |
+|---|---|---|
+| S2.16 | Submissions: about 3 a day for verified candidates, 2 kept for safety (runs alongside the steps above) | Every candidate fully verified before it is sent |
+| S2.17 | Freeze before the break: `build/` regenerates the best version byte-for-byte; `STATUS.md` (score, files, open ideas, dead ends) | A fresh session can rebuild and resubmit from `STATUS.md` alone |
+| S2.18 | Phase 2 review: retrospective and backlog triage for January | Plan updated |
 
-- Use about 3 submissions a day for real candidates and keep 2 for safety. Submit a candidate only after
-  a full local verification.
-- **Wrap-up before the break (around 29–30 Nov).** Freeze the best version, make sure `build/`
-  regenerates it byte-for-byte, write `STATUS.md` (score, files, open ideas, dead ends) so January
-  starts in minutes.
+The order inside each track is a default. At each review we pick the next step by expected gain on the
+score, so a promising track can take more steps than its share.
 
-## 7. Break (around 1 Dec → 3 Jan)
+## 8. Break (around 1 Dec → 3 Jan)
 
 No work required. Optional: pass on any question in the forum that would unblock January (host
 clarifications), and keep the Kaggle token valid.
 
-## 8. Phase 3 — catch-up and new ideas (around 4 → 16 Jan)
+## 9. Phase 3 — catch-up and new ideas (around 4 → 16 Jan)
 
-This phase is sketched, not planned: its content depends on where the board and the public frontier
-are in January. Its first step is to rewrite sections 1, 6 and 8 of this plan from a fresh snapshot.
+This phase is sketched, not planned: its steps depend on where the board and the public frontier are
+in January. S3.1 rewrites them.
 
-1. **Catch-up (2 days).** Read the forum and the December briefings, list the public notebooks by score
-   (`kaggle kernels list --competition … --sort-by scoreDescending`), download the leaderboard, and pull
-   every public part better than ours. Rebase our generators on the new frontier. Resubmit to recover our
-   position.
-2. **New ideas.** Pick the 2–3 highest-value ideas from the `STATUS.md` backlog and the January forum.
-   Keep the same infrastructure and ledger.
-3. **Before 13 Jan (hard deadline): team decision.** Decide whether to merge with another team (only
-   worth it if it brings a task where we are weak). After 13 Jan no merger and no new entrant.
-4. Last improvement round, still on full verification.
+| Step | Goal | Done when |
+|---|---|---|
+| S3.1 | Snapshot: read `changelog/` and `STATUS.md`, download the board, list the top notebooks, read the December forum; rewrite sections 1 and 9 of this plan | Plan updated with January numbers and steps |
+| S3.2 | Catch-up: pull every public part better than ours; rebase our generators on the new frontier | Our build at the new public frontier |
+| S3.3 | Resubmit to recover our position | Score at or above the plateau of the day |
+| S3.4… | New-idea steps, one per backlog item, highest expected gain first | Gain measured or null |
+| S3.x | **Before 13 Jan (hard deadline):** team decision (merge only if it brings a task where we are weak) | Decision recorded |
 
-## 9. Phase 4 — final submission (17 → 20 Jan)
+## 10. Phase 4 — final submission (17 → 20 Jan)
 
-Only the method is fixed here (freeze, verify, choose two); the score aimed for is whatever the January
-board makes realistic.
+Only the method is fixed here; the score aimed for is whatever the January board makes realistic.
 
-| Date | Work |
-|---|---|
-| Sun 17 | Code freeze. Full verifications: invsqrt exhaustive, dqi on 48 salts, dfthcsos. |
-| Mon 18 | Choose the **two final submissions**: (A) safest, fewest dqi failures across salts; (B) best expected score. Both already scored on Kaggle. |
-| Tue 19 | Select them on Kaggle. Last-chance buffer for a failed scoring or a queue delay. |
-| Wed 20 | No new submission unless one was scored and verified before. Deadline 23:59 UTC. |
+| Step | Date | Goal | Done when |
+|---|---|---|---|
+| S4.1 | Sun 17 | Code freeze | No more circuit changes |
+| S4.2 | Sun 17 | Full verifications: invsqrt exhaustive, dqi on 48 salts, dfthcsos | All PASS, failure spread known |
+| S4.3 | Mon 18 | Choose the two finals: (A) safest, fewest dqi failures across salts; (B) best expected score | Both already scored on Kaggle |
+| S4.4 | Tue 19 | Select them on Kaggle; buffer for a failed scoring or a queue delay | Selection confirmed |
+| S4.5 | 17–20 | Winner package: generators, `LICENSE`, `NOTICE`, `PROVENANCE.md`, a methodology write-up per task, one command that rebuilds `submission.zip` with the same SHA-256 (rules B.5 and B.7) | Rebuild from a clean clone matches |
+| — | Wed 20 | No new submission unless scored and verified before. Deadline 23:59 UTC | — |
 
-In parallel: the winner package. Apache-2.0 repository with the generators, `LICENSE`, `NOTICE`,
-`third_party/PROVENANCE.md`, a methodology write-up per task and one command that rebuilds
-`submission.zip` with the same SHA-256 (rules B.5 and B.7).
+## 11. Backlog
 
-## 10. Risks
+Ideas not yet scheduled as steps. Each review may promote one.
+
+- invsqrt: direct synthesis of phase bits as low-degree Boolean functions of x.
+- invsqrt: exploit x values that cannot occur in the algorithm (topic 753451; check the host answer).
+- dqi: reduce the 50 working qubits above the 840 syndrome qubits (one qubit ≈ 830 Toffolis).
+- chemistry: co-design the Givens tree order and the QAT training so the XOR word differences compress.
+- Infrastructure: an agent loop that evolves the generators against the evaluator, several families in
+  parallel (Gu et al., arXiv:2610.22367).
+
+## 12. Risks
 
 | Risk | Mitigation |
 |---|---|

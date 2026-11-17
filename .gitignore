@@ -10,3 +10,6 @@ __pycache__/
 
 # Raw downloads from Kaggle (untrusted, re-downloadable); curated copies go to third_party/
 downloads/
+
+# Generated circuits and submission zips (large; rebuilt from source)
+artifacts/

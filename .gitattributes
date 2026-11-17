@@ -1,0 +1,15 @@
+# Byte-exact reproducibility. Circuits are seeded from the SHA-256 of their bytes, and the reused
+# generators check the SHA-256 of their own sources and of the official verifiers, so git must never
+# rewrite line endings (core.autocrlf=true on this Windows machine would turn LF into CRLF).
+
+# Our own text files: stored and checked out with LF.
+* text=auto eol=lf
+
+# Third-party code, official competition data and circuits: never converted, byte for byte.
+third_party/** -text
+google-verifiable-quantum-circuit-compilation/** -text
+*.kmb binary
+*.kmx -text
+*.npz binary
+*.xz binary
+*.ipynb -text

@@ -10,6 +10,39 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Never commit or push.** Do not run `git commit`, `git push`, or any other command that writes
   to git history or a remote (including `gh` commands that create commits, branches, PRs or
   releases). The user handles all git operations themselves.
+- **Read the changelog at the start of every session.** Before any other work, read
+  `changelog/README.md` and the most recent entries in `changelog/` (at least the last five, more if
+  they belong to the step in progress), then the step table in `Analysis/PLAN.md`, so you know what
+  was done, why, and which step comes next.
+- **Write a changelog entry for every change to code or files.** Whenever you write or modify code,
+  circuits, tools, notebooks, the plan or other project files, add a **new** file to `changelog/`
+  (never edit an old entry; correct it with a new one). Name it
+  `changelog/YYYY-MM-DD-HHMM-short-slug.md` (UTC) and follow the template in `changelog/README.md`:
+  what was done, why, and the results or analysis (measured costs, verifier output, nulls, open
+  questions). One entry per plan step or per coherent change, written when it is finished.
+- **Optimize run time, never at the cost of correctness or result quality.** Code we write
+  (generators, tools, search loops, checkers) must run as fast as reasonably possible, because the
+  speed of the try-and-verify loop limits how many ideas we can test. Speed never justifies a less
+  exact result: an optimized tool must give the same output as the reference method (same circuit
+  bytes, same costs, same verdicts), checked on known cases before it replaces it; a fast proxy
+  (static cost, reduced run, sampling) only screens candidates and never replaces the full check at a
+  gate; no search is cut short or approximated if that could miss a better circuit, unless the
+  trade-off is stated and agreed. Within that limit:
+  - choose the algorithm with the best complexity first (state the time and memory complexity of
+    hot paths in their docstring), and avoid quadratic or worse scans when a linear or log-linear
+    method exists;
+  - vectorize with NumPy (or bit-parallel integer tricks) instead of Python loops on hot paths,
+    and cache or memoize results that are reused;
+  - use the 12 cores: `multiprocessing` with `fork` in WSL; size worker counts to the 8 GB WSL
+    memory cap;
+  - profile before tuning (`cProfile`, `time.perf_counter`), and record the measured run time and
+    peak memory of every tool or build in its changelog entry;
+  - iterate on the fastest check that answers the question (static cost, reduced verifier run, the
+    generators' own exact proofs); run the full official verifiers only at gates (before a
+    submission or a final choice).
+- **Work step by step.** `Analysis/PLAN.md` splits the work into steps (`S<phase>.<n>`). Work on one
+  step at a time, update its status in the plan when it ends, and end it with a short review in the
+  chat before starting the next one.
 
 ## What this repository is
 

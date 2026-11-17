@@ -27,5 +27,11 @@ This product includes software developed by the following authors, under the lic
 in third_party/PROVENANCE.md:
 
 - Google Quantum AI: kickmix and the competition verifiers (Apache License 2.0).
+- Syed Asad Ali (Kaggle: syed3000): the inverse-square-root, DQI and chemistry builders of the
+  "VQCC own-circuit portfolio", dataset syed3000/vqcc-own-circuit-portfolio version 12
+  (Apache License 2.0), in third_party/syed3000-vqcc-own-circuit-portfolio-v12/. As its NOTICE
+  requires, Syed Asad Ali is the original builder of the inverse-square-root and DQI generator lines
+  and of every circuit derived from them here, credited before any later contributor. Its NOTICE
+  files are kept verbatim in that folder.
 
 (Entries are added here as third-party work is included.)
