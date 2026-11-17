@@ -4,6 +4,10 @@ kickmix==1.0.0
 numpy==2.5.5
 scipy==1.18.1
 
+# Kaggle API client (six is a dependency it fails to declare)
+kaggle==2.2.5
+six==1.17.0
+
 # Notebooks
 pandas==3.1.1
 ipykernel==7.4.0

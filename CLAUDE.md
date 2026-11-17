@@ -25,9 +25,10 @@ is "correct" when its verifier prints `"status": "PASS"`.
 - `Instructions/`: snapshot (2026-11-15) of the Kaggle Overview/Data/Rules tabs and all forum topics.
   `Instructions/discussion/README.md` indexes the topics; official answers are marked **Host**.
   The forum holds most of the known techniques, public frontier scores and "what didn't work" lists.
-- `Notebooks/` (committed, but removed from the working tree): public Kaggle submission notebooks
-  that reuse public circuits pinned by SHA-256 and credit their sources and licenses. To read one,
-  run `git show HEAD:Notebooks/<name>.ipynb` (list them with `git ls-tree --name-only HEAD Notebooks/`).
+- `Notebooks/` (versioned): our own notebooks, written here and usually run on Kaggle (CPU, or GPU
+  for float64-heavy chemistry refits). Any notebook that reuses a public circuit pins it by SHA-256
+  and credits its author and license.
+- `Analysis/PLAN.md`: our action plan and its phases. The dates are indicative and move with progress.
 - `Analysis/`: third-party analyses of the competition (PDF).
 - `Scientific Papers/`: the background papers. The competition paper itself is
   `google-verifiable-quantum-circuit-compilation/verifiable_circuit_compilation.pdf`.
@@ -41,7 +42,7 @@ https://www.kaggle.com/competitions/google-verifiable-quantum-circuit-compilatio
 
 It is more current than the local snapshots. This link is only the starting point, not the only
 source: continue with any other relevant source, such as the live forum, the forum snapshot in
-`Instructions/discussion/`, the pinned notebooks in `Notebooks/` (via `git show`), `Analysis/`,
+`Instructions/discussion/`, the notebooks in `Notebooks/`, `Analysis/`,
 `Scientific Papers/`, and papers or code found on the web. Record the author, license and SHA-256 of any public circuit worth reusing.
 
 ## Environment setup
