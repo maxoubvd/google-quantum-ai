@@ -1,3 +1,9 @@
 # Large files (>100 MB) — versioned as .xz instead; decompress with: xz -dk <file>.xz
 google-verifiable-quantum-circuit-compilation/sample_submission/dqi.kmb
 google-verifiable-quantum-circuit-compilation/verifiers/dfthcsos/FeMoCo76o113e.fcidump
+
+# Python environment and caches
+.venv/
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/

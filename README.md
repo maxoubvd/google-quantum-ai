@@ -2,7 +2,8 @@
 
 Workspace for the Google Quantum AI Kaggle competition on **verifiable quantum circuit
 compilation**. It gathers the official competition data (the `kickmix` simulator, the verifiers,
-sample submissions), analysis and submission notebooks, and the reference scientific papers.
+sample submissions), the competition instructions and forum, analyses, and the reference
+scientific papers.
 
 The competition is based on the paper *Leveraging verifiable structure in quantum circuits to find
 more efficient compilations with agentic AI* (Khattar, Rubin, Gidney, Broughton, Low, Babbush —
@@ -33,12 +34,14 @@ file (Fiat-Shamir heuristic), so there is no hidden test set.
 ```text
 .
 ├── README.md
+├── CLAUDE.md                           Guidance for Claude Code in this repository
+├── requirements.txt                    Python dependencies (pinned)
+├── Analysis/                           Third-party analyses of the competition (PDF)
 ├── Instructions/                       Competition instructions copied from Kaggle (overview, data, rules, discussion)
-├── Notebooks/                          Kaggle notebooks (analyses and submission portfolios)
 ├── Scientific Papers/                  Reference papers (PDF)
 └── google-verifiable-quantum-circuit-compilation/   Official competition data
     ├── verifiable_circuit_compilation.pdf          Paper describing the competition
-    ├── kickmix/                         kickmix simulator (compiled Python module, Linux x86-64)
+    ├── kickmix/                         kickmix simulator (compiled Python module, Linux x86-64 only)
     ├── sample_submission/
     │   ├── invsqrt.kmb                  invsqrt reference circuit
     │   ├── dqi.kmb.xz                   dqi reference circuit (compressed, see below)
@@ -49,20 +52,6 @@ file (Fiat-Shamir heuristic), so there is no hidden test set.
         └── dfthcsos/                    Chemistry verifier (Benchmark III), see SCORING_README.md
 ```
 
-### Notebooks
-
-| Notebook | Contents |
-|---|---|
-| `24-94-lb-verified-three-task-portfolio.ipynb` | Verified portfolio across all three tasks (LB 24.94), an overview of the competition, and a list of ideas that were tried and did not work |
-| `qai-fewer-toffolis-same-qubits-lb-27-31224.ipynb` | Fewer Toffolis at the same qubit count: invsqrt `1ba197b0`, DQI at cutoff 18, chemistry refit (LB 27.312) |
-| `qcc-reproducible-circuit-portfolio.ipynb` | Builds a submission from public circuits pinned by SHA-256 and re-runs the official verifiers |
-| `qcc-v27-4030-toffoli-coded-word-chemistry.ipynb` | Coded-word chemistry with 4,030-Toffoli loaders |
-| `quantum-ai-df-thc-group-compression.ipynb` | v23: exact gains on each task and a list of ideas that were ruled out |
-| `quantum-ai-fast-runner-starter-notebook.ipynb` | Fast runner: checks the 18 files by SHA-256 and writes `submission.zip` |
-
-Most of these notebooks reuse public circuits from the competition; each one credits its sources
-and their licenses.
-
 ### Papers (`Scientific Papers/`)
 
 - `2510.10967v1.pdf`: MBUC Reed-Solomon decoder for DQI (used by the `dqi` verifier)
@@ -72,13 +61,52 @@ and their licenses.
 
 ## Setup
 
-Requirements: Linux x86-64, Python 3, `numpy` and `scipy`.
+Requirements: Python 3.10–3.14 on Windows, Linux or macOS. `requirements.txt` installs
+[`kickmix` from PyPI](https://pypi.org/project/kickmix/) (prebuilt wheels for all three systems),
+`numpy` and `scipy` for the verifiers, and `pandas` and `ipykernel` for notebooks.
 
 ```bash
 git clone https://github.com/maxoubvd/google-quantum-ai.git
 cd google-quantum-ai
-pip install numpy scipy
+python -m venv .venv                        # Windows: py -3.12 -m venv .venv
+source .venv/bin/activate                   # Windows (PowerShell): .venv\Scripts\Activate.ps1
+pip install -r requirements.txt
 ```
+
+The bundled `kickmix/kickmix.so` is the Linux x86-64 build from the Kaggle notebook image and does
+not load on Windows or macOS; the PyPI package replaces it.
+
+### Windows: run the verifiers in WSL
+
+The verifiers work on Windows but are much slower there:
+
+- **Single-core invsqrt and dqi checks:** both verifiers run in parallel only when the OS supports
+  `fork`, which Windows doesn't, so they fall back to one core.
+- **Slower simulation:** the Windows kickmix wheel also simulates about 4× slower per core.
+
+On a 12-core laptop:
+
+| Check | Windows | WSL (Ubuntu) |
+|---|---|---|
+| Sample chemistry submission | 5 min 9 s | 1 min 6 s |
+| invsqrt, `--shots-per-x 1` | 23 min 25 s | 54 s |
+
+Keep the repository on Windows and run the verifiers in a Linux environment inside WSL:
+
+```powershell
+wsl --install Ubuntu        # once; then run `wsl -d Ubuntu` to create the Linux user
+```
+
+```bash
+# Inside Ubuntu (the Windows drive is mounted under /mnt/c):
+sudo apt-get install -y python3-venv
+python3 -m venv ~/venvs/gqai
+~/venvs/gqai/bin/pip install -r /mnt/c/Users/<you>/.../google-quantum-ai/requirements.txt
+```
+
+Keep the venv in the Linux filesystem (`~`) rather than on `/mnt/c`, where file access is slow. WSL
+gets up to half of the machine's RAM by default. The dqi verifier can need about 9 GB with 4
+workers, so lower `--max-workers` or raise the limit in `%UserProfile%\.wslconfig`.
 
 ### Large files
 
@@ -98,11 +126,12 @@ file is rejected.
 
 ## Running the verifiers
 
-Run the commands from `verifiers/`, with the `kickmix/` folder on `PYTHONPATH`:
+Run the commands from `verifiers/`, with the virtual environment active (on Windows, inside WSL; see
+above). To use the bundled Linux build instead of the PyPI package, also run
+`export PYTHONPATH=../kickmix:$PYTHONPATH`.
 
 ```bash
 cd google-verifiable-quantum-circuit-compilation/verifiers
-export PYTHONPATH=../kickmix:$PYTHONPATH
 
 # Benchmark I — invsqrt (200 M shots by default, which is slow; --shots-per-x lowers the count)
 python invsqrt/verify_submission_invsqrt.py ../sample_submission/invsqrt.kmb
@@ -115,7 +144,10 @@ python dfthcsos/verify.py ../sample_submission/dfthcsos
 ```
 
 Each verifier prints a JSON summary (status, cost, Toffoli count, qubit count, etc.). The
-`--salt STR` option changes the sampling seed; without it, results are publicly reproducible. The
+`--salt STR` option changes the sampling seed; without it, results are publicly reproducible. For
+quicker test runs, lower the shot count with `--shots-per-x` (invsqrt), `--num-shots` (dqi, a
+multiple of 256) or `--shots-per-address` (dfthcsos). For invsqrt, the total shot count must be a
+multiple of `--batch-size`; with `--shots-per-x 1`, use `--batch-size 12`. The
 submission format and the details of the chemistry score are described in
 [`verifiers/dfthcsos/SCORING_README.md`](google-verifiable-quantum-circuit-compilation/verifiers/dfthcsos/SCORING_README.md).
 
@@ -131,6 +163,6 @@ python dfthcsos/example_submission/angle_k_reference_circuit.py \
 ## Licenses
 
 The `kickmix` simulator and the verifiers are released under the **Apache 2.0** license
-(`kickmix/LICENSE.txt`, `verifiers/LICENSE.txt`). Public circuits reused in the notebooks keep
-their authors' licenses, as stated in each notebook. The papers in `Scientific Papers/` remain
+(`kickmix/LICENSE.txt`, `verifiers/LICENSE.txt`). Reused public circuits keep their authors'
+licenses. The papers in `Scientific Papers/` remain
 the property of their authors and publishers.
