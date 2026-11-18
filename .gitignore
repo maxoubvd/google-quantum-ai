@@ -13,3 +13,6 @@ downloads/
 
 # Generated circuits and submission zips (large; rebuilt from source)
 artifacts/
+
+# Personal Claude Code settings (sound hooks)
+.claude/settings.local.json
