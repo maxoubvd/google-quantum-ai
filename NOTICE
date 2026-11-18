@@ -34,4 +34,8 @@ in third_party/PROVENANCE.md:
   and of every circuit derived from them here, credited before any later contributor. Its NOTICE
   files are kept verbatim in that folder.
 
+- manwithacat: "VQCC Negative Results" ledger (dataset manwithacat/vqcc-chemistry-negative-results,
+  Apache License 2.0), in third_party/manwithacat-vqcc-negative-results/ with its LICENSE and NOTICE;
+  used as research data (experiments/NULLS.md is generated from it), not in any submission.
+
 (Entries are added here as third-party work is included.)

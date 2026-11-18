@@ -52,11 +52,11 @@ draw their milestones from it.
 | ID | Task | Idea | Gain as stated | Score gain % | P | Effort h | Priority | Status |
 |---|---|---|---|---:|---:|---:|---:|---|
 | GEN-A01 | cross-cutting | kickmix-engine as our fast evaluator | 7–9× faster verification (author-reported), dqi memory 9 GB → < 1 GB so 4+ workers fit in WSL; ≈ 0.5% eq. | 0.50 | 0.85 | 3 | 0.1417 | DONE (S2.1: identical results; dqi 6–7×, invsqrt 12×, chemistry 1×) |
-| GEN-A05 | cross-cutting | Nulls ledger seeded from the community | Avoids repeating closed work; ≈ 0.3% eq. | 0.30 | 0.95 | 3 | 0.0950 | TODO |
+| GEN-A05 | cross-cutting | Nulls ledger seeded from the community | Avoids repeating closed work; ≈ 0.3% eq. | 0.30 | 0.95 | 3 | 0.0950 | DONE (S2.4: `experiments/NULLS.md`, `experiments/LEDGER.md`) |
 | GEN-A02 | cross-cutting | Static IR + exact static cost | Evaluator tier T0 in seconds instead of minutes; ≈ 0.4% eq. | 0.40 | 0.90 | 6 | 0.0600 | DONE (S2.2: `tools/kmb.py`, < 1 s per circuit) |
 | GEN-A06 | cross-cutting | Daily frontier-ingestion agent | Keeps us on the moving plateau without manual reading; ≈ 0.6% eq. | 0.60 | 0.80 | 8 | 0.0600 | TODO |
-| GEN-A04 | cross-cutting | Salt-robustness gate for every HMR-dependent edit | Avoids −0.15% per dqi failed shot and the 0-score case; ≈ 0.3% eq. (risk-weighted) | 0.30 | 0.90 | 5 | 0.0540 | TODO |
-| GEN-A07 | cross-cutting | I/O and caching hygiene | 1.5–3× on load-heavy dqi runs, no repeated runs; ≈ 0.1% eq. | 0.10 | 0.90 | 2 | 0.0450 | TODO |
+| GEN-A04 | cross-cutting | Salt-robustness gate for every HMR-dependent edit | Avoids −0.15% per dqi failed shot and the 0-score case; ≈ 0.3% eq. (risk-weighted) | 0.30 | 0.90 | 5 | 0.0540 | IN PROGRESS (S2.3: multi-salt gate in `tools/gate.py`; targeted dqi inputs in M2.3) |
+| GEN-A07 | cross-cutting | I/O and caching hygiene | 1.5–3× on load-heavy dqi runs, no repeated runs; ≈ 0.1% eq. | 0.10 | 0.90 | 2 | 0.0450 | DONE (S2.3: work on ~/work ext4, result cache keyed by SHA and salt) |
 | GEN-B11 | cross-cutting | Divergent-family brainstorm + red team, weekly | ≈ 1% (one new family that beats the incumbent on one stage) | 1.00 | 0.25 | 8 | 0.0312 | TODO |
 | INV-A02 | invsqrt | Port Ali Haydar Özdağ's 64-row coefficient table into our generator | 1.5–2.0 | 0.59 | 0.75 | 16 | 0.0277 | TODO |
 | GEN-B01 | cross-cutting | Evolutionary agent loop over our generators | 2–5% over the remaining weeks (Gu et al. found 4–39× over **literature** baselines; ours are crowd-optimized, so far less) ≈ 3% | 3.00 | 0.35 | 40 | 0.0262 | TODO |
@@ -229,11 +229,11 @@ Details (mechanism, risks, sources): `Analysis/research/general.md`.
 | ID | Idea | Gain as stated | Score gain % | P | Effort h | Priority | Status |
 |---|---|---|---:|---:|---:|---:|---|
 | GEN-A01 | kickmix-engine as our fast evaluator | 7–9× faster verification (author-reported), dqi memory 9 GB → < 1 GB so 4+ workers fit in WSL; ≈ 0.5% eq. | 0.50 | 0.85 | 3 | 0.1417 | DONE (S2.1: identical results; dqi 6–7×, invsqrt 12×, chemistry 1×) |
-| GEN-A05 | Nulls ledger seeded from the community | Avoids repeating closed work; ≈ 0.3% eq. | 0.30 | 0.95 | 3 | 0.0950 | TODO |
+| GEN-A05 | Nulls ledger seeded from the community | Avoids repeating closed work; ≈ 0.3% eq. | 0.30 | 0.95 | 3 | 0.0950 | DONE (S2.4: `experiments/NULLS.md`, `experiments/LEDGER.md`) |
 | GEN-A02 | Static IR + exact static cost | Evaluator tier T0 in seconds instead of minutes; ≈ 0.4% eq. | 0.40 | 0.90 | 6 | 0.0600 | DONE (S2.2: `tools/kmb.py`, < 1 s per circuit) |
 | GEN-A06 | Daily frontier-ingestion agent | Keeps us on the moving plateau without manual reading; ≈ 0.6% eq. | 0.60 | 0.80 | 8 | 0.0600 | TODO |
-| GEN-A04 | Salt-robustness gate for every HMR-dependent edit | Avoids −0.15% per dqi failed shot and the 0-score case; ≈ 0.3% eq. (risk-weighted) | 0.30 | 0.90 | 5 | 0.0540 | TODO |
-| GEN-A07 | I/O and caching hygiene | 1.5–3× on load-heavy dqi runs, no repeated runs; ≈ 0.1% eq. | 0.10 | 0.90 | 2 | 0.0450 | TODO |
+| GEN-A04 | Salt-robustness gate for every HMR-dependent edit | Avoids −0.15% per dqi failed shot and the 0-score case; ≈ 0.3% eq. (risk-weighted) | 0.30 | 0.90 | 5 | 0.0540 | IN PROGRESS (S2.3: multi-salt gate in `tools/gate.py`; targeted dqi inputs in M2.3) |
+| GEN-A07 | I/O and caching hygiene | 1.5–3× on load-heavy dqi runs, no repeated runs; ≈ 0.1% eq. | 0.10 | 0.90 | 2 | 0.0450 | DONE (S2.3: work on ~/work ext4, result cache keyed by SHA and salt) |
 | GEN-A09 | Kaggle batch-verification orchestrator | Frees the laptop; 48-salt dqi sweeps and full invsqrt runs in parallel; ≈ 0.15% eq. | 0.15 | 0.80 | 6 | 0.0200 | TODO |
 | GEN-A03 | Task-agnostic finishing pipeline | 0.01–0.1% per task per round; ≈ 0.25% | 0.25 | 0.60 | 12 | 0.0125 | TODO |
 | GEN-A10 | Local proof per rewrite | Catches rare-branch phase bugs early, fewer wasted full runs; ≈ 0.2% eq. | 0.20 | 0.60 | 10 | 0.0120 | TODO |

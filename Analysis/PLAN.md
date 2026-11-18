@@ -25,6 +25,11 @@ leaderboard and list the top notebooks with the Kaggle CLI); the numbers in it a
 
 ## 1. Where the competition stands (2026-11-17)
 
+**Snapshot 2026-11-18 09:00 UTC (Phase 1 review, 3,305 teams):** leader 31.617 (Z³C¹oherence), 6 teams ≥ 30,
+gold line (rank 16) 28.741, silver (rank 165) 28.190, bronze (rank 330) 28.181, median 25.148; 537 teams at
+28.18 or more. **Our score 27.00209 (rank ≈ 1,318, tied with 36 teams on the same public files).** The tables
+below are the 17 Nov snapshot.
+
 ### Leaderboard (public, 3,274 teams)
 
 | | Rank | Score |
@@ -208,8 +213,8 @@ into our generators, then goes beyond.
 | S1.4 | Unpack Syed Asad Ali's v12 builders into `third_party/`, read them, run their `build.sh` in WSL | Outputs byte-identical to the published SHA-256 | DONE (17 Nov): all 17 files byte-identical (CPython 3.13.18, numpy 2.2.4, WSL; 3 min in all) |
 | S1.5 | Verify the v12 outputs with the official verifiers (dfthcsos, full invsqrt, dqi on 8 salts); record our baseline costs | All PASS; baseline table in the changelog | DONE (17 Nov): all PASS; expected score 27.06 (27.08 clean dqi draw, 27.00 worst of 8 salts) |
 | S1.6 | Our build entry point `build/` (one command rebuilds all three tasks) and packaging tool `tools/package.py` (builds `submission.zip`, runs the metric-only checks of topic 751951) | The tool rejects a planted bad zip and accepts the good one | DONE (17 Nov): `build/build_all.sh`, `tools/package.py` (self-test rejects 4 planted defects; packaging 24 s, 49 MB zip) |
-| S1.7 | First submission (user) and comparison with the local estimate | Kaggle score ≈ 27.0, matching the local estimate | WAITING (submitted 18 Nov, pending on Kaggle) |
-| S1.8 | Phase 1 review: retrospective, board snapshot | Plan updated | TODO |
+| S1.7 | First submission (user) and comparison with the local estimate | Kaggle score ≈ 27.0, matching the local estimate | DONE (18 Nov): public score **27.00209**, exactly the local worst-salt projection (2 dqi failed shots on the public split); rank ≈ 1,318 / 3,305 |
+| S1.8 | Phase 1 review: retrospective, board snapshot | Plan updated | DONE (18 Nov): see the snapshot below section 1's header and `changelog/2026-11-18-0905-…` |
 | S1.9 | Research and idea register: our code (cost anatomy of each circuit) and the state of the art (papers, public notebooks, open-source tools), by four parallel research agents (invsqrt, dqi, chemistry, cross-cutting); merged into `Analysis/IDEAS.md`, as long a list as possible, by task and by category (A: improve our code; B: rewrite with a different technique), ranked by priority = P(success) × gain ÷ effort | `Analysis/research/*.md` and `Analysis/IDEAS.md` written | DONE (18 Nov): 128 ideas (INV 34, DQI 31, CHEM 31, GEN 32) in `Analysis/IDEAS.md`, details in `Analysis/research/` |
 | S1.10 | Plan refactor: phases 2–4 rewritten as milestones drawn from `IDEAS.md`, keeping every existing step | Plan refactored and reviewed with the user | DONE (18 Nov), pending the user's review |
 
@@ -239,8 +244,8 @@ The 10 days will not cover every milestone: what is left moves to January at the
 |---|---|---|---|---|
 | S2.1 | M2.1 | GEN-A01: install manwithacat's `kickmix-engine` in WSL and cross-check it against the official verifiers on our three v12 circuits | Same costs and verdicts on all three tasks; measured speed-up and memory recorded (or dropped as a null if it disagrees) | DONE (18 Nov): identical on all fields; dqi 6–7× faster (16–18 s, 0.55 GB vs 110–119 s, 4.7 GB), invsqrt full run 12× (15 s vs 183 s), chemistry no gain (44 vs 42 s) |
 | S2.2 | M2.1 | GEN-A02: our static `.kmb` reader (struct-of-arrays, modelled on GrantPrater's `vqcc_ir.py`, credited): qubits, exact expected Toffolis, liveness per stage, in < 1 s | Agrees with the verifier's Toffoli mean on the three baselines | DONE (18 Nov): `tools/kmb.py`; invsqrt 1,511.580 ± 0.008 vs verifier 1,511.570 (0.24 s); chemistry 4,074/pass exact (0.1 s); dqi static 384,003 and 889 Q (0.85 s; its mean stays with the engine) |
-| S2.3 | M2.1 | GEN-A04 + former S2.2/S2.3: one gate command per task: invsqrt exact proof (the v12 tree's `prove_any`), dqi on N salts (16 screening, 48 finalists) plus Atakan Aldemir's adversarial inputs, chemistry all-branch proof + verifier; GEN-A07 work dirs on ext4 and a result cache keyed by (SHA, salt) | One command per task gives PASS/FAIL, cost and failure spread on the baseline; a planted error is caught | TODO |
-| S2.4 | M2.1 | GEN-A05 + former S2.4: experiment ledger `experiments/LEDGER.md` (one line per attempt, linked to its changelog entry), seeded with the research nulls and manwithacat's negative-results dataset | Ledger exists with the known nulls | TODO |
+| S2.3 | M2.1 | GEN-A04 + former S2.2/S2.3: one gate command per task: invsqrt exact proof (the v12 tree's `prove_any`), dqi on N salts (16 screening, 48 finalists) plus Atakan Aldemir's adversarial inputs, chemistry all-branch proof + verifier; GEN-A07 work dirs on ext4 and a result cache keyed by (SHA, salt) | One command per task gives PASS/FAIL, cost and failure spread on the baseline; a planted error is caught | DONE (18 Nov): `tools/gate.py` (all three tasks in 176 s cold, 1.5 s from cache; planted invsqrt and dqi errors caught). Atakan Aldemir's targeted dqi inputs moved to M2.3 (they matter when the cutoff changes) |
+| S2.4 | M2.1 | GEN-A05 + former S2.4: experiment ledger `experiments/LEDGER.md` (one line per attempt, linked to its changelog entry), seeded with the research nulls and manwithacat's negative-results dataset | Ledger exists with the known nulls | DONE (18 Nov): `experiments/LEDGER.md` (8 rows so far), `experiments/NULLS.md` (297 community rows + 95 from our research, by task), generated by `tools/nulls_index.py`. **M2.1 complete** |
 | S2.5 | M2.2 | INV-A02: re-synthesise Ali Haydar Özdağ's 64-row table loaders (27 + 29 ANDs) in our generator, S4 measured out, angle refit | 46 qubits at ≈ 78,766 (−1.7%), exact proof PASS | TODO |
 | S2.6 | M2.2 | INV-A03 (part 1): stage map and diff of v12 vs Syed's compiled 44-qubit file `47b31838` (which wires leave the multiplier, how v10/v11 and e2/e3 are rebuilt) | Written derivation of the 46 → 44 moves | TODO |
 | S2.7 | M2.2 | INV-A03 (part 2): implement the moves as generator patches, qubit cap 44 | 44 qubits at ≈ 75,171 (−4.6%), exact proof PASS | TODO |

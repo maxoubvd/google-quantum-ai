@@ -1,0 +1,25 @@
+VQCC Negative Results
+Copyright 2026 manwithacat. Licensed under the Apache License, Version 2.0.
+
+This dataset reuses or wraps the following work, each Apache-2.0:
+
+- Google Quantum AI, verifiable circuit compilation competition: the
+  tools/scripts/chemistry_campaign/scoring.py tool wraps the organizers'
+  official scoreinfra equations (dfthc_math.py, reference.py, costs_prepare.py),
+  which are loaded by path from the competition data and are not redistributed
+  here. https://www.kaggle.com/competitions/google-verifiable-quantum-circuit-compilation
+- anazemcev (Artem1410): the PyTorch structure trainer and fixed-word refit code
+  that produced the training trajectories and refit reports under results/ were
+  vendored unmodified, with their LICENSE and NOTICE, in the pipeline that made
+  these results. The code itself is not included; its outputs are.
+  https://www.kaggle.com/datasets/anazemcev/vqcc-viberteam-verified-circuits
+- Dmitrii Gluzdov: the public (1, 496, 384) factorization used as the starting
+  dictionary (not redistributed here).
+  https://www.kaggle.com/datasets/dmitriigluzdov/vqcc-femoco-public-factorization
+
+Other entrants' bounds and numbers quoted in README.md are author-reported and
+credited there by name.
+
+The negative-results ledger (ledger.csv, ledger.parquet) summarises, in our own words, other entrants'
+public reports from Kaggle discussions and notebooks. Each such row names the author by Kaggle display name
+and links the original; the numbers in it are the author's (evidence tier author-reported).

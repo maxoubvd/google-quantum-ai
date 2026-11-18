@@ -44,7 +44,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   implementing and testing ideas from the ranked register `Analysis/IDEAS.md`, with a go/no-go
   criterion) and steps (`S<phase>.<n>`). Work on one step at a time, update its status in the plan
   (and the idea's status in `IDEAS.md`) when it ends, and end it with a short review in the chat
-  before starting the next one.
+  before starting the next one. Before trying an idea, search `experiments/NULLS.md` (known negative
+  results); after each attempt, add a row to `experiments/LEDGER.md` (measured result and verdict).
 
 ## What this repository is
 
