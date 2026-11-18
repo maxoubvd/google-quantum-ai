@@ -40,9 +40,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   - iterate on the fastest check that answers the question (static cost, reduced verifier run, the
     generators' own exact proofs); run the full official verifiers only at gates (before a
     submission or a final choice).
-- **Work step by step.** `Analysis/PLAN.md` splits the work into steps (`S<phase>.<n>`). Work on one
-  step at a time, update its status in the plan when it ends, and end it with a short review in the
-  chat before starting the next one.
+- **Work step by step.** `Analysis/PLAN.md` splits the work into milestones (`M<phase>.<n>`, each one
+  implementing and testing ideas from the ranked register `Analysis/IDEAS.md`, with a go/no-go
+  criterion) and steps (`S<phase>.<n>`). Work on one step at a time, update its status in the plan
+  (and the idea's status in `IDEAS.md`) when it ends, and end it with a short review in the chat
+  before starting the next one.
 
 ## What this repository is
 
