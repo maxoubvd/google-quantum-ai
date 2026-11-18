@@ -131,10 +131,29 @@ MSYS_NO_PATHCONV=1 wsl.exe -d Ubuntu \
 The verifier commands, with `python` meaning `~/venvs/gqai/bin/python`:
 
 ```bash
-python invsqrt/verify_submission_invsqrt.py CIRCUIT.kmb   # 64 shots x 3.1M inputs, about 1 h in WSL
-python dqi/verify_submission_dqi.py CIRCUIT.kmb           # 102,400 shots
-python dfthcsos/verify.py RUN_DIR/                        # angle_k_*.kmb + submission.npz, about 1 min in WSL
+python invsqrt/verify_submission_invsqrt.py CIRCUIT.kmb   # 64 shots x 3.1M inputs: 3 min in WSL (measured, 46-qubit circuit)
+python dqi/verify_submission_dqi.py CIRCUIT.kmb --max-workers 2   # 102,400 shots: about 2 min, 4.7 GB
+python dfthcsos/verify.py RUN_DIR/                        # angle_k_*.kmb + submission.npz, about 45 s in WSL
 ```
+
+**Fast path for iteration: `kickmix-engine`** (manwithacat's Rust re-implementation, Apache-2.0,
+v0.6.0, installed in `~/venvs/gqai` from the GitHub release wheel, SHA-256 `76f02cce…d178`, copy in
+`downloads/kickmix-engine-0.6.0/`). Cross-checked on our v12 circuits (step S2.1): identical on every
+field, including dqi failures. invsqrt full run 15 s (12× faster), dqi 16–18 s and 0.55 GB (6–7×),
+chemistry no gain. It only accepts invsqrt `--batch-size 256`. The official verifier stays the gate.
+
+```bash
+export KICKMIX_ENGINE_VERIFIERS=/mnt/c/Users/maxim/Documents/Projets/google-quantum-ai/google-verifiable-quantum-circuit-compilation/verifiers
+export KICKMIX_ENGINE_CACHE=$HOME/work/kecache
+~/venvs/gqai/bin/kickmix-engine verify dqi CIRCUIT.kmb --salt S          # add --cross-check to diff against the official verifier
+~/venvs/gqai/bin/kickmix-engine verify invsqrt CIRCUIT.kmb
+~/venvs/gqai/bin/kickmix-engine diff dqi BASE.kmb CANDIDATE.kmb          # structural + paired comparison
+```
+
+**Static statistics in under a second: `tools/kmb.py`** (our reader, step S2.2): qubits, bits, counts,
+static Toffolis, expected Toffolis per shot (bit-parallel replay of the classical trajectory; exact model
+for invsqrt and chemistry, not for dqi whose classical inputs follow the verifier's distribution),
+allocated-width peak. Copy large circuits to `~/work/` (ext4) first: `/mnt/c` is slow for them.
 
 For a reduced invsqrt run, the total shot count must be a multiple of `--batch-size`.
 3,133,452 = 12 × 261,121, so `--shots-per-x 1 --batch-size 12` works; the default batch size of 256

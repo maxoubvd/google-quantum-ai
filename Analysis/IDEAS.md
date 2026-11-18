@@ -51,9 +51,9 @@ draw their milestones from it.
 
 | ID | Task | Idea | Gain as stated | Score gain % | P | Effort h | Priority | Status |
 |---|---|---|---|---:|---:|---:|---:|---|
-| GEN-A01 | cross-cutting | kickmix-engine as our fast evaluator | 7–9× faster verification (author-reported), dqi memory 9 GB → < 1 GB so 4+ workers fit in WSL; ≈ 0.5% eq. | 0.50 | 0.85 | 3 | 0.1417 | TODO |
+| GEN-A01 | cross-cutting | kickmix-engine as our fast evaluator | 7–9× faster verification (author-reported), dqi memory 9 GB → < 1 GB so 4+ workers fit in WSL; ≈ 0.5% eq. | 0.50 | 0.85 | 3 | 0.1417 | DONE (S2.1: identical results; dqi 6–7×, invsqrt 12×, chemistry 1×) |
 | GEN-A05 | cross-cutting | Nulls ledger seeded from the community | Avoids repeating closed work; ≈ 0.3% eq. | 0.30 | 0.95 | 3 | 0.0950 | TODO |
-| GEN-A02 | cross-cutting | Static IR + exact static cost | Evaluator tier T0 in seconds instead of minutes; ≈ 0.4% eq. | 0.40 | 0.90 | 6 | 0.0600 | TODO |
+| GEN-A02 | cross-cutting | Static IR + exact static cost | Evaluator tier T0 in seconds instead of minutes; ≈ 0.4% eq. | 0.40 | 0.90 | 6 | 0.0600 | DONE (S2.2: `tools/kmb.py`, < 1 s per circuit) |
 | GEN-A06 | cross-cutting | Daily frontier-ingestion agent | Keeps us on the moving plateau without manual reading; ≈ 0.6% eq. | 0.60 | 0.80 | 8 | 0.0600 | TODO |
 | GEN-A04 | cross-cutting | Salt-robustness gate for every HMR-dependent edit | Avoids −0.15% per dqi failed shot and the 0-score case; ≈ 0.3% eq. (risk-weighted) | 0.30 | 0.90 | 5 | 0.0540 | TODO |
 | GEN-A07 | cross-cutting | I/O and caching hygiene | 1.5–3× on load-heavy dqi runs, no repeated runs; ≈ 0.1% eq. | 0.10 | 0.90 | 2 | 0.0450 | TODO |
@@ -228,9 +228,9 @@ Details (mechanism, risks, sources): `Analysis/research/general.md`.
 
 | ID | Idea | Gain as stated | Score gain % | P | Effort h | Priority | Status |
 |---|---|---|---:|---:|---:|---:|---|
-| GEN-A01 | kickmix-engine as our fast evaluator | 7–9× faster verification (author-reported), dqi memory 9 GB → < 1 GB so 4+ workers fit in WSL; ≈ 0.5% eq. | 0.50 | 0.85 | 3 | 0.1417 | TODO |
+| GEN-A01 | kickmix-engine as our fast evaluator | 7–9× faster verification (author-reported), dqi memory 9 GB → < 1 GB so 4+ workers fit in WSL; ≈ 0.5% eq. | 0.50 | 0.85 | 3 | 0.1417 | DONE (S2.1: identical results; dqi 6–7×, invsqrt 12×, chemistry 1×) |
 | GEN-A05 | Nulls ledger seeded from the community | Avoids repeating closed work; ≈ 0.3% eq. | 0.30 | 0.95 | 3 | 0.0950 | TODO |
-| GEN-A02 | Static IR + exact static cost | Evaluator tier T0 in seconds instead of minutes; ≈ 0.4% eq. | 0.40 | 0.90 | 6 | 0.0600 | TODO |
+| GEN-A02 | Static IR + exact static cost | Evaluator tier T0 in seconds instead of minutes; ≈ 0.4% eq. | 0.40 | 0.90 | 6 | 0.0600 | DONE (S2.2: `tools/kmb.py`, < 1 s per circuit) |
 | GEN-A06 | Daily frontier-ingestion agent | Keeps us on the moving plateau without manual reading; ≈ 0.6% eq. | 0.60 | 0.80 | 8 | 0.0600 | TODO |
 | GEN-A04 | Salt-robustness gate for every HMR-dependent edit | Avoids −0.15% per dqi failed shot and the 0-score case; ≈ 0.3% eq. (risk-weighted) | 0.30 | 0.90 | 5 | 0.0540 | TODO |
 | GEN-A07 | I/O and caching hygiene | 1.5–3× on load-heavy dqi runs, no repeated runs; ≈ 0.1% eq. | 0.10 | 0.90 | 2 | 0.0450 | TODO |
