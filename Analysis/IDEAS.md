@@ -58,7 +58,7 @@ draw their milestones from it.
 | GEN-A04 | cross-cutting | Salt-robustness gate for every HMR-dependent edit | Avoids −0.15% per dqi failed shot and the 0-score case; ≈ 0.3% eq. (risk-weighted) | 0.30 | 0.90 | 5 | 0.0540 | IN PROGRESS (S2.3: multi-salt gate in `tools/gate.py`; targeted dqi inputs in M2.3) |
 | GEN-A07 | cross-cutting | I/O and caching hygiene | 1.5–3× on load-heavy dqi runs, no repeated runs; ≈ 0.1% eq. | 0.10 | 0.90 | 2 | 0.0450 | DONE (S2.3: work on ~/work ext4, result cache keyed by SHA and salt) |
 | GEN-B11 | cross-cutting | Divergent-family brainstorm + red team, weekly | ≈ 1% (one new family that beats the incumbent on one stage) | 1.00 | 0.25 | 8 | 0.0312 | TODO |
-| INV-A02 | invsqrt | Port Ali Haydar Özdağ's 64-row coefficient table into our generator | 1.5–2.0 | 0.59 | 0.75 | 16 | 0.0277 | TODO |
+| INV-A02 | invsqrt | Port Ali Haydar Özdağ's 64-row coefficient table into our generator | 1.5–2.0 | 0.59 | 0.75 | 16 | 0.0277 | TODO (effort re-estimated at 24–40 h on 18 Nov: no table or loader search tools in the v12 source; steps S2.7–S2.10) |
 | GEN-B01 | cross-cutting | Evolutionary agent loop over our generators | 2–5% over the remaining weeks (Gu et al. found 4–39× over **literature** baselines; ours are crowd-optimized, so far less) ≈ 3% | 3.00 | 0.35 | 40 | 0.0262 | TODO |
 | INV-A03 | invsqrt | Port Syed's v13/v14 46 → 44 moves into the source | 4.3–4.8 | 1.56 | 0.50 | 30 | 0.0261 | TODO |
 | GEN-B02 | cross-cutting | Principle sweep, stage by stage | ≈ 1.5% (a few stage-level wins) | 1.50 | 0.30 | 20 | 0.0225 | TODO |
@@ -71,7 +71,7 @@ draw their milestones from it.
 | GEN-A10 | cross-cutting | Local proof per rewrite | Catches rare-branch phase bugs early, fewer wasted full runs; ≈ 0.2% eq. | 0.20 | 0.60 | 10 | 0.0120 | TODO |
 | GEN-A12 | cross-cutting | Design-space optimizer over generator parameters | ≈ 0.3% from better trade-offs | 0.30 | 0.40 | 10 | 0.0120 | TODO |
 | DQI-A02 | dqi | Norm-preserving GF(2^24) closing in `gf24_nested_norm.emit_closing` | 0.21 to 0.26 | 0.08 | 0.85 | 6 | 0.0111 | TODO |
-| DQI-A03 | dqi | Extractor cutoff j_min 15 -> 18 | 0.05 to 0.08 net | 0.02 | 0.95 | 2 | 0.0103 | TODO |
+| DQI-A03 | dqi | Extractor cutoff j_min 15 -> 18 | 0.05 to 0.08 net | 0.02 | 0.95 | 2 | 0.0103 | DONE (S2.5: cutoff 17 kept, expected −0.048% task cost; measured, not the estimated −0.05 to −0.08%) |
 | GEN-A08 | cross-cutting | Peak map + functional-dependency mining | ≈ 0.5% (invsqrt qubit 0.77%, dqi 0.075%) | 0.50 | 0.20 | 10 | 0.0100 | TODO |
 | GEN-B12 | cross-cutting | One end-to-end error budget, fitted to the exact quantized computation | ≈ 0.4% (one table bit or a few rotations) | 0.40 | 0.25 | 12 | 0.0083 | TODO |
 | INV-A05 | invsqrt | Forward normaliser with measurement-conditioned clean-up, like the inverse | 0.2–0.5 | 0.12 | 0.40 | 6 | 0.0078 | TODO |
@@ -91,7 +91,7 @@ Details (mechanism, risks, sources): `Analysis/research/invsqrt.md`.
 | ID | Idea | Gain as stated | Score gain % | P | Effort h | Priority | Status |
 |---|---|---|---:|---:|---:|---:|---|
 | INV-A01 | Submit the public frontier file `563d0583` now, credited, while A02–A04 rebuild it from source | 7.0 | 2.45 | 0.95 | 1 | 2.3261 | EXCLUDED |
-| INV-A02 | Port Ali Haydar Özdağ's 64-row coefficient table into our generator | 1.5–2.0 | 0.59 | 0.75 | 16 | 0.0277 | TODO |
+| INV-A02 | Port Ali Haydar Özdağ's 64-row coefficient table into our generator | 1.5–2.0 | 0.59 | 0.75 | 16 | 0.0277 | TODO (effort re-estimated at 24–40 h on 18 Nov: no table or loader search tools in the v12 source; steps S2.7–S2.10) |
 | INV-A03 | Port Syed's v13/v14 46 → 44 moves into the source | 4.3–4.8 | 1.56 | 0.50 | 30 | 0.0261 | TODO |
 | INV-A04 | Public micro-edit pack as generator passes | 0.5–0.9 | 0.23 | 0.70 | 8 | 0.0205 | TODO |
 | INV-A05 | Forward normaliser with measurement-conditioned clean-up, like the inverse | 0.2–0.5 | 0.12 | 0.40 | 6 | 0.0078 | TODO |
@@ -140,7 +140,7 @@ Details (mechanism, risks, sources): `Analysis/research/dqi.md`.
 |---|---|---|---:|---:|---:|---:|---|
 | DQI-A01 | Recover Syed's v13 delta and port it into the v12 generator | 3.0 to 3.6 | 1.12 | 0.55 | 40 | 0.0155 | TODO |
 | DQI-A02 | Norm-preserving GF(2^24) closing in `gf24_nested_norm.emit_closing` | 0.21 to 0.26 | 0.08 | 0.85 | 6 | 0.0111 | TODO |
-| DQI-A03 | Extractor cutoff j_min 15 -> 18 | 0.05 to 0.08 net | 0.02 | 0.95 | 2 | 0.0103 | TODO |
+| DQI-A03 | Extractor cutoff j_min 15 -> 18 | 0.05 to 0.08 net | 0.02 | 0.95 | 2 | 0.0103 | DONE (S2.5: cutoff 17 kept, expected −0.048% task cost; measured, not the estimated −0.05 to −0.08%) |
 | DQI-A04 | boristown's native patches inside the generator | 0.10 to 0.25 | 0.06 | 0.70 | 12 | 0.0034 | TODO |
 | DQI-A08 | Width / Toffoli Pareto pass | 0 to 1.0 | 0.17 | 0.30 | 16 | 0.0031 | TODO |
 | DQI-A05 | Generator-level measurement-based uncomputation audit | 0.05 to 0.30 | 0.06 | 0.45 | 10 | 0.0026 | TODO |

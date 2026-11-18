@@ -38,4 +38,8 @@ in third_party/PROVENANCE.md:
   Apache License 2.0), in third_party/manwithacat-vqcc-negative-results/ with its LICENSE and NOTICE;
   used as research data (experiments/NULLS.md is generated from it), not in any submission.
 
+- generators/dqi/ and generators/invsqrt/ are our working copies of Syed Asad Ali's v12 generators
+  (same license and NOTICE; Syed Asad Ali credited first as the original builder); our additions are listed
+  in generators/<task>/TEAM.md.
+
 (Entries are added here as third-party work is included.)

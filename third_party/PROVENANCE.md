@@ -17,3 +17,10 @@ kept verbatim. Files we change carry a header line saying so (Apache License 2.0
 | Negative-results ledger (data, not in a submission) | manwithacat (VQCC Negative Results; rows credit other entrants) | dataset `manwithacat/vqcc-chemistry-negative-results`, pulled 2026-11-18 (updated 08:55 UTC) | Apache-2.0 + NOTICE | `ledger.csv` 55f13abc9c35d8af3163e6f1cce212f4ecb9237aa4f01da685e5cf1157a5aa82 (matches its SHA256SUMS), with LICENSE, NOTICE, README, schema, in `third_party/manwithacat-vqcc-negative-results/` | n/a | n/a |
 | Design reference (no code copied): `vqcc_ir.py` .kmb layout | GrantPrater | dataset `grantprater/vqcc-dqi-61c8348d-merged-closings` | Apache-2.0 | read as documentation for `tools/kmb.py` | n/a | n/a |
 | Chemistry: 15 loaders at 4,022 Toffolis/pass + weights `703843d3` | maoxin123 (loaders, CC0), Atakan Aldemir (weights), on Lera's (8,143,44) table | `atakanaldemir/qcc-shared-4022-loaders-and-own703-weights`; `marculera/dfthc-c44-build`, pulled 2026-11-17 | Apache-2.0 (Lera NOTICE §4) / CC0 (maoxin123 loaders) | `science17.xz` | **No** for the loaders (compiled); weights come from a refit run | — |
+
+## Our working copies (derived works)
+
+| Folder | Derived from | Changes | Where documented |
+|---|---|---|---|
+| `generators/dqi/` | Syed Asad Ali v12 dqi source (above) | new files only (`team_build.sh`, `src/team/`), run-time patches after the pinned checks | `generators/dqi/TEAM.md` |
+| `generators/invsqrt/` | Syed Asad Ali v12 invsqrt source (above) | none yet (identical copy) | — |
