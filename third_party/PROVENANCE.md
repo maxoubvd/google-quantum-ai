@@ -23,4 +23,4 @@ kept verbatim. Files we change carry a header line saying so (Apache License 2.0
 | Folder | Derived from | Changes | Where documented |
 |---|---|---|---|
 | `generators/dqi/` | Syed Asad Ali v12 dqi source (above) | new files only (`team_build.sh`, `src/team/`), run-time patches after the pinned checks | `generators/dqi/TEAM.md` |
-| `generators/invsqrt/` | Syed Asad Ali v12 invsqrt source (above) | none yet (identical copy) | — |
+| `generators/invsqrt/` | Syed Asad Ali v12 invsqrt source (above) | new files only (`team/`: table search, K = 6 model) | `generators/invsqrt/TEAM.md` |
