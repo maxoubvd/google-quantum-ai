@@ -19,11 +19,17 @@ leaderboard and list the top notebooks with the Kaggle CLI); the numbers in it a
 | Phase | Target, measured on the board at that time |
 |---|---|
 | 1 | At the public plateau (the score of the best public portfolio) |
-| 2 | Back to the plateau from our own source, then strictly above it, aiming for the gold line (top 10 + 0.2%) |
+| 2 | At the public plateau (credited public files, decision S1.3 revised 19 Nov), then new families explored to get strictly above it |
 | 3 | Back above the plateau after the December rise, then as close to gold as possible |
 | 4 | Best private-board expectation: robustness on the private salt first, then score |
 
 ## 1. Where the competition stands (2026-11-17)
+
+**Snapshot 2026-11-19 08:27 UTC (re-plan, 3,377 teams):** leader 31.74 (Z³C¹oherence); gold line (rank 16) 28.824;
+silver (rank 168) 28.2344; bronze (rank 337) 28.2316; plateau: 153 teams at 28.23162 and 53 at 28.23444. Public
+frontier 28.23445 (invsqrt `ecf908fe` 44 Q 74,383.70; dqi `e39b1396` 890 Q 3.4526e11; chemistry `6ef06081` with
+the 4,022-Toffoli loaders 294,642,169.5). Against our v12 base: invsqrt −7.2%, dqi −4.3%, chemistry −0.7%. Sources:
+`Analysis/research/public_frontier_*_2026-11-19.md`.
 
 **Snapshot 2026-11-18 09:00 UTC (Phase 1 review, 3,305 teams):** leader 31.617 (Z³C¹oherence), 6 teams ≥ 30,
 gold line (rank 16) 28.741, silver (rank 165) 28.190, bronze (rank 330) 28.181, median 25.148; 537 teams at
@@ -209,7 +215,7 @@ into our generators, then goes beyond.
 |---|---|---|---|
 | S1.1 | Licensing: `LICENSE`, `NOTICE`, `third_party/PROVENANCE.md` | Files in place, scope stated | DONE (17 Nov) |
 | S1.2 | Source inventory: who published what, with or without a generator | `PROVENANCE.md` lists the 5 key sources and their generator status | DONE (17 Nov): only Syed Asad Ali's v12 builders (≈ 27.08 level) ship full source; the 28.18 parts are compiled files or patches of compiled files |
-| S1.3 | Decision: track A (credited public frontier) and/or track B (own base from the v12 builders) | User decision recorded here | DONE (17 Nov): **track B only** |
+| S1.3 | Decision: track A (credited public frontier) and/or track B (own base from the v12 builders) | User decision recorded here | DONE (17 Nov): **track B only**; **revised 19 Nov**: credited public files allowed for the leaderboard (see section 7) |
 | S1.4 | Unpack Syed Asad Ali's v12 builders into `third_party/`, read them, run their `build.sh` in WSL | Outputs byte-identical to the published SHA-256 | DONE (17 Nov): all 17 files byte-identical (CPython 3.13.18, numpy 2.2.4, WSL; 3 min in all) |
 | S1.5 | Verify the v12 outputs with the official verifiers (dfthcsos, full invsqrt, dqi on 8 salts); record our baseline costs | All PASS; baseline table in the changelog | DONE (17 Nov): all PASS; expected score 27.06 (27.08 clean dqi draw, 27.00 worst of 8 salts) |
 | S1.6 | Our build entry point `build/` (one command rebuilds all three tasks) and packaging tool `tools/package.py` (builds `submission.zip`, runs the metric-only checks of topic 751951) | The tool rejects a planted bad zip and accepts the good one | DONE (17 Nov): `build/build_all.sh`, `tools/package.py` (self-test rejects 4 planted defects; packaging 24 s, 49 MB zip) |
@@ -218,7 +224,46 @@ into our generators, then goes beyond.
 | S1.9 | Research and idea register: our code (cost anatomy of each circuit) and the state of the art (papers, public notebooks, open-source tools), by four parallel research agents (invsqrt, dqi, chemistry, cross-cutting); merged into `Analysis/IDEAS.md`, as long a list as possible, by task and by category (A: improve our code; B: rewrite with a different technique), ranked by priority = P(success) × gain ÷ effort | `Analysis/research/*.md` and `Analysis/IDEAS.md` written | DONE (18 Nov): 128 ideas (INV 34, DQI 31, CHEM 31, GEN 32) in `Analysis/IDEAS.md`, details in `Analysis/research/` |
 | S1.10 | Plan refactor: phases 2–4 rewritten as milestones drawn from `IDEAS.md`, keeping every existing step | Plan refactored and reviewed with the user | DONE (18 Nov), pending the user's review |
 
-## 7. Phase 2 — back to the frontier from our own source, then beyond (21 → 30 Nov)
+## 7. Phase 2 — public level, then exploration of new families (21 → 30 Nov)
+
+### Re-plan of 19 Nov (user decisions)
+
+Two findings changed the plan: (1) everything beyond the public v12 base exists only as compiled files, and
+porting it into our source means redoing the searches that produced it (S2.9 and S2.14 assessments); (2) the top
+public portfolios are an accumulation of patches on the same three families, exhausted by every public scan,
+while the leaders (31.74) need about −30% total cost, which only new families can give. The user therefore
+decided:
+
+- **Decision S1.3 revised:** credited public Apache-2.0 / CC0 files may be submitted **for the leaderboard**, pinned
+  by SHA-256 with their licences and NOTICEs (`third_party/PROVENANCE.md`, `NOTICE`). Prize eligibility still needs
+  our own generators (prizes need > 31 anyway).
+- **Second submission at the public level** first, as the floor.
+- **Then phases of exploration of other families**, task by task, to stand out: invsqrt first (best exchange rate,
+  no hard floor, the likely place of the leaders' jump), dqi second, chemistry last (boxed in by its cost model).
+
+Ideas already tested publicly are marked in `IDEAS.md` (statuses of 19 Nov: IN PUBLIC FRONTIER, NULL (public),
+PARTLY NULL) and are not planned again.
+
+**How a family is explored** (one milestone per family, time-boxed, go/no-go at each gate):
+1. *Paper:* the datapath, its qubit peak and Toffoli count from exact formulas, priced with the exchange rates;
+   checked against `experiments/NULLS.md` (a family must say why it escapes the recorded bounds, e.g. table-free
+   invsqrt ≥ 74 Q, divider-free piecewise polynomial ≥ 48 Q).
+2. *Scaled prototype:* a small instance (e.g. invsqrt on 12–14-bit x) verified exhaustively in seconds.
+3. *Full scale:* generator, exact proof where possible, gate, official verifier.
+
+| Milestone | Content | Expected gain | Time box | Go / no-go |
+|---|---|---|---|---|
+| M2.A Public-level submission | S2.17: the public frontier set with a proven board score (28.23445: `ecf908fe`, `e39b1396`, `6ef06081` + loaders), pinned, credited, gated, packaged | ≈ 27.00 → 28.23 (+4.6%) | 0.5 day | All three files PASS our gate and the official verifiers; the user submits |
+| M2.B invsqrt family exploration | S2.18 divergent brainstorm (GEN-B11): ≥ 5 qualitatively different datapaths for 1/√x phasing, priced and red-teamed; S2.19 scaled-proxy harness (GEN-A13) reusing the S2.7 exact model; S2.20+ prototype of the 1–2 surviving families | +1 to +5% if a family lands (one qubit = +0.77%) | rest of Phase 2, continued in January | A priced design below the frontier (44 Q × ~1,690) on paper, then a passing prototype |
+| M2.C dqi family exploration (paper) | S2.21 brainstorm for the decoder's key stage (56% of T) and convert stage (30%): history-free Berlekamp–Massey, Bezout reuse, fused CRT, cheaper inverses; target ≤ 5,462 GF(2^12) multiplications (≈ 274k T) | prepares January | 1 day | 1–2 families priced below the frontier |
+| M2.D Freeze before the break | S2.22: `STATUS.md` (score, files, open families, dead ends), build/package commands, Phase 2 review | — | 0.5 day | A fresh session can resubmit and resume alone |
+
+Chemistry family moves (R = 7 with C = 48–50, C = 40/42 retrains, codebook columns CHEM-N11) need a Kaggle P100 and
+come in Phase 3. The in-family steps that stay open (DQI-A07 guard, DQI-A09 one qubit from the source build,
+GEN-B03 exact pebbling, INV-A02 port from Özdağ's now-public source) are in the backlog, behind the family work.
+
+### Initial Phase 2 milestones (17 Nov; superseded on 19 Nov except where their steps are DONE)
+
 
 Goal: **strictly above the public plateau, aiming for the gold line of the day** (on 17 Nov: 28.71, +1.9%
 over the plateau), with every gain coming from our own generators. The research (S1.9) shows that the
@@ -288,19 +333,18 @@ clarifications), keep the Kaggle token valid, and, if the user wants it, let a s
 frontier watch (GEN-A06: list new public notebooks, re-verify, record what to port) so that January starts
 with a ready list.
 
-## 9. Phase 3 — catch-up, then new designs (around 4 → 16 Jan)
+## 9. Phase 3 — catch-up, then the new families at full scale (around 4 → 16 Jan)
 
-Sketched, not planned: its milestones are re-ranked at M3.1 from `IDEAS.md`, `STATUS.md` and the January board.
+Re-planned on 19 Nov; re-ranked at M3.1 from `IDEAS.md`, `STATUS.md` and the January board.
 
-| Milestone | Ideas (`IDEAS.md`) | Expected score gain | Time box | Go / no-go |
+| Milestone | Content | Expected gain | Time box | Go / no-go |
 |---|---|---|---|---|
-| M3.1 Snapshot and catch-up | GEN-A06; former S3.1–S3.3 | back to the plateau of the day | 2 days | Read `changelog/` and `STATUS.md`, download the board, list the top notebooks, read the December forum; port every public advance we can rebuild from source; resubmit; rewrite sections 1 and 9 |
-| M3.2 Evolutionary agent loop | GEN-B01 with GEN-B02 operators, families seeded by M2.6; INV-A08/B01, DQI-B01 | +1 to +3% | 3–4 days | A family beats its incumbent on a task under the full gates; otherwise frozen after 3 rounds without improvement |
-| M3.3 invsqrt 43-qubit campaign (joint test) | INV-A20 → A21 + A22 + A24 + A25, GEN-B04, GEN-B03, GEN-A08 | +0.77% per qubit | 3 days | A cover of every 44-wide window within ~39 Toffoli-equivalents; otherwise null |
-| M3.4 New designs per task | best surviving B ideas, e.g. INV-B03/B04/B02, DQI-B02/B03/B04, GEN-B12, GEN-B10 | +1 to +5% if one lands | 3 days | Priced prototype beats the incumbent stage; otherwise null with the reason |
-| M3.4b invsqrt: a generator of our own | New invsqrt generator written by us (clean, understood code), starting from the S2.7 tools (exact integer model, table search, angle refit, loader synthesis) and the best B ideas (INV-B02/B03/B04) | the large invsqrt gains (+1 to +5%) | 4–6 days | Full-domain exact proof and gate; cost below the then-current base |
-| M3.5 Chemistry error-budget campaign (joint test) | CHEM-B05 (budget optimizer) then B01/B02, B03, B04 (C = 43), final weight refit (former S2.15), on a Kaggle P100 | +0.5 to +1% | 2–3 days | All gates (20 mHa, Λ > 49, E_gap) passed with a lower cost |
-| M3.6 Team decision (**before 13 Jan, hard deadline**) | — | — | — | Decision recorded (merge only if it brings a task where we are weak) |
+| M3.1 Snapshot and catch-up | Read `changelog/` and `STATUS.md`; board and public notebooks (GEN-A06); resubmit the new public frontier if it moved | back to the plateau of the day | 1–2 days | Score at the plateau of the day |
+| M3.2 invsqrt: the best family at full scale | Our own invsqrt generator for the family retained in M2.B (former M3.4b), with the S2.7 tools (exact integer model, table search, angle refit, loader synthesis), the 43-qubit ideas (INV-A20–A25, GEN-B03, GEN-B04) where they apply | +1 to +5% | 4–6 days | Exact full-domain proof and gate; cost below the frontier |
+| M3.3 dqi: the best family at full scale | Prototype then full build of the M2.C family | +1 to +5% if it lands | 3–4 days | Multi-salt expected cost below the frontier, no worse failure rate |
+| M3.4 Evolutionary agent loop | GEN-B01 with GEN-B02 operators on the retained families (fresh subagent per iteration, MAP-Elites on (Q, T)) | +1 to +3% | alongside M3.2–M3.3 | A family beats its incumbent under the full gates; frozen after 3 rounds without gain |
+| M3.5 Chemistry family moves (P100) | CHEM-B10 (R = 7, C = 48–50), CHEM-B12 (C = 40), CHEM-B04/B08 retrains, CHEM-N11 codebook columns, CHEM-B05 budget optimiser; filters: rank R·min(B,C) ≥ ~290, B ≥ 129 | +0.5 to +2.5% | 2–3 days | All chemistry gates passed at a lower cost |
+| M3.6 Team decision (**before 13 Jan, hard deadline**) | — | — | — | Decision recorded |
 
 ## 10. Phase 4 — final submission (17 → 20 Jan)
 

@@ -58,25 +58,25 @@ draw their milestones from it.
 | GEN-A04 | cross-cutting | Salt-robustness gate for every HMR-dependent edit | Avoids −0.15% per dqi failed shot and the 0-score case; ≈ 0.3% eq. (risk-weighted) | 0.30 | 0.90 | 5 | 0.0540 | IN PROGRESS (S2.3: multi-salt gate in `tools/gate.py`; targeted dqi inputs in M2.3) |
 | GEN-A07 | cross-cutting | I/O and caching hygiene | 1.5–3× on load-heavy dqi runs, no repeated runs; ≈ 0.1% eq. | 0.10 | 0.90 | 2 | 0.0450 | DONE (S2.3: work on ~/work ext4, result cache keyed by SHA and salt) |
 | GEN-B11 | cross-cutting | Divergent-family brainstorm + red team, weekly | ≈ 1% (one new family that beats the incumbent on one stage) | 1.00 | 0.25 | 8 | 0.0312 | TODO |
-| INV-A02 | invsqrt | Port Ali Haydar Özdağ's 64-row coefficient table into our generator | 1.5–2.0 | 0.59 | 0.75 | 16 | 0.0277 | PAUSED (S2.7 table certified and kept; integration blocked by table-specific width patches, see PLAN S2.9) |
+| INV-A02 | invsqrt | Port Ali Haydar Özdağ's 64-row coefficient table into our generator | 1.5–2.0 | 0.59 | 0.75 | 16 | 0.0277 | DONE PUBLICLY FROM SOURCE (Ali Haydar Özdağ, `ahoirg/qcc-invk6-k6c`, 19 Nov: −1.74%); our own S2.7 table also certified; in the frontier file |
 | GEN-B01 | cross-cutting | Evolutionary agent loop over our generators | 2–5% over the remaining weeks (Gu et al. found 4–39× over **literature** baselines; ours are crowd-optimized, so far less) ≈ 3% | 3.00 | 0.35 | 40 | 0.0262 | TODO |
-| INV-A03 | invsqrt | Port Syed's v13/v14 46 → 44 moves into the source | 4.3–4.8 | 1.56 | 0.50 | 30 | 0.0261 | PAUSED (same patch stack as INV-A02; moved to M3.4b) |
+| INV-A03 | invsqrt | Port Syed's v13/v14 46 → 44 moves into the source | 4.3–4.8 | 1.56 | 0.50 | 30 | 0.0261 | IN PUBLIC FRONTIER (compiled only); from source still open |
 | GEN-B02 | cross-cutting | Principle sweep, stage by stage | ≈ 1.5% (a few stage-level wins) | 1.50 | 0.30 | 20 | 0.0225 | TODO |
-| INV-A04 | invsqrt | Public micro-edit pack as generator passes | 0.5–0.9 | 0.23 | 0.70 | 8 | 0.0205 | TODO |
+| INV-A04 | invsqrt | Public micro-edit pack as generator passes | 0.5–0.9 | 0.23 | 0.70 | 8 | 0.0205 | IN PUBLIC FRONTIER (compiled; scans on the frontier find 0 more) |
 | GEN-A09 | cross-cutting | Kaggle batch-verification orchestrator | Frees the laptop; 48-salt dqi sweeps and full invsqrt runs in parallel; ≈ 0.15% eq. | 0.15 | 0.80 | 6 | 0.0200 | TODO |
 | CHEM-A02 | chemistry | Daily "parts market" watch: pull new public chemistry loaders and weights, re-verify, adopt the cheapest compatible pair | 0.3 (0.1-0.7) | 0.10 | 0.70 | 4 | 0.0175 | TODO |
-| DQI-A01 | dqi | Recover Syed's v13 delta and port it into the v12 generator | 3.0 to 3.6 | 1.12 | 0.55 | 40 | 0.0155 | TODO |
+| DQI-A01 | dqi | Recover Syed's v13 delta and port it into the v12 generator | 3.0 to 3.6 | 1.12 | 0.55 | 40 | 0.0155 | IN PUBLIC FRONTIER (compiled only) |
 | GEN-B04 | cross-cutting | Qubit-cap ladder harness | invsqrt −1 qubit = 0.77% | 0.77 | 0.20 | 10 | 0.0154 | TODO |
-| GEN-A03 | cross-cutting | Task-agnostic finishing pipeline | 0.01–0.1% per task per round; ≈ 0.25% | 0.25 | 0.60 | 12 | 0.0125 | TODO |
+| GEN-A03 | cross-cutting | Task-agnostic finishing pipeline | 0.01–0.1% per task per round; ≈ 0.25% | 0.25 | 0.60 | 12 | 0.0125 | OPEN, lower expectation (0 cancelling pairs in 58.4M dqi ops publicly) |
 | GEN-A10 | cross-cutting | Local proof per rewrite | Catches rare-branch phase bugs early, fewer wasted full runs; ≈ 0.2% eq. | 0.20 | 0.60 | 10 | 0.0120 | TODO |
 | GEN-A12 | cross-cutting | Design-space optimizer over generator parameters | ≈ 0.3% from better trade-offs | 0.30 | 0.40 | 10 | 0.0120 | TODO |
-| DQI-A02 | dqi | Norm-preserving GF(2^24) closing in `gf24_nested_norm.emit_closing` | 0.21 to 0.26 | 0.08 | 0.85 | 6 | 0.0111 | DEFERRED (S2.6: only a compiled gadget is public; generator re-implementation 4–8 h for +0.09% score) |
+| DQI-A02 | dqi | Norm-preserving GF(2^24) closing in `gf24_nested_norm.emit_closing` | 0.21 to 0.26 | 0.08 | 0.85 | 6 | 0.0111 | IN PUBLIC FRONTIER (Balram Srinivasan, Grant Prater, Ertuğrul Özer: gadget transplants) |
 | DQI-A03 | dqi | Extractor cutoff j_min 15 -> 18 | 0.05 to 0.08 net | 0.02 | 0.95 | 2 | 0.0103 | DONE (S2.5: cutoff 17 kept, expected −0.048% task cost; measured, not the estimated −0.05 to −0.08%) |
 | GEN-A08 | cross-cutting | Peak map + functional-dependency mining | ≈ 0.5% (invsqrt qubit 0.77%, dqi 0.075%) | 0.50 | 0.20 | 10 | 0.0100 | TODO |
 | GEN-B12 | cross-cutting | One end-to-end error budget, fitted to the exact quantized computation | ≈ 0.4% (one table bit or a few rotations) | 0.40 | 0.25 | 12 | 0.0083 | TODO |
 | INV-A05 | invsqrt | Forward normaliser with measurement-conditioned clean-up, like the inverse | 0.2–0.5 | 0.12 | 0.40 | 6 | 0.0078 | TODO |
 | GEN-B03 | cross-cutting | Width-optimal rescheduling by spooky pebbling DP/SAT | ≈ 0.77% (one invsqrt qubit; open best case −0.37% cost) | 0.77 | 0.20 | 20 | 0.0077 | TODO |
-| INV-A10 | invsqrt | Clean up rotation bookkeeping | 0.01–0.06 | 0.01 | 0.60 | 1 | 0.0070 | TODO |
+| INV-A10 | invsqrt | Clean up rotation bookkeeping | 0.01–0.06 | 0.01 | 0.60 | 1 | 0.0070 | NULL (public, Asterios Panoras: no mergeable rotation pair on 563d0583) |
 | GEN-A13 | cross-cutting | Scaled-down proxy instances | Faster triage of new families; ≈ 0.2% eq. | 0.20 | 0.40 | 12 | 0.0067 | TODO |
 | INV-A08 | invsqrt | LLM agent loop over the patch layer | 1–5 | 1.02 | 0.25 | 40 | 0.0064 | TODO |
 | INV-A09 | invsqrt | Re-synthesise the PHASE endpoint ring | 0.3–1.2 | 0.25 | 0.30 | 12 | 0.0063 | TODO |
@@ -90,16 +90,16 @@ Details (mechanism, risks, sources): `Analysis/research/invsqrt.md`.
 
 | ID | Idea | Gain as stated | Score gain % | P | Effort h | Priority | Status |
 |---|---|---|---:|---:|---:|---:|---|
-| INV-A01 | Submit the public frontier file `563d0583` now, credited, while A02–A04 rebuild it from source | 7.0 | 2.45 | 0.95 | 1 | 2.3261 | EXCLUDED |
-| INV-A02 | Port Ali Haydar Özdağ's 64-row coefficient table into our generator | 1.5–2.0 | 0.59 | 0.75 | 16 | 0.0277 | PAUSED (S2.7 table certified and kept; integration blocked by table-specific width patches, see PLAN S2.9) |
-| INV-A03 | Port Syed's v13/v14 46 → 44 moves into the source | 4.3–4.8 | 1.56 | 0.50 | 30 | 0.0261 | PAUSED (same patch stack as INV-A02; moved to M3.4b) |
-| INV-A04 | Public micro-edit pack as generator passes | 0.5–0.9 | 0.23 | 0.70 | 8 | 0.0205 | TODO |
+| INV-A01 | Submit the public frontier file `563d0583` now, credited, while A02–A04 rebuild it from source | 7.0 | 2.45 | 0.95 | 1 | 2.3261 | IN PUBLIC FRONTIER (decision S1.3 revised 19 Nov: credited public files allowed for the leaderboard; frontier invsqrt `ecf908fe`, 74,383.70) |
+| INV-A02 | Port Ali Haydar Özdağ's 64-row coefficient table into our generator | 1.5–2.0 | 0.59 | 0.75 | 16 | 0.0277 | DONE PUBLICLY FROM SOURCE (Ali Haydar Özdağ, `ahoirg/qcc-invk6-k6c`, 19 Nov: −1.74%); our own S2.7 table also certified; in the frontier file |
+| INV-A03 | Port Syed's v13/v14 46 → 44 moves into the source | 4.3–4.8 | 1.56 | 0.50 | 30 | 0.0261 | IN PUBLIC FRONTIER (compiled only); from source still open |
+| INV-A04 | Public micro-edit pack as generator passes | 0.5–0.9 | 0.23 | 0.70 | 8 | 0.0205 | IN PUBLIC FRONTIER (compiled; scans on the frontier find 0 more) |
 | INV-A05 | Forward normaliser with measurement-conditioned clean-up, like the inverse | 0.2–0.5 | 0.12 | 0.40 | 6 | 0.0078 | TODO |
-| INV-A10 | Clean up rotation bookkeeping | 0.01–0.06 | 0.01 | 0.60 | 1 | 0.0070 | TODO |
+| INV-A10 | Clean up rotation bookkeeping | 0.01–0.06 | 0.01 | 0.60 | 1 | 0.0070 | NULL (public, Asterios Panoras: no mergeable rotation pair on 563d0583) |
 | INV-A08 | LLM agent loop over the patch layer | 1–5 | 1.02 | 0.25 | 40 | 0.0064 | TODO |
 | INV-A09 | Re-synthesise the PHASE endpoint ring | 0.3–1.2 | 0.25 | 0.30 | 12 | 0.0063 | TODO |
 | INV-A06 | Domain-aware window re-synthesis scanner | 0.2–1.0 | 0.20 | 0.50 | 16 | 0.0063 | TODO |
-| INV-A12 | Margin-maximising joint refit (MILP) | 0.15–0.6 | 0.13 | 0.50 | 10 | 0.0063 | TODO |
+| INV-A12 | Margin-maximising joint refit (MILP) | 0.15–0.6 | 0.13 | 0.50 | 10 | 0.0063 | PARTLY NULL (public: angle-only LP saturated, +2 units); joint table-word MILP still open |
 | INV-A07 | SAT-minimal rebuild programs with domain don't-cares | 0.1–0.5 | 0.10 | 0.50 | 8 | 0.0063 | TODO |
 | INV-A11 | Remove the inverse-product premium | 0.4–1.5 | 0.32 | 0.30 | 16 | 0.0060 | TODO |
 | INV-A13 | Trim the consuming root | 0.2–0.8 | 0.17 | 0.35 | 12 | 0.0049 | TODO |
@@ -138,19 +138,19 @@ Details (mechanism, risks, sources): `Analysis/research/dqi.md`.
 
 | ID | Idea | Gain as stated | Score gain % | P | Effort h | Priority | Status |
 |---|---|---|---:|---:|---:|---:|---|
-| DQI-A01 | Recover Syed's v13 delta and port it into the v12 generator | 3.0 to 3.6 | 1.12 | 0.55 | 40 | 0.0155 | TODO |
-| DQI-A02 | Norm-preserving GF(2^24) closing in `gf24_nested_norm.emit_closing` | 0.21 to 0.26 | 0.08 | 0.85 | 6 | 0.0111 | DEFERRED (S2.6: only a compiled gadget is public; generator re-implementation 4–8 h for +0.09% score) |
+| DQI-A01 | Recover Syed's v13 delta and port it into the v12 generator | 3.0 to 3.6 | 1.12 | 0.55 | 40 | 0.0155 | IN PUBLIC FRONTIER (compiled only) |
+| DQI-A02 | Norm-preserving GF(2^24) closing in `gf24_nested_norm.emit_closing` | 0.21 to 0.26 | 0.08 | 0.85 | 6 | 0.0111 | IN PUBLIC FRONTIER (Balram Srinivasan, Grant Prater, Ertuğrul Özer: gadget transplants) |
 | DQI-A03 | Extractor cutoff j_min 15 -> 18 | 0.05 to 0.08 net | 0.02 | 0.95 | 2 | 0.0103 | DONE (S2.5: cutoff 17 kept, expected −0.048% task cost; measured, not the estimated −0.05 to −0.08%) |
 | DQI-A04 | boristown's native patches inside the generator | 0.10 to 0.25 | 0.06 | 0.70 | 12 | 0.0034 | TODO |
 | DQI-A08 | Width / Toffoli Pareto pass | 0 to 1.0 | 0.17 | 0.30 | 16 | 0.0031 | TODO |
-| DQI-A05 | Generator-level measurement-based uncomputation audit | 0.05 to 0.30 | 0.06 | 0.45 | 10 | 0.0026 | TODO |
-| DQI-A07 | Failure-budget audit of rare-branch handlers | 0 to 0.6 | 0.10 | 0.35 | 14 | 0.0025 | TODO |
-| DQI-A06 | Product retention / caching with exact lifetimes from the source | 0.10 to 0.40 | 0.08 | 0.60 | 20 | 0.0025 | TODO |
-| DQI-A10 | Closing 15-AND product: measured uncomputation and a second helper | 0.013 to 0.18 | 0.03 | 0.50 | 8 | 0.0020 | TODO |
+| DQI-A05 | Generator-level measurement-based uncomputation audit | 0.05 to 0.30 | 0.06 | 0.45 | 10 | 0.0026 | IN PUBLIC FRONTIER (compiled) |
+| DQI-A07 | Failure-budget audit of rare-branch handlers | 0 to 0.6 | 0.10 | 0.35 | 14 | 0.0025 | OPEN (drop-rare-gate variant NULL public: dropping one rare slot fails ≈2.5e-4 of shots) |
+| DQI-A06 | Product retention / caching with exact lifetimes from the source | 0.10 to 0.40 | 0.08 | 0.60 | 20 | 0.0025 | IN PUBLIC FRONTIER (nearly exhausted at 890 Q: 1 free window in 281 pairs) |
+| DQI-A10 | Closing 15-AND product: measured uncomputation and a second helper | 0.013 to 0.18 | 0.03 | 0.50 | 8 | 0.0020 | PROBABLY IN PUBLIC FRONTIER (15a4b740: −672 T = 48×14; unverified) |
 | DQI-A11 | Salt-robust selection and failure attribution | 0 to 0.05 (risk control) | 0.01 | 0.90 | 4 | 0.0019 | TODO |
 | DQI-A12 | Atakan Aldemir's four-Toffoli phase component | 0.01 to 0.03 | 0.01 | 0.80 | 3 | 0.0018 | TODO |
 | DQI-A13 | Cheaper GF(2^12) inverse (66 T today) | 0.10 to 0.40 | 0.08 | 0.30 | 16 | 0.0016 | TODO |
-| DQI-A09 | Liveness profiler and peak shave of the 889 windows | 0 to 0.45 | 0.08 | 0.25 | 14 | 0.0013 | TODO |
+| DQI-A09 | Liveness profiler and peak shave of the 889 windows | 0 to 0.45 | 0.08 | 0.25 | 14 | 0.0013 | OPEN, raised (needs the decoder source build, which we have; +0.010–0.021 score points per Asterios) |
 | DQI-A14 | Phase-debt merging audit | 0.05 to 0.30 | 0.06 | 0.30 | 14 | 0.0013 | TODO |
 | DQI-A15 | Exhaustive re-synthesis of small recurring kernels | 0.10 to 0.50 | 0.10 | 0.20 | 20 | 0.0010 | TODO |
 | DQI-A16 | Better middle-product ranks in the Toeplitz solver | 0 to 0.10 | 0.02 | 0.30 | 6 | 0.0008 | TODO |
@@ -183,7 +183,7 @@ Details (mechanism, risks, sources): `Analysis/research/chemistry.md`.
 
 | ID | Idea | Gain as stated | Score gain % | P | Effort h | Priority | Status |
 |---|---|---|---:|---:|---:|---:|---|
-| CHEM-A01 | Adopt the public frontier parts: Lera's coded table + maoxin123's 4,022 loaders + Atakan Aldemir's weights `703843d3` | 0.67 (0.6-0.7) | 0.22 | 0.95 | 2 | 0.1066 | EXCLUDED |
+| CHEM-A01 | Adopt the public frontier parts: Lera's coded table + maoxin123's 4,022 loaders + Atakan Aldemir's weights `703843d3` | 0.67 (0.6-0.7) | 0.22 | 0.95 | 2 | 0.1066 | IN PUBLIC FRONTIER (S1.3 revised; frontier weights `6ef06081`/`4d63be3d` + 4,022-T loaders) |
 | CHEM-A02 | Daily "parts market" watch: pull new public chemistry loaders and weights, re-verify, adopt the cheapest compatible pair | 0.3 (0.1-0.7) | 0.10 | 0.70 | 4 | 0.0175 | TODO |
 | CHEM-A03 | Rebuild Lera's table loaders with Syed Asad Ali's compiler (our source) | 0.6 (0.5-0.7) | 0.20 | 0.50 | 16 | 0.0063 | TODO |
 | CHEM-A04 | Code the one-body rows harder | 0.3 (0.1-0.6) | 0.10 | 0.35 | 8 | 0.0044 | TODO |
@@ -191,27 +191,27 @@ Details (mechanism, risks, sources): `Analysis/research/chemistry.md`.
 | CHEM-A06 | Use the spare qubits in loaders k1..k14 (126 of 128) | 0.15 (0.05-0.3) | 0.05 | 0.50 | 6 | 0.0042 | TODO |
 | CHEM-A07 | Per-slot best-of between maoxin123's and Lera's loaders on the same words | 0.05 (0-0.1) | 0.02 | 0.50 | 2 | 0.0042 | TODO |
 | CHEM-A08 | Search the low/high address split and low-block partition per loader | 0.3 (0.1-0.5) | 0.10 | 0.40 | 12 | 0.0033 | TODO |
-| CHEM-A09 | Bring loaders k0..k3 down to the k4..k14 level | 0.65 (0.3-1.2) | 0.22 | 0.30 | 20 | 0.0033 | TODO |
+| CHEM-A09 | Bring loaders k0..k3 down to the k4..k14 level | 0.65 (0.3-1.2) | 0.22 | 0.30 | 20 | 0.0033 | IN PUBLIC FRONTIER (maoxin123, compiled) |
 | CHEM-A10 | Park more helper monomials in free word bits | 0.25 (0.1-0.4) | 0.08 | 0.30 | 10 | 0.0025 | TODO |
-| CHEM-A11 | Peephole / kernel-relation search on compiled loaders | 0.2 (0.05-0.4) | 0.07 | 0.30 | 10 | 0.0020 | TODO |
-| CHEM-A12 | Exact re-planning toward the counting floor | 1.5 (0.5-5) | 0.51 | 0.15 | 40 | 0.0019 | TODO |
-| CHEM-A13 | Global (multi-start) weight refit at fixed words | 0.03 (0.01-0.1) | 0.01 | 0.30 | 6 | 0.0005 | TODO |
+| CHEM-A11 | Peephole / kernel-relation search on compiled loaders | 0.2 (0.05-0.4) | 0.07 | 0.30 | 10 | 0.0020 | NULL (public: no removable Toffoli in the 15 frontier loaders) |
+| CHEM-A12 | Exact re-planning toward the counting floor | 1.5 (0.5-5) | 0.51 | 0.15 | 40 | 0.0019 | PARTLY NULL (public: greedy/local/flip-graph variants); exact or fully mixed construction still open |
+| CHEM-A13 | Global (multi-start) weight refit at fixed words | 0.03 (0.01-0.1) | 0.01 | 0.30 | 6 | 0.0005 | NULL (public: weight refits saturated, 4e-7 relative) |
 
 ### B. Rewrite with a different technique / new pipeline (18 ideas)
 
 | ID | Idea | Gain as stated | Score gain % | P | Effort h | Priority | Status |
 |---|---|---|---:|---:|---:|---:|---|
-| CHEM-B01 | Mixed-precision coded words, trained with a loader-cost surrogate | 2.5 (1-4) | 0.85 | 0.25 | 50 | 0.0042 | TODO |
+| CHEM-B01 | Mixed-precision coded words, trained with a loader-cost surrogate | 2.5 (1-4) | 0.85 | 0.25 | 50 | 0.0042 | OPEN, value cut (loaders shrink only 3.6% from 8 to 6 bits, Balram Srinivasan) |
 | CHEM-B02 | Row-sensitivity-weighted coding | 0.8 (0.3-1.5) | 0.27 | 0.25 | 20 | 0.0034 | TODO |
 | CHEM-B03 | Address-permutation gauge | 1.0 (0.5-2) | 0.34 | 0.20 | 30 | 0.0022 | TODO |
 | CHEM-B05 | Exchange-rate-aware error budget | 1.0 (0.5-2) | 0.34 | 0.25 | 40 | 0.0021 | TODO |
-| CHEM-B04 | New table at C = 43 | 0.47 (0.4-0.53) | 0.16 | 0.40 | 30 | 0.0021 | TODO |
+| CHEM-B04 | New table at C = 43 | 0.47 (0.4-0.53) | 0.16 | 0.40 | 30 | 0.0021 | OPEN (fixed-word variant NULL public: floor 21.10 mHa); retrained table only |
 | CHEM-B06 | Better initializers for lower-C tables | 0.85 (0.6-1.1) | 0.28 | 0.20 | 30 | 0.0019 | TODO |
 | CHEM-B07 | Fewer basis vectors per group: B = 139 (R 8, C 44) | 1.5 (1.0-1.9) | 0.51 | 0.15 | 40 | 0.0019 | TODO |
 | CHEM-B08 | New table at C = 42 | 0.85 (0.6-1.1) | 0.28 | 0.25 | 40 | 0.0018 | TODO |
 | CHEM-B09 | Co-design the Givens tree, edge order and gauge with the codes | 1.0 (0.5-2) | 0.34 | 0.20 | 40 | 0.0017 | TODO |
 | CHEM-B10 | R = 7, B = 143, C = 48-50 | 7 (6-7.5) | 2.45 | 0.04 | 60 | 0.0016 | TODO |
-| CHEM-B11 | brot 7 with codes and QAT | 9 (8-10) | 3.19 | 0.03 | 60 | 0.0016 | TODO |
+| CHEM-B11 | brot 7 with codes and QAT | 9 (8-10) | 3.19 | 0.03 | 60 | 0.0016 | NULL (public, Balram Srinivasan: brot 7 rounds to 27.1 mHa > 20) |
 | CHEM-B12 | New table at C = 40 | 1.8 (1.5-2.1) | 0.61 | 0.10 | 50 | 0.0012 | TODO |
 | CHEM-B13 | Loader architecture from XAG multiplicative-complexity synthesis | 2 (1-5) | 0.68 | 0.10 | 60 | 0.0011 | TODO |
 | CHEM-B14 | Use the word registers as dirty workspace | 0.5 (0-2) | 0.17 | 0.10 | 30 | 0.0006 | TODO |
@@ -235,7 +235,7 @@ Details (mechanism, risks, sources): `Analysis/research/general.md`.
 | GEN-A04 | Salt-robustness gate for every HMR-dependent edit | Avoids −0.15% per dqi failed shot and the 0-score case; ≈ 0.3% eq. (risk-weighted) | 0.30 | 0.90 | 5 | 0.0540 | IN PROGRESS (S2.3: multi-salt gate in `tools/gate.py`; targeted dqi inputs in M2.3) |
 | GEN-A07 | I/O and caching hygiene | 1.5–3× on load-heavy dqi runs, no repeated runs; ≈ 0.1% eq. | 0.10 | 0.90 | 2 | 0.0450 | DONE (S2.3: work on ~/work ext4, result cache keyed by SHA and salt) |
 | GEN-A09 | Kaggle batch-verification orchestrator | Frees the laptop; 48-salt dqi sweeps and full invsqrt runs in parallel; ≈ 0.15% eq. | 0.15 | 0.80 | 6 | 0.0200 | TODO |
-| GEN-A03 | Task-agnostic finishing pipeline | 0.01–0.1% per task per round; ≈ 0.25% | 0.25 | 0.60 | 12 | 0.0125 | TODO |
+| GEN-A03 | Task-agnostic finishing pipeline | 0.01–0.1% per task per round; ≈ 0.25% | 0.25 | 0.60 | 12 | 0.0125 | OPEN, lower expectation (0 cancelling pairs in 58.4M dqi ops publicly) |
 | GEN-A10 | Local proof per rewrite | Catches rare-branch phase bugs early, fewer wasted full runs; ≈ 0.2% eq. | 0.20 | 0.60 | 10 | 0.0120 | TODO |
 | GEN-A12 | Design-space optimizer over generator parameters | ≈ 0.3% from better trade-offs | 0.30 | 0.40 | 10 | 0.0120 | TODO |
 | GEN-A08 | Peak map + functional-dependency mining | ≈ 0.5% (invsqrt qubit 0.77%, dqi 0.075%) | 0.50 | 0.20 | 10 | 0.0100 | TODO |
@@ -309,3 +309,24 @@ tested jointly only when they touch the same part of the circuit or share a budg
 Do not start an idea without checking the nulls of its task: `Analysis/research/invsqrt.md` §4 (28 nulls),
 `dqi.md` §4, `chemistry.md` §4, `general.md` §3 (23 nulls). A null is closed only in its design family; a new
 family can reopen it, but must say why it escapes the recorded bound.
+
+## 10. New ideas from the public work of 17–19 Nov
+
+From `Analysis/research/public_frontier_asterios_2026-11-19.md` and `public_frontier_others_2026-11-19.md`. Gains are
+the authors' or the agents' estimates; not yet in the ranked tables above.
+
+| ID | Task | Idea | Evidence / estimate | Status |
+|---|---|---|---|---|
+| INV-N01 | invsqrt | Hand the AND terms of the divider clean-up to the second table load instead of recomputing them | maoxin123 `d0227f3c` / `ecf908fe`, −0.03% | IN PUBLIC FRONTIER |
+| DQI-N01 | dqi | Cheaper GF(2^24) → GF(2^12) norm map, 42 → 36 ANDs | Asterios Panoras estimate ≈ −0.3% if reachable | OPEN |
+| DQI-N02 | dqi | Balram Srinivasan's `40294f00` converter / phase-kick splice (−385 T) | compiled; mechanism to read in `balramsrinivasan/vqcc-cand-28199-submit` | IN PUBLIC FRONTIER |
+| DQI-N11 | dqi | Stage-wise best-of splicing between decoder variants of one line | public practice | OPEN |
+| DQI-N12 | dqi | Commute paid control products into measurement-conditioned CZ/CCZ fix-ups | Atakan Aldemir, −6.8 mean T | OPEN (tiny) |
+| DQI-N13 | dqi | Free-wire certification rule for product retention | boristown, 1 site in 281 | OPEN (tiny) |
+| CHEM-N11 | dfthcsos | Codebook columns: many angle columns take only 65–129 distinct values; load a short index and decode it | Aniruddha Pawar measurement | OPEN (unknown gain) |
+| GEN-N01 | all | Controlled swap whose outputs are only measured → zero Toffolis, as a generator pass | Atakan Aldemir readout windows, −24 T per window | OPEN |
+
+**Reading of 19 Nov.** Every top public portfolio is an accumulation of patches on three families (Syed Asad Ali's
+invsqrt and dqi generators, Lera's coded chemistry table); no public family change since 15–16 Nov, and the
+frontier files are exhausted by every public scan. The next 1% per task needs a new design; the leaders (31.74)
+need about −30% total cost, which only new families can give.
