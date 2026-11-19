@@ -248,6 +248,20 @@ condition blocks.
 | "Re-rolling" the circuit hash for a lucky public draw | changes the public draw only; the private salt is independent, expected cost unchanged | 753424 |
 | Z-basis measurement or `R` on data-dependent scratch | physically collapses the superposition (rule risk, and `R` is already caught by the verifier); excluded on purpose | 755302 |
 
+
+Nulls on paper from the family studies of 19 Nov (S2.18, S2.21):
+
+| # | Idea | Measured result | Source |
+|---|---|---|---|
+| DQI-B14 | Explicit/blocked convergents in the extractor ("free queries") | width 70 + 2k + 4 words at slot k: +840 Q at slot 35 (cost ×3.3); blocks of 12 need 624 Q | `dqi_families_2026-11-19.md` F1 |
+| DQI-B15 | Monic (subfield) pivots; CRT batching of shared-pivot products; inversion-free pivots | +82k T; break-even 2.8 heads at +24 Q each; +110k T | same, F2 |
+| DQI-B16 | Reciprocal (Horiguchi–Koetter) convert + inverse-trace scan | in-place multiply mod σ costs the same as the division it replaces; +4,025 × (≥ 10) T | same, F4 |
+| DQI-B17 | Decode–re-encode instead of replaying the reverse key | in-place encode is the Hankel solve (the key stage); out of place +840 Q | same, F5 |
+| DQI-B18 | 12-qubit (subfield) carry bank | +~118k T for −12 to −24 Q | same, F6 |
+| DQI-B19 | Hold forward products across the mirror, MBU on the reverse copy | needs ≥ 267 products per held 24-qubit word | same, F7 |
+| DQI-B20 | Quartic-node CRT (GF(2^48) heads) | −51.8k queries but +48 Q and +10k inverses: −1.6% at best (cubic precedent +48k) | same, F8 |
+| law | Phase-oracle pricing | a per-position phase costs MC(f) Toffolis; an in-place map and its inverse cost the same | same, section 1 |
+
 ## 5. Ideas
 
 Conventions. Gain = expected task-cost reduction in % (positive is better), against our v12 base unless the row says

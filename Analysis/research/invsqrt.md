@@ -230,6 +230,19 @@ Two more nulls reasoned here (*ours*, not built):
 | N27 | Make rotations cheaper by putting them under a classical condition (the verifier counts executed `Z_POW`, so a conditioned one counts on about half the shots) | The phase θ·q depends on a data qubit; it cannot be moved behind a measurement outcome without a controlled rotation, which costs more. | verifier semantics |
 | N28 | Replace Bennett uncomputation of the whole body by "HMR everything after the phase, repay the debt" | The debt is a random parity of the intermediate values; repaying it needs the values again (a forward pass plus its own clean-up), so it costs at least as much. The in-place stages (normalise, root, divider remainder) cannot be measured at all. | spooky pebbling argument |
 
+
+Nulls on paper from the family studies of 19 Nov (S2.18, S2.21):
+
+| # | Idea | Measured result | Source |
+|---|---|---|---|
+| F2 | Divider-free piecewise polynomial (Horner, any segmentation) | ≥ 50 Q (multiplier, multiplicand and accumulator coexist), ≥ +17% | `invsqrt_families_2026-11-19.md` |
+| F3 | Absolute-frame streaming quotient without the CSWAP ring | ≥ 46 Q, +10 divider rows, ≥ +19%; history cannot be dropped in feed rows (lemma 5.2) | same |
+| F4 | Table-free reciprocal-root recurrences (CORDIC, Newton, digit recurrence) | carry n, y and a residual at once: ≥ 74 Q, ≥ +200% | same |
+| F5 | Coarse exponent-indexed phase table + fine part | 45–46 Q and +13 rotations: +9% to +13% | same |
+| F6 | Logarithmic number system | two hard function evaluations instead of one: ≥ 55 Q, ≥ +120% | same |
+| F7 | Direct Boolean synthesis of the phase bits | ≥ +490% | same |
+| L5.2 | History-free rewrite of divider rows that take a dividend bit | impossible (no invariant interval when a bit is fed): feed rows must store their digits | same, lemma 5.2 |
+
 ## 5. Ideas
 
 Units and conventions:

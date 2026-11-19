@@ -150,7 +150,7 @@ Details (mechanism, risks, sources): `Analysis/research/dqi.md`.
 | DQI-A11 | Salt-robust selection and failure attribution | 0 to 0.05 (risk control) | 0.01 | 0.90 | 4 | 0.0019 | TODO |
 | DQI-A12 | Atakan Aldemir's four-Toffoli phase component | 0.01 to 0.03 | 0.01 | 0.80 | 3 | 0.0018 | TODO |
 | DQI-A13 | Cheaper GF(2^12) inverse (66 T today) | 0.10 to 0.40 | 0.08 | 0.30 | 16 | 0.0016 | TODO |
-| DQI-A09 | Liveness profiler and peak shave of the 889 windows | 0 to 0.45 | 0.08 | 0.25 | 14 | 0.0013 | OPEN, raised (needs the decoder source build, which we have; +0.010–0.021 score points per Asterios) |
+| DQI-A09 | Liveness profiler and peak shave of the 889 windows | 0 to 0.45 | 0.08 | 0.25 | 14 | 0.0013 | OPEN, raised (needs the source build; S2.21 adds the F6-lite step: re-emit inverse helpers at non-multiply peaks, 888/889 Q, −0.05% to −0.35%) |
 | DQI-A14 | Phase-debt merging audit | 0.05 to 0.30 | 0.06 | 0.30 | 14 | 0.0013 | TODO |
 | DQI-A15 | Exhaustive re-synthesis of small recurring kernels | 0.10 to 0.50 | 0.10 | 0.20 | 20 | 0.0010 | TODO |
 | DQI-A16 | Better middle-product ranks in the Toeplitz solver | 0 to 0.10 | 0.02 | 0.30 | 6 | 0.0008 | TODO |
@@ -166,13 +166,13 @@ Details (mechanism, risks, sources): `Analysis/research/dqi.md`.
 | DQI-B03 | Fuse the projective finish into the synthesis output basis | 0.5 to 2.0 | 0.42 | 0.15 | 30 | 0.0021 | TODO |
 | DQI-B02 | Make the reverse key as cheap as the forward key | 1.0 to 3.8 | 0.81 | 0.15 | 60 | 0.0020 | TODO |
 | DQI-B04 | Quadratic-node CRT (K24) form for the convert stage | 1 to 6 | 1.19 | 0.10 | 100 | 0.0012 | TODO |
-| DQI-B05 | Bezout reuse from the extractor's convergents | 1 to 5 | 1.02 | 0.07 | 60 | 0.0012 | TODO |
+| DQI-B05 | Bezout reuse from the extractor's convergents | 1 to 5 | 1.02 | 0.07 | 60 | 0.0012 | PARTLY NULL (paper, S2.21: Bezout reuse gives Ω⁻¹ or 1/e; turning it into e in place costs the convert; only DQI-B13 route remains) |
 | DQI-B07 | Recover branch decisions from the state instead of storing flags | 0.2 to 1.0 | 0.20 | 0.15 | 30 | 0.0010 | TODO |
 | DQI-B06 | Exact-synthesis search for one fused extractor slot | 0.5 to 3 | 0.59 | 0.08 | 50 | 0.0009 | TODO |
 | DQI-B08 | GF(2^24) bilinear rank below 99 | 0.3 to 1.5 | 0.30 | 0.10 | 40 | 0.0008 | TODO |
-| DQI-B09 | Explicit incremental synthesis so that queries become free evaluations | 0 to 10 | 1.72 | 0.03 | 80 | 0.0006 | TODO |
-| DQI-B10 | Two slots per chain with a shared pivot operand | 0 to 3 | 0.51 | 0.05 | 40 | 0.0006 | TODO |
-| DQI-B11 | 12-qubit carry bank | -1 to 2.7 | 0.28 | 0.05 | 60 | 0.0002 | TODO |
+| DQI-B09 | Explicit incremental synthesis so that queries become free evaluations | 0 to 10 | 1.72 | 0.03 | 80 | 0.0006 | NULL (paper, S2.21 F1) unless a one-pair representation is found |
+| DQI-B10 | Two slots per chain with a shared pivot operand | 0 to 3 | 0.51 | 0.05 | 40 | 0.0006 | NULL (paper, S2.21 F2b) for ≤ 4 slots |
+| DQI-B11 | 12-qubit carry bank | -1 to 2.7 | 0.28 | 0.05 | 60 | 0.0002 | NULL (paper, S2.21 F6: +118k T); lite variant folded into DQI-A09 |
 | DQI-B12 | Cubic-node CRT (GF(2^36) heads) | -2 to 4 | 0.34 | 0.08 | 150 | 0.0002 | TODO |
 
 ## 6. Chemistry (dfthcsos)
@@ -337,4 +337,11 @@ are structural nulls (polynomial ≥ 50 Q; absolute-frame streaming ≥ 46 Q; ta
 phase table + fine part 45–46 Q and +13 rotations; logarithmic number system ≥ 55 Q; direct Boolean synthesis of the
 phase bits ≥ +490%); only the parity divider (INV-B10) survives. Realistic invsqrt target from our own source: −3% to
 −9%; the leaders' gap is more likely on dqi or chemistry.
+| DQI-B13 | dqi | Convert-free Forney: each of the 4,025 scan positions applies the phase [w = 0]·Tr(a/b) from E, O, Ω (fits in the 840-qubit core), deleting convert, unconvert and the projective finish (−122k static T) | S2.21 F3: −20% if MC(Tr(a/b)) over GF(2^12) ≈ 12, break-even at ≈ 30 ANDs; best known construction 69 (+42%); lower bound 11–12 | OPEN, screen first (S2.21b: minimum AND count of Tr(a/b) for n = 2–6 by SAT; null if ≥ 75% of the subfield construction) |
+| DQI-B14..B20 | dqi | Explicit convergents, re-based query MAC, reciprocal convert, decode–re-encode, 12-qubit carry bank, holding products across the mirror, quartic nodes | S2.21 F1, F2, F4–F8 | NULL (paper; rows in `Analysis/research/dqi.md` §4) |
+
+**S2.21 (19 Nov):** eight dqi families priced on paper and red-teamed (`Analysis/research/dqi_families_2026-11-19.md`):
+no family reaches the 1.34× target (≈ 274k T at 890 Q); only DQI-B13 survives, conditional on a cheap screen
+(P ≈ 0.03). Together with S2.18 (invsqrt: six nulls, INV-B10 only), the paper studies point January's family effort
+to chemistry first, with dqi kept on in-family steps (DQI-A01, A07/A17, A09).
 

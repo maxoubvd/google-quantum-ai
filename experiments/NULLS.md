@@ -71,7 +71,7 @@ Counts: 297 community rows; outcomes kill 172, null 96, partial 23, observation 
 | NR-0295 | Drop rotations (remove low-weight phase rotations) | public circuits (the authors say all three tasks;… | null | none published | Reported as a dead end; no numbers given. | Not stated by the authors. |  | crackercoder (Sazza… |
 | NR-0297 | Affine-residual measure-out: replace a CCX whose target holds a·b XOR (affine in other wi… | current 44 Q invsqrt 563d0583f736 (maoxin123 on S… | kill | 1,364 unconditional CCX; uniform 4,096-x screen 14 hits; exact all-x check under zero/7/1… | Every sampled hit failed at small x (1, 2, 16, 64) where leading-zero flags fire; uniform sampling almost nev… | A joint value/phase consumer rewrite or a schedule change for the 33-… |  | ours |
 
-### From our research (`Analysis/research/invsqrt.md`, 28 rows)
+### From our research (`Analysis/research/invsqrt.md`, 35 rows)
 
 | Ref | What was tried | Result | Source |
 |---|---|---|---|
@@ -103,6 +103,13 @@ Counts: 297 community rows; outcomes kill 172, null 96, partial 23, observation 
 | N26 | GPU/tensor-core simulation of linear blocks; threaded verifier | No invsqrt linear blocks long enough; threads ~1.2× only. | 753185 |
 | N27 | Make rotations cheaper by putting them under a classical condition (the verifier counts executed `Z_POW`, so … | The phase θ·q depends on a data qubit; it cannot be moved behind a measurement outcome without a controlled r… | verifier semantics |
 | N28 | Replace Bennett uncomputation of the whole body by "HMR everything after the phase, repay the debt" | The debt is a random parity of the intermediate values; repaying it needs the values again (a forward pass pl… | spooky pebbling argument |
+| F2 | Divider-free piecewise polynomial (Horner, any segmentation) | ≥ 50 Q (multiplier, multiplicand and accumulator coexist), ≥ +17% | `invsqrt_families_2026-11-19.md` |
+| F3 | Absolute-frame streaming quotient without the CSWAP ring | ≥ 46 Q, +10 divider rows, ≥ +19%; history cannot be dropped in feed rows (lemma 5.2) | same |
+| F4 | Table-free reciprocal-root recurrences (CORDIC, Newton, digit recurrence) | carry n, y and a residual at once: ≥ 74 Q, ≥ +200% | same |
+| F5 | Coarse exponent-indexed phase table + fine part | 45–46 Q and +13 rotations: +9% to +13% | same |
+| F6 | Logarithmic number system | two hard function evaluations instead of one: ≥ 55 Q, ≥ +120% | same |
+| F7 | Direct Boolean synthesis of the phase bits | ≥ +490% | same |
+| L5.2 | History-free rewrite of divider rows that take a dividend bit | impossible (no invariant interval when a bit is fed): feed rows must store their digits | same, lemma 5.2 |
 
 ## dqi
 
@@ -186,7 +193,7 @@ Counts: 297 community rows; outcomes kill 172, null 96, partial 23, observation 
 | NR-0292 | Failure-budget and measure-and-repay variants of the DQI decoder | public DQI decoders as of 8 Nov | null | none published | Reported as measured and closed; no counts given. | Not stated by the authors. |  | crackercoder (Sazza… |
 | NR-0296 | Add one clean wire (890 -> 891 Q) to GrantPrater's 575b043f DQI file to unlock blocked me… | public DQI pick 575b043f4fee (Syed Asad Ali v13 l… | kill | break-even ~826 fewer Toffolis per shot for +0.2249% width cost; one extra wire books 89 … | The 1,700 blocked sites have long overlapping intervals, so one wire serves about 89 of them; even with Grant… | A wire is found inside 890 Q (e.g. an order that brings the closing's… |  | ours |
 
-### From our research (`Analysis/research/dqi.md`, 24 rows)
+### From our research (`Analysis/research/dqi.md`, 32 rows)
 
 | Ref | What was tried | Result | Source |
 |---|---|---|---|
@@ -214,6 +221,14 @@ Counts: 297 community rows; outcomes kill 172, null 96, partial 23, observation 
 |  | Faster scan zero test | 11 Toffoli-likes per position is the AND count of a 12-input zero test with the phase folded in; the gauge ca… | our analysis; v12 ledger |
 |  | "Re-rolling" the circuit hash for a lucky public draw | changes the public draw only; the private salt is independent, expected cost unchanged | 753424 |
 |  | Z-basis measurement or `R` on data-dependent scratch | physically collapses the superposition (rule risk, and `R` is already caught by the verifier); excluded on pu… | 755302 |
+| DQI-B14 | Explicit/blocked convergents in the extractor ("free queries") | width 70 + 2k + 4 words at slot k: +840 Q at slot 35 (cost ×3.3); blocks of 12 need 624 Q | `dqi_families_2026-11-19.md` F1 |
+| DQI-B15 | Monic (subfield) pivots; CRT batching of shared-pivot products; inversion-free pivots | +82k T; break-even 2.8 heads at +24 Q each; +110k T | same, F2 |
+| DQI-B16 | Reciprocal (Horiguchi–Koetter) convert + inverse-trace scan | in-place multiply mod σ costs the same as the division it replaces; +4,025 × (≥ 10) T | same, F4 |
+| DQI-B17 | Decode–re-encode instead of replaying the reverse key | in-place encode is the Hankel solve (the key stage); out of place +840 Q | same, F5 |
+| DQI-B18 | 12-qubit (subfield) carry bank | +~118k T for −12 to −24 Q | same, F6 |
+| DQI-B19 | Hold forward products across the mirror, MBU on the reverse copy | needs ≥ 267 products per held 24-qubit word | same, F7 |
+| DQI-B20 | Quartic-node CRT (GF(2^48) heads) | −51.8k queries but +48 Q and +10k inverses: −1.6% at best (cubic precedent +48k) | same, F8 |
+| law | Phase-oracle pricing | a per-position phase costs MC(f) Toffolis; an in-place map and its inverse cost the same | same, section 1 |
 
 ## Chemistry (dfthcsos)
 
