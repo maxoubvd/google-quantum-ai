@@ -1,0 +1,58 @@
+[
+ {
+  "j_tail": "none (incumbent)",
+  "freed_rows": 0,
+  "base_min_margin": 31966138,
+  "base_failures": 0,
+  "refit_min_margin": 124397056,
+  "refit_failures": 0,
+  "worst_ratio": 0.93202
+ },
+ {
+  "j_tail": 24,
+  "freed_rows": 12,
+  "base_min_margin": -21900687,
+  "base_failures": 1,
+  "overflows": 0,
+  "refit_min_margin": 123710613,
+  "refit_failures": 0,
+  "worst_ratio": 0.92392,
+  "margin_vs_reference": 0.9945
+ },
+ {
+  "j_tail": 26,
+  "freed_rows": 10,
+  "base_min_margin": 39488155,
+  "base_failures": 0,
+  "overflows": 0,
+  "refit_min_margin": 130997346,
+  "refit_failures": 0,
+  "worst_ratio": 0.94434,
+  "margin_vs_reference": 1.0531
+ },
+ {
+  "j_tail": 28,
+  "freed_rows": 8,
+  "base_min_margin": 77821526,
+  "base_failures": 0,
+  "overflows": 0,
+  "refit_min_margin": 143569685,
+  "refit_failures": 0,
+  "worst_ratio": 0.89774,
+  "margin_vs_reference": 1.1541
+ },
+ {
+  "j_tail": 30,
+  "freed_rows": 6,
+  "base_min_margin": -4611686018427387904,
+  "base_failures": 1174,
+  "overflows": 1174
+ },
+ {
+  "j_tail": 32,
+  "freed_rows": 4,
+  "base_min_margin": -4611686018427387904,
+  "base_failures": 5531,
+  "overflows": 5530
+ }
+]

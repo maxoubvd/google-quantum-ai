@@ -121,13 +121,13 @@ Details (mechanism, risks, sources): `Analysis/research/invsqrt.md`.
 | ID | Idea | Gain as stated | Score gain % | P | Effort h | Priority | Status |
 |---|---|---|---:|---:|---:|---:|---|
 | INV-B01 | Evolutionary LLM search over algorithm families | 0–25 | 4.55 | 0.08 | 80 | 0.0046 | TODO |
-| INV-B02 | Fused reciprocal-square-root digit recurrence | 5–20 | 4.55 | 0.05 | 80 | 0.0028 | TODO |
+| INV-B02 | Fused reciprocal-square-root digit recurrence | 5–20 | 4.55 | 0.05 | 80 | 0.0028 | NULL (paper, S2.18 F4: table-free recurrences need ≥ 74 Q) |
 | INV-B05 | Tolerance-approximate carries | 0.5–3 | 0.59 | 0.10 | 30 | 0.0020 | TODO |
 | INV-B03 | Compressed body encoding | 2.3–4.6 | 1.18 | 0.10 | 60 | 0.0020 | TODO |
 | INV-B04 | Odd-shift normalisation with parity-selected table | 0–3 | 0.51 | 0.15 | 40 | 0.0019 | TODO |
-| INV-B08 | Narrow Horner hybrid | −5 to +10 | 0.85 | 0.07 | 60 | 0.0010 | TODO |
-| INV-B07 | Division-free Goldschmidt with streamed phase | −5 to +8 | 0.51 | 0.08 | 50 | 0.0008 | TODO |
-| INV-B06 | History-free reverse divider (hybrid) | 0–3 | 0.51 | 0.05 | 40 | 0.0006 | TODO |
+| INV-B08 | Narrow Horner hybrid | −5 to +10 | 0.85 | 0.07 | 60 | 0.0010 | NULL (paper, S2.18 F2: ≥ 50 Q, +17%) |
+| INV-B07 | Division-free Goldschmidt with streamed phase | −5 to +8 | 0.51 | 0.08 | 50 | 0.0008 | NULL (paper, S2.18 F2/F4) |
+| INV-B06 | History-free reverse divider (hybrid) | 0–3 | 0.51 | 0.05 | 40 | 0.0006 | SUPERSEDED by INV-B10 (S2.18) |
 | INV-B09 | Coarser normalisation (shift by 4^2k) | −1 to +2 | 0.17 | 0.10 | 30 | 0.0006 | TODO |
 
 ## 5. dqi
@@ -330,3 +330,11 @@ the authors' or the agents' estimates; not yet in the ranked tables above.
 invsqrt and dqi generators, Lera's coded chemistry table); no public family change since 15–16 Nov, and the
 frontier files are exhausted by every public scan. The next 1% per task needs a new design; the leaders (31.74)
 need about −30% total cost, which only new families can give.
+| INV-B10 | invsqrt | History-free ("parity") divider rows for the 12 rows without a dividend feed: subtract E when r ≥ 0, else add E + 1; the digit is the low bit of the next remainder, so the tail digits can be measured out after the phase (0 Toffolis) and the clean-up premium shrinks | S2.18 F1: −35 to −60 Toffolis, −2.1% to −3.6% at 44 Q; beats the frontier only on a 44-qubit base built from source (P 0.3; 0.6 on our own divider build); exhaustive row check in `Analysis/research/invsqrt_families_2026-11-19.md` App. A | OPEN — E1 GO (19 Nov: 12 parity rows keep 99.5% of the refit margin, 0 failures; tails from row 26/28 even raise it to 105%/115%); next E2 (Toffoli cost of the tail, scaled circuit) |
+
+**S2.18 (19 Nov):** seven invsqrt families priced on paper (`Analysis/research/invsqrt_families_2026-11-19.md`): six
+are structural nulls (polynomial ≥ 50 Q; absolute-frame streaming ≥ 46 Q; table-free recurrences ≥ 74 Q; coarse
+phase table + fine part 45–46 Q and +13 rotations; logarithmic number system ≥ 55 Q; direct Boolean synthesis of the
+phase bits ≥ +490%); only the parity divider (INV-B10) survives. Realistic invsqrt target from our own source: −3% to
+−9%; the leaders' gap is more likely on dqi or chemistry.
+

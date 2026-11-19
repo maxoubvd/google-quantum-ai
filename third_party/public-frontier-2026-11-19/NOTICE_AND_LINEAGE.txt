@@ -1,0 +1,77 @@
+Sources, credits and licenses of the circuits this notebook submits:
+- invsqrt: original builder of the generator line Syed Asad Ali (Kaggle syed3000; 46-qubit inverse-square-root generator, Copyright 2026 Syed Asad Ali, Apache-2.0), then Ali Haydar Ozdag's (ahoirg) 64-row table and maoxin123's newer 44-qubit circuit built on that line (Apache-2.0; public notebook maoxin123/qcc-28-20-4-022-toffoli-chemistry-loaders version 4, file sha256 d0227f3c, notebook run 2026-11-18T13:02Z; credited there: angle refit by Ertugrul Ozer (ozertuu), measured-CZ / dead-write ideas by Asterios Panoras and James Barlow (manwithacat)), then its 33 rotation angles re-solved by an exact LP by Manvender Raparia (manvenderraparia; dataset manvenderraparia/vqcc-lp-refit-portfolio, 2026-11-19, Apache-2.0 with NOTICE, file sha256 f7841eb4), used unchanged. (https://www.kaggle.com/datasets/syed3000/vqcc-own-circuit-portfolio; dataset version 13, 2026-11-15; license Apache-2.0, NOTICE carried below); used for invsqrt (candidate 2257, file sha256 f7841eb4)
+- dqi: original builder Syed Asad Ali (Kaggle syed3000): his own 890-qubit DQI decoder from his 889-qubit decoder line (VQCC Own-Circuit Portfolio v13, Copyright 2026 Syed Asad Ali, Apache-2.0; file sha256 46446af1), then Hayato Hikawa's (hayatohikawa) product retention pass, boristown's (team 暗黑AGI) control merging, measured uncomputations and product-cache chains (idea credited by him to Akmal Xodarev / busyaprime), Balram Srinivasan's (balramsrinivasan) norm-preserving GF(2^24) closings (he credits the continued-fraction decoder idea to James Day), grantprater's merge of the two patch sets with the closing at all 49 sites, 49 measured uncomputations and four further held products (released under Apache 2.0 with Syed Asad Ali's NOTICE; dataset grantprater/vqcc-dqi-61c8348d-merged-closings, version 2026-11-17T02:32Z, file sha256 575b043f), and boristown's six further retained products on that file (his patch list PW4; public notebook boristown/qcc-gap-3-residue-repair-and-c43-native-compiler, run 2026-11-17T20:49Z, file sha256 5f901c55; pair-window retention on this file first published by Asterios Panoras, asteriospanoras/qcc-28-18084-wait-daily-reset-you-can-try), and five product-retention patches from VUMANIAcom's file 2683225b (public notebook vumaniacom/qcc-verified-portfolio-and-where-the-gap-to-32-is, Apache-2.0; its retention pass credits Hayato Hikawa) merged into that file by James Barlow (manwithacat), entry HW-30 of dataset manwithacat/vqcc-hedge-wizardry (version 2026-11-18T12:28Z, Apache-2.0 with NOTICE, file sha256 35fa5ef9), all as merged by Ertugrul Ozer (ozertuu) onto Balram Srinivasan's variant of the same decoder line (file 40294f00: Syed Asad Ali's v13 decoder with a converter and phase-kick splice from an earlier variant of that line; public notebook balramsrinivasan/vqcc-cand-28199-submit, run 2026-11-18T12:56Z), with further GF(2^24) closings and measured uncomputations (public notebook ozertuu/28-23163-sota-verified-compilation-top-portfolio, run 2026-11-18T16:39Z, file sha256 15a4b740; Apache-2.0 as a Kaggle public notebook), and one more pair-window AND retention on that file by boristown (team 暗黑AGI; public notebook boristown/qcc-gap-3-residue-repair-and-c43-native-compiler, run 2026-11-19T01:07Z, file sha256 e39b1396; Apache-2.0 by his notebook text, with Syed Asad Ali's NOTICE), used as shipped. (https://www.kaggle.com/datasets/syed3000/vqcc-own-circuit-portfolio; dataset version 13, 2026-11-15; license Apache-2.0, NOTICE carried below); used for dqi (candidate 2258, file sha256 e39b1396)
+- dfthcsos: origin dataset marculera/dfthc-c44-build: Lera's (marculera) DF-THC words, table and tree (Copyright 2026 marculera, Apache-2.0, NOTICE carried below), with maoxin123's 15 loaders at 4,022 Toffolis per pass (CC0 by his text, public notebook maoxin123/qcc-28-14-4-022-toffoli-chemistry-loaders, run 2026-11-17T02:16Z) and Atakan Aldemir's (atakanaldemir) weights 703843d3 on boristown's seed lineage (Apache-2.0, dataset atakanaldemir/qcc-shared-4022-loaders-and-own703-weights, 2026-11-17T06:53Z), with the weights W and H2_I then refitted by us at fixed words (our own refit code, Apache-2.0; parent candidate 2243, npz 703843d3; result candidate 2245, npz 4d63be3d) and refitted further at fixed words by Manvender Raparia (manvenderraparia; dataset manvenderraparia/vqcc-lp-refit-portfolio, 2026-11-19, Apache-2.0 with NOTICE, npz sha256 6ef06081). Further lineage as credited by maoxin123: weight-refit work of prvsiyan, Asterios Panoras, boristown and ozertuu; ideas from Syed Asad Ali's published chemistry source (Apache-2.0); loader design after Syed Asad Ali, Lera (marculera), Ahmed Berat Ozer and Atakan Aldemir; busyaprime, Heliosli, James Barlow (manwithacat). (authors Lera, maoxin123, Atakan Aldemir; https://www.kaggle.com/datasets/atakanaldemir/qcc-shared-4022-loaders-and-own703-weights; angle_k_0 sha256 ed648708, angle_k_14 sha256 fe949998; npz sha256 6ef06081; license Apache-2.0 with CC0-1.0 loaders); used for dfthcsos (candidate 2256)
+NOTICE of Syed Asad Ali (carried as required by Apache-2.0 Section 4(d); file NOTICE_syed3000.txt in the dataset):
+  VQCC own-circuit portfolio
+  Copyright 2026 Syed Asad Ali. Licensed under the Apache License, Version 2.0.
+  
+  Credits: Syed Asad Ali, working with a team of AI agents (GPT-6 Astra Pro, Gemini 4 Argon,
+  Fable 5.2, Mythos 5.2 and Opus 5.5), with Claude Science supporting the research.
+  
+  Lineage notice (Apache-2.0, Section 4(d): this NOTICE must be carried by every redistribution):
+  - The 46-qubit inverse-square-root generator, the 889-qubit DQI decoder generator (v12 and
+    later), and all circuits built from them are the original work of Syed Asad Ali
+    (Kaggle: syed3000; dataset syed3000/vqcc-own-circuit-portfolio).
+  - This version contains: invsqrt.kmb (44-qubit inverse square root, from that generator line),
+    dqi.kmb (890-qubit DQI decoder, from that decoder line), and the chemistry files
+    dfthcsos__angle_k_0..14.kmb and dfthcsos__submission.npz (our own loader compiler and word tables).
+  - Any redistribution of these files, or of works derived from them at any number of steps
+    removed, must include this NOTICE (or its full attribution text) in a readable place, and
+    must name "Syed Asad Ali" as the original builder in its credit or lineage line, before
+    any later contributors.
+  - Improvements by others are welcome; please credit them after the original builder.
+NOTICE of marculera (carried as required by Apache-2.0 Section 4; file NOTICE_marculera.txt in the dataset):
+  DF-THC 11.38x: (8, 143, 44) table and loaders
+  Copyright 2026 marculera (Kaggle)
+  
+  Licensed under the Apache License, Version 2.0 (see LICENSE). The weights and words in submission.npz were trained and
+  rounded by us from the competition's FeMoCo Hamiltonian, with no public weights or tables. The arrays H1_I and
+  Hsym_lower are the hosts' fixed shifts, as published in the starter kit
+  (sohier/verifiable-circuit-compilation-starter-kit). No file here is copied from another dataset.
+  
+  Lineage. If you publish or redistribute this table, its words or its loaders, or anything derived from them (a refit
+  of the weights, re-coded words, new loaders on these words), name this dataset, marculera/dfthc-c44-build, as the origin
+  and keep this NOTICE with the files, as section 4 of the Apache License requires. The notebook that checks these
+  files is https://www.kaggle.com/code/marculera/df-thc-11-38x-codes-on-the-xor-of-five-words
+  
+  The build rests on public work, credited below as ideas; no code or data of the people named ships here. Each source
+  keeps its own terms (some Apache-2.0, some CC0, some "other").
+  
+  The table
+  - Staged progressive rounding, the sign-mixing measure D(w) and the exact gauge refinement of the offsets:
+    ahmedberatozer, who credits kozykappa's column rotations and anazemcev's effective-norm method.
+  - L-BFGS stages: michaelrustad. One-body refresh from the decoded two-body part: mrmeows.
+  - Rounding of an (8, 143, 44) table: the public notes of Syed Asad Ali (syed3000) on his own table
+    (vqcc-own-circuit-portfolio).
+  - Weight refit at fixed words: phucthaiv02 (joint refit), heliosli and busyaprime (up to the gates), James Barlow
+    (manwithacat; constrained refit and gauge rotations), maoxin123 (zero-weight active sets).
+  
+  The words
+  - Coded low bits, one affine pattern per block of 16 addresses, on bit 0 of every word and in some circuits on bit 1
+    too: somejoint (qcc-our-chemistry-b143-c60-xor2, Apache-2.0).
+  - Codes on the XOR of the five words of a batch, at bits 1 and 2: ours. Placing them on every batch from 3 on: as in
+    maoxin123's re-coded tables (QCC v25 to v27).
+  
+  The loaders
+  - Signed Givens gauge (a word's top bit equals the bit below) and the banked QROM that loads ANF deltas: kozykappa,
+    Kozykorpesh and Sumit Chongder.
+  - Exact lookup emitter design: mrmeows (qcc-1375-open-circuits). Borrowed top bit: heliosli. Five words per circuit:
+    heliosli, lightningv08. Padding rows as don't-cares: James Barlow (manwithacat).
+  - pi-gauge helper encoding (a word's top bit holds a low address monomial): Atakan Aldemir.
+  - Five-block low-monomial plans and exact matroid-parity pair selection: Syed Asad Ali (syed3000), from his published
+    circuits and notes. The parity count uses Lovasz's rank formula (L. Lovasz, Matroid matching and some applications,
+    J. Combin. Theory Ser. B 28, 1980).
+  - The four exact word forms (theta, theta + pi, -theta, pi - theta), the low-block partition and the product pattern
+    that fits five dirty words in 128 qubits: gengsr (vqcc-25-2268-portfolio, Apache-2.0).
+  - A free padding row in the plans, and the first two loaders, which are based on his published ones: maoxin123
+    (qcc-chemistry-4030-toffoli-loaders, CC0).
+  - Kernel-relation search in an earlier loader family: qwertykeypadapple.
+  
+  Our planner and circuit builder are our own code, run on our own words.
+  
+  The hosts: the official verifier, kickmix and the starter kit.
+Apache License 2.0: https://www.apache.org/licenses/LICENSE-2.0 (invsqrt, dqi, chemistry words / table and weights). CC0-1.0: https://creativecommons.org/publicdomain/zero/1.0/ (maoxin123 chemistry loaders, used unchanged).
+Dataset license: apache-2.0.
+
+Additional invsqrt credit: maoxin123 newer 44-qubit invsqrt ecf908fe (maoxin123/qcc-28-20-4-022-toffoli-chemistry-loaders v5, Apache-2.0, on Syed Asad Ali generator line and Ali Haydar Ozdag 64-row table).

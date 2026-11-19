@@ -42,4 +42,9 @@ in third_party/PROVENANCE.md:
   (same license and NOTICE; Syed Asad Ali credited first as the original builder); our additions are listed
   in generators/<task>/TEAM.md.
 
+- Public frontier files used for the leaderboard submission of 2026-11-19 (invsqrt by maoxin123 on Syed
+  Asad Ali's line, dqi by boristown on Syed Asad Ali's line, chemistry weights by Manvender Raparia on
+  Lera's table with maoxin123's CC0 loaders): not stored in this repository; pinned, with the authors'
+  NOTICE and credits verbatim, in third_party/public-frontier-2026-11-19/.
+
 (Entries are added here as third-party work is included.)

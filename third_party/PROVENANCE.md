@@ -24,3 +24,9 @@ kept verbatim. Files we change carry a header line saying so (Apache License 2.0
 |---|---|---|---|
 | `generators/dqi/` | Syed Asad Ali v12 dqi source (above) | new files only (`team_build.sh`, `src/team/`), run-time patches after the pinned checks | `generators/dqi/TEAM.md` |
 | `generators/invsqrt/` | Syed Asad Ali v12 invsqrt source (above) | new files only (`team/`: table search, K = 6 model) | `generators/invsqrt/TEAM.md` |
+
+## Public files submitted for the leaderboard (decision S1.3 revised, 2026-11-19)
+
+| Set | Source | Licences | Pins | Gate |
+|---|---|---|---|---|
+| Public frontier 28.23445: invsqrt `ecf908fe`, dqi `e39b1396`, chemistry `6ef06081` + maoxin123 4,022-T loaders | output `submission.zip` of `mizeroluckygall/quantum-circuits-28-23-keep-the-and-frontier` (zip `ae1b455c…`) | Apache-2.0 (Syed Asad Ali NOTICE, credited first), CC0 (maoxin123 loaders), Lera NOTICE | `third_party/public-frontier-2026-11-19/PINS.md` (18 files), credits verbatim in the same folder | all PASS, 8 salts + official verifiers (S2.17) |

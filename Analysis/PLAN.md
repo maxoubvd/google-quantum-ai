@@ -253,10 +253,12 @@ PARTLY NULL) and are not planned again.
 
 | Milestone | Content | Expected gain | Time box | Go / no-go |
 |---|---|---|---|---|
-| M2.A Public-level submission | S2.17: the public frontier set with a proven board score (28.23445: `ecf908fe`, `e39b1396`, `6ef06081` + loaders), pinned, credited, gated, packaged | ≈ 27.00 → 28.23 (+4.6%) | 0.5 day | All three files PASS our gate and the official verifiers; the user submits |
+| M2.A Public-level submission | S2.17: the public frontier set with a proven board score (28.23445: `ecf908fe`, `e39b1396`, `6ef06081` + loaders), pinned, credited, gated, packaged | ≈ 27.00 → 28.23 (+4.6%) | 0.5 day | All three files PASS our gate and the official verifiers; the user submits | 
 | M2.B invsqrt family exploration | S2.18 divergent brainstorm (GEN-B11): ≥ 5 qualitatively different datapaths for 1/√x phasing, priced and red-teamed; S2.19 scaled-proxy harness (GEN-A13) reusing the S2.7 exact model; S2.20+ prototype of the 1–2 surviving families | +1 to +5% if a family lands (one qubit = +0.77%) | rest of Phase 2, continued in January | A priced design below the frontier (44 Q × ~1,690) on paper, then a passing prototype |
 | M2.C dqi family exploration (paper) | S2.21 brainstorm for the decoder's key stage (56% of T) and convert stage (30%): history-free Berlekamp–Massey, Bezout reuse, fused CRT, cheaper inverses; target ≤ 5,462 GF(2^12) multiplications (≈ 274k T) | prepares January | 1 day | 1–2 families priced below the frontier |
 | M2.D Freeze before the break | S2.22: `STATUS.md` (score, files, open families, dead ends), build/package commands, Phase 2 review | — | 0.5 day | A fresh session can resubmit and resume alone |
+
+**S2.17 status: DONE** — submitted 19 Nov 09:01 UTC, public score **28.23444** (rank ≈ 152–220 of 3,381, bronze zone). **S2.18 status: DONE** (19 Nov) — 7 invsqrt families on paper, 6 structural nulls, only the parity divider INV-B10 survives (−2.1% to −3.6%, and only on a 44-qubit base from source); invsqrt from our own source is worth −3% to −9% at best, so M2.C (dqi families) moves up. Former status line: **S2.17 status (19 Nov 08:55 UTC): READY**. **S2.19 (E1) status: DONE, GO** (19 Nov): the parity tail in the exact model keeps 99.5% of the refit margin with 12 freed rows (0 failures); E2 (Toffoli cost of the tail on a scaled kickmix circuit) is next for M2.B, while M2.C (dqi families) runs — `artifacts/submissions/public-28234.zip` (SHA-256 `8c99649b…afed`), all three tasks PASS our gate (8 salts) and the official verifiers; pins in `third_party/public-frontier-2026-11-19/PINS.md`. Waiting for the user's submission.
 
 Chemistry family moves (R = 7 with C = 48–50, C = 40/42 retrains, codebook columns CHEM-N11) need a Kaggle P100 and
 come in Phase 3. The in-family steps that stay open (DQI-A07 guard, DQI-A09 one qubit from the source build,
@@ -365,7 +367,7 @@ The idea backlog is `Analysis/IDEAS.md` (128 ranked ideas). Items from the earli
 (GEN-B01), the dqi working qubits (DQI-A08/A09) and the chemistry tree/QAT co-design (CHEM-B09) are in it;
 exploiting impossible x values is a recorded null (invsqrt.md N1: the verifier checks every x). Not yet in it:
 
-- invsqrt: direct synthesis of the phase bits as low-degree Boolean functions of x (to be priced by M2.6).
+- ~~invsqrt: direct synthesis of the phase bits as low-degree Boolean functions of x~~ NULL on paper (S2.18 F7: ≥ +490%).
 
 ## 12. Risks
 
