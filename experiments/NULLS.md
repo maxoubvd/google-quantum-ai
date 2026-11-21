@@ -389,7 +389,7 @@ Counts: 297 community rows; outcomes kill 172, null 96, partial 23, observation 
 | NR-0293 | Chemistry Lambda / Q-lock levers, loader decompositions and loader information bounds | public chemistry factorizations and loaders as of… | null | none published | Reported as measured and closed; no counts given. | Not stated by the authors. |  | crackercoder (Sazza… |
 | NR-0294 | Train the chemistry factorization with lambda_eff as the first objective | DF-THC chemistry factorization | null | none published | Reported as a dead end; no numbers given. | Not stated by the authors. |  | crackercoder (Sazza… |
 
-### From our research (`Analysis/research/chemistry.md`, 20 rows)
+### From our research (`Analysis/research/chemistry.md`, 28 rows)
 
 | Ref | What was tried | Result | Source |
 |---|---|---|---|
@@ -413,6 +413,14 @@ Counts: 297 community rows; outcomes kill 172, null 96, partial 23, observation 
 |  | AlphaTensor-Quantum on loaders | Trades Toffolis for T/CS gates, which the loaders cannot use; 130M local moves found nothing | 754605 |
 |  | Narrower single loader | 126/127-wire loaders do not change Q_total (the temp is set by the inner prep) | Asterios Panoras notebook |
 |  | LLM-evolved gauge optimizer | 0 improvements in 15 generations | 753185 |
+| S2.23-1 | Row-axis shape moves at the linear row price | Σ core rank invariant under row removal; only caches scale (1.9 T per row): R 7 −2.0%, R 6 −3.5%, B 129 −1.6%… | `chemistry_families_2026-11-19.md` §0.3–0.4 |
+| S2.23-2 | Force the inner QROAM block to 2^3 (Q 427 → 276, −22%) | the model keeps the largest k with temp < 75·brot: needs brot ≤ 3 or R·C·B < 2,432 | same, F2 |
+| S2.23-3 | CHEM-B20 block-localized dictionary | 76 one-body rows keep ≥ 5 generic blocks per plane; NR-0249 truncation 1.2–2.3 Ha at k ≤ 8 | same, F4 |
+| S2.23-4 | CHEM-B22 dithered twin vectors | B 159 costs +4.2% for 128 twins; the freed C budget is worth −1.9% (−3.6% at best) | same, F5 |
+| S2.23-5 | CHEM-N11 codebook-index loaders | index saves ≈ 27 products per circuit; per-column decoders cost ≈ 350–600 ANDs per circuit | same, §3 |
+| S2.23-6 | Classical copy of the address | no Z-basis measurement in kickmix (only HMR and R) | same, §3 |
+| S2.23-7 | Random-condition Toffoli halving | no gadget computes an AND with expected < 1 counted Toffoli | same, §3 |
+| S2.23-8 | CHEM-B03 address-permutation gauge alone | ≤ about 110 rank units (−0.6%) by counting | same, F6 |
 
 ## Cross-cutting and tooling
 

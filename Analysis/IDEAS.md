@@ -192,7 +192,7 @@ Details (mechanism, risks, sources): `Analysis/research/chemistry.md`.
 | CHEM-A07 | Per-slot best-of between maoxin123's and Lera's loaders on the same words | 0.05 (0-0.1) | 0.02 | 0.50 | 2 | 0.0042 | TODO |
 | CHEM-A08 | Search the low/high address split and low-block partition per loader | 0.3 (0.1-0.5) | 0.10 | 0.40 | 12 | 0.0033 | TODO |
 | CHEM-A09 | Bring loaders k0..k3 down to the k4..k14 level | 0.65 (0.3-1.2) | 0.22 | 0.30 | 20 | 0.0033 | IN PUBLIC FRONTIER (maoxin123, compiled) |
-| CHEM-A10 | Park more helper monomials in free word bits | 0.25 (0.1-0.4) | 0.08 | 0.30 | 10 | 0.0025 | TODO |
+| CHEM-A10 | Park more helper monomials in free word bits | 0.25 (0.1-0.4) | 0.08 | 0.30 | 10 | 0.0025 | OPEN (S2.23 F7: −0.2% to −0.6%, first experiment defined) |
 | CHEM-A11 | Peephole / kernel-relation search on compiled loaders | 0.2 (0.05-0.4) | 0.07 | 0.30 | 10 | 0.0020 | NULL (public: no removable Toffoli in the 15 frontier loaders) |
 | CHEM-A12 | Exact re-planning toward the counting floor | 1.5 (0.5-5) | 0.51 | 0.15 | 40 | 0.0019 | PARTLY NULL (public: greedy/local/flip-graph variants); exact or fully mixed construction still open |
 | CHEM-A13 | Global (multi-start) weight refit at fixed words | 0.03 (0.01-0.1) | 0.01 | 0.30 | 6 | 0.0005 | NULL (public: weight refits saturated, 4e-7 relative) |
@@ -203,21 +203,21 @@ Details (mechanism, risks, sources): `Analysis/research/chemistry.md`.
 |---|---|---|---:|---:|---:|---:|---|
 | CHEM-B01 | Mixed-precision coded words, trained with a loader-cost surrogate | 2.5 (1-4) | 0.85 | 0.25 | 50 | 0.0042 | OPEN, value cut (loaders shrink only 3.6% from 8 to 6 bits, Balram Srinivasan) |
 | CHEM-B02 | Row-sensitivity-weighted coding | 0.8 (0.3-1.5) | 0.27 | 0.25 | 20 | 0.0034 | TODO |
-| CHEM-B03 | Address-permutation gauge | 1.0 (0.5-2) | 0.34 | 0.20 | 30 | 0.0022 | TODO |
+| CHEM-B03 | Address-permutation gauge | 1.0 (0.5-2) | 0.34 | 0.20 | 30 | 0.0022 | DEPRIORITIZED (S2.23: counting bound ≤ about −0.6%) |
 | CHEM-B05 | Exchange-rate-aware error budget | 1.0 (0.5-2) | 0.34 | 0.25 | 40 | 0.0021 | TODO |
 | CHEM-B04 | New table at C = 43 | 0.47 (0.4-0.53) | 0.16 | 0.40 | 30 | 0.0021 | OPEN (fixed-word variant NULL public: floor 21.10 mHa); retrained table only |
 | CHEM-B06 | Better initializers for lower-C tables | 0.85 (0.6-1.1) | 0.28 | 0.20 | 30 | 0.0019 | TODO |
-| CHEM-B07 | Fewer basis vectors per group: B = 139 (R 8, C 44) | 1.5 (1.0-1.9) | 0.51 | 0.15 | 40 | 0.0019 | TODO |
+| CHEM-B07 | Fewer basis vectors per group: B = 139 (R 8, C 44) | 1.5 (1.0-1.9) | 0.51 | 0.15 | 40 | 0.0019 | DEPRIORITIZED (S2.23: core-rank model, B 129 only −1.6%, B 139 ≈ −0.4%) |
 | CHEM-B08 | New table at C = 42 | 0.85 (0.6-1.1) | 0.28 | 0.25 | 40 | 0.0018 | TODO |
 | CHEM-B09 | Co-design the Givens tree, edge order and gauge with the codes | 1.0 (0.5-2) | 0.34 | 0.20 | 40 | 0.0017 | TODO |
-| CHEM-B10 | R = 7, B = 143, C = 48-50 | 7 (6-7.5) | 2.45 | 0.04 | 60 | 0.0016 | TODO |
-| CHEM-B11 | brot 7 with codes and QAT | 9 (8-10) | 3.19 | 0.03 | 60 | 0.0016 | NULL (public, Balram Srinivasan: brot 7 rounds to 27.1 mHa > 20) |
+| CHEM-B10 | R = 7, B = 143, C = 48-50 | 7 (6-7.5) | 2.45 | 0.04 | 60 | 0.0016 | DEPRIORITIZED (S2.23: re-priced −2.0%, not −7%) |
+| CHEM-B11 | brot 7 with codes and QAT | 9 (8-10) | 3.19 | 0.03 | 60 | 0.0016 | NULL (public, Balram Srinivasan: brot 7 rounds to 27.1 mHa > 20; S2.23 re-prices the gain to −5% to −6%) |
 | CHEM-B12 | New table at C = 40 | 1.8 (1.5-2.1) | 0.61 | 0.10 | 50 | 0.0012 | TODO |
 | CHEM-B13 | Loader architecture from XAG multiplicative-complexity synthesis | 2 (1-5) | 0.68 | 0.10 | 60 | 0.0011 | TODO |
 | CHEM-B14 | Use the word registers as dirty workspace | 0.5 (0-2) | 0.17 | 0.10 | 30 | 0.0006 | TODO |
-| CHEM-B15 | J = 4 with larger caches | 0.4 (-1 to +1) | 0.13 | 0.10 | 30 | 0.0004 | TODO |
+| CHEM-B15 | J = 4 with larger caches | 0.4 (-1 to +1) | 0.13 | 0.10 | 30 | 0.0004 | NULL (paper, S2.23: J 4 is +2.2%) |
 | CHEM-B16 | Direction-symmetric word features | 1 (0.5-3) | 0.34 | 0.05 | 40 | 0.0004 | TODO |
-| CHEM-B17 | J = 6 or 7 | 0.2 (-0.5 to +0.5) | 0.07 | 0.15 | 30 | 0.0003 | TODO |
+| CHEM-B17 | J = 6 or 7 | 0.2 (-0.5 to +0.5) | 0.07 | 0.15 | 30 | 0.0003 | NULL (paper, S2.23: J 6 ≤ −0.3% even if the cache fitted; it does not, NR-0128) |
 | CHEM-B18 | Multi-basin lambda refit on a new table | 0.1 (0.05-0.25) | 0.03 | 0.20 | 30 | 0.0002 | TODO |
 
 ## 7. Cross-cutting methods and tooling
@@ -323,7 +323,7 @@ the authors' or the agents' estimates; not yet in the ranked tables above.
 | DQI-N11 | dqi | Stage-wise best-of splicing between decoder variants of one line | public practice | OPEN |
 | DQI-N12 | dqi | Commute paid control products into measurement-conditioned CZ/CCZ fix-ups | Atakan Aldemir, −6.8 mean T | OPEN (tiny) |
 | DQI-N13 | dqi | Free-wire certification rule for product retention | boristown, 1 site in 281 | OPEN (tiny) |
-| CHEM-N11 | dfthcsos | Codebook columns: many angle columns take only 65–129 distinct values; load a short index and decode it | Aniruddha Pawar measurement | OPEN (unknown gain) |
+| CHEM-N11 | dfthcsos | Codebook columns: many angle columns take only 65–129 distinct values; load a short index and decode it | Aniruddha Pawar measurement | NULL (paper, S2.23 §3: decoders cost 350–600 ANDs per circuit for ≈ 27 products saved) |
 | GEN-N01 | all | Controlled swap whose outputs are only measured → zero Toffolis, as a generator pass | Atakan Aldemir readout windows, −24 T per window | OPEN |
 
 **Reading of 19 Nov.** Every top public portfolio is an accumulation of patches on three families (Syed Asad Ali's
@@ -337,11 +337,19 @@ are structural nulls (polynomial ≥ 50 Q; absolute-frame streaming ≥ 46 Q; ta
 phase table + fine part 45–46 Q and +13 rotations; logarithmic number system ≥ 55 Q; direct Boolean synthesis of the
 phase bits ≥ +490%); only the parity divider (INV-B10) survives. Realistic invsqrt target from our own source: −3% to
 −9%; the leaders' gap is more likely on dqi or chemistry.
-| DQI-B13 | dqi | Convert-free Forney: each of the 4,025 scan positions applies the phase [w = 0]·Tr(a/b) from E, O, Ω (fits in the 840-qubit core), deleting convert, unconvert and the projective finish (−122k static T) | S2.21 F3: −20% if MC(Tr(a/b)) over GF(2^12) ≈ 12, break-even at ≈ 30 ANDs; best known construction 69 (+42%); lower bound 11–12 | OPEN, screen first (S2.21b: minimum AND count of Tr(a/b) for n = 2–6 by SAT; null if ≥ 75% of the subfield construction) |
+| DQI-B13 | dqi | Convert-free Forney: each of the 4,025 scan positions applies the phase [w = 0]·Tr(a/b) from E, O, Ω (fits in the 840-qubit core), deleting convert, unconvert and the projective finish (−122k static T) | S2.21 F3: −20% if MC(Tr(a/b)) over GF(2^12) ≈ 12, break-even at ≈ 30 ANDs; best known construction 69 (+42%); lower bound 11–12 | PARKED, leans null (S2.24, 20 Nov: exact MC of Tr(a/b) is 2 at n = 2 and 4–5 at n = 3, i.e. 67–83% of the tower construction (3, 6), above the 45% bar that would justify a GF(2^12) search; exact SAT does not scale to n = 4 (8 variables: no result for k = 5..11 in 50 min). Reopen only with a structured, tower-seeded resynthesis) |
 | DQI-B14..B20 | dqi | Explicit convergents, re-based query MAC, reciprocal convert, decode–re-encode, 12-qubit carry bank, holding products across the mirror, quartic nodes | S2.21 F1, F2, F4–F8 | NULL (paper; rows in `Analysis/research/dqi.md` §4) |
 
 **S2.21 (19 Nov):** eight dqi families priced on paper and red-teamed (`Analysis/research/dqi_families_2026-11-19.md`):
 no family reaches the 1.34× target (≈ 274k T at 890 Q); only DQI-B13 survives, conditional on a cheap screen
 (P ≈ 0.03). Together with S2.18 (invsqrt: six nulls, INV-B10 only), the paper studies point January's family effort
 to chemistry first, with dqi kept on in-family steps (DQI-A01, A07/A17, A09).
+| CHEM-B19 | dfthcsos | Non-bilinear (multi-level XAG) ANGLE_k loaders toward the generic counting floor (≈ 195 ANDs per circuit vs 268); supersedes the search framing of A12/B13 | S2.23 F3: −1.4% to −3.1% (ceiling −14.9%), P 0.10, 80 h CPU | OPEN — exact small-case screen first |
+| CHEM-B20 | dfthcsos | Block-localized dictionary (16-row blocks share an orbital region, low-rank planes by construction) | S2.23 F4 | NULL (paper) |
+| CHEM-B21 | dfthcsos | Rank-budgeted C-axis retrain: B05 optimiser with core-rank pricing, C 44 → 42/40 from a warm coded C 44 start (absorbs B01, B02, B05, B08, B12) | S2.23 F6: −1% to −3%, P 0.20, 10 h CPU + 50 h P100 | OPEN — CPU rank-price curve, then P100 in January (go if continuous error ≤ 13.5 mHa, kill above 14.5) |
+| CHEM-B22 | dfthcsos | Dithered twin vectors (rows for precision) | S2.23 F5: net +0.6% to +2.3% | NULL (paper) |
+
+**S2.23 (19 Nov):** seven chemistry families on paper (`Analysis/research/chemistry_families_2026-11-19.md`): no
+−20% to −35% family under this scorer; loader products do not scale with rows (one row ≈ 1.9 T), which cuts every
+row-axis shape move; survivors CHEM-B19, CHEM-B21, CHEM-A10; realistic January ceiling −2% to −5% on chemistry.
 

@@ -16,7 +16,7 @@ Public frontier: about 2.94642e8 (maoxin123's 4,022-Toffoli loaders + Atakan Ald
 5. Fastest win: adopt the public frontier parts (CHEM-A01, -0.67%, 2 h), then rebuild them from source.
 6. Main controllable lever: loader Toffolis via word codes (bit-level Reed-Muller constraints, sensitivity-
    weighted and mixed precision), worth 1-4% if the 20 mHa budget allows.
-7. Shape moves: C 43 (-0.5%), C 42 (-1.1%), B 139 (-1.5%), R 7 (-7%), brot 7 (-10%); all are capacity-
+7. Shape moves: C 43 (-0.5%), C 42 (-1.1%), B 139 (-0.4%), R 7 (-2%), brot 7 (-5% to -6%) (re-priced by S2.23, see §2.3); all are capacity-
    or accuracy-limited and need a full rebuild on a P100.
 8. A free gauge nobody has used publicly: permuting rows within groups (and groups, and one-body rows).
 9. Realistic combined target: -2.5 to -3.5% task cost (+0.8 to +1.2% score). 31 ideas below.
@@ -94,6 +94,13 @@ block exponent chosen by the model (see 2.4).
 
 The shape rows assume the loaders keep the current 3.34 Toffolis per row per pass (4,074/1,220); only
 the ANGLE share scales with the row count `76 + R*B`.
+
+**Correction (S2.23, 19 Nov, `chemistry_families_2026-11-19.md` §0.3–0.4):** that assumption is wrong. The sum of
+per-plane core ranks of the loaded bit-planes (`tools/core_rank.py`) is invariant under row removal (8,443 / 8,444 /
+8,445 / 8,395 for 1,220 / 1,077 / 934 / 512 rows); only the per-circuit address caches scale with rows. Loader T per
+pass ≈ 0.42 × Σ core rank + K × ⌈rows/16⌉, so one row ≈ 1.9 T (−0.013%), not 3.34–6.6. Re-priced: B 143 → 129
+−1.6% (not −5.2%), R 8 → 7 −2.0% (not −7.5%), R 8 → 6 −3.5%, brot 8 → 7 −4.9% to −6.4% (not −10%). The C rows
+and the cost-model-only rows are unchanged.
 
 ### 2.4 The k2 cliff: why (8,143,44) at brot 8 is a sweet spot of the cost model
 
@@ -239,6 +246,20 @@ ours included, relies on the reachable reading (helper bits carried in word top 
 | AlphaTensor-Quantum on loaders | Trades Toffolis for T/CS gates, which the loaders cannot use; 130M local moves found nothing | 754605 |
 | Narrower single loader | 126/127-wire loaders do not change Q_total (the temp is set by the inner prep) | Asterios Panoras notebook |
 | LLM-evolved gauge optimizer | 0 improvements in 15 generations | 753185 |
+
+
+Nulls on paper from the family study of 19 Nov (S2.23):
+
+| # | Idea | Measured result | Source |
+|---|---|---|---|
+| S2.23-1 | Row-axis shape moves at the linear row price | Σ core rank invariant under row removal; only caches scale (1.9 T per row): R 7 −2.0%, R 6 −3.5%, B 129 −1.6% (not −7.5 / −13 / −5.2%) | `chemistry_families_2026-11-19.md` §0.3–0.4 |
+| S2.23-2 | Force the inner QROAM block to 2^3 (Q 427 → 276, −22%) | the model keeps the largest k with temp < 75·brot: needs brot ≤ 3 or R·C·B < 2,432 | same, F2 |
+| S2.23-3 | CHEM-B20 block-localized dictionary | 76 one-body rows keep ≥ 5 generic blocks per plane; NR-0249 truncation 1.2–2.3 Ha at k ≤ 8 | same, F4 |
+| S2.23-4 | CHEM-B22 dithered twin vectors | B 159 costs +4.2% for 128 twins; the freed C budget is worth −1.9% (−3.6% at best) | same, F5 |
+| S2.23-5 | CHEM-N11 codebook-index loaders | index saves ≈ 27 products per circuit; per-column decoders cost ≈ 350–600 ANDs per circuit | same, §3 |
+| S2.23-6 | Classical copy of the address | no Z-basis measurement in kickmix (only HMR and R) | same, §3 |
+| S2.23-7 | Random-condition Toffoli halving | no gadget computes an AND with expected < 1 counted Toffoli | same, §3 |
+| S2.23-8 | CHEM-B03 address-permutation gauge alone | ≤ about 110 rank units (−0.6%) by counting | same, F6 |
 
 ## 5. Ideas
 

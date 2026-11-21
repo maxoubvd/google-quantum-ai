@@ -10,6 +10,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Never commit or push.** Do not run `git commit`, `git push`, or any other command that writes
   to git history or a remote (including `gh` commands that create commits, branches, PRs or
   releases). The user handles all git operations themselves.
+- **Propose a commit name when a task is finished.** At the end of every finished task (plan step or
+  coherent change), give the user a suggested commit message in the chat: a short imperative title
+  (about 50-70 characters, optionally prefixed with the step, e.g. `S2.23: chemistry families study`)
+  and, if useful, a one-line body. Only propose it; never run `git commit` (see the previous rule).
 - **Read the changelog at the start of every session.** Before any other work, read
   `changelog/README.md` and the most recent entries in `changelog/` (at least the last five, more if
   they belong to the step in progress), then the step table in `Analysis/PLAN.md`, so you know what
