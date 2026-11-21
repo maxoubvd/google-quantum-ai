@@ -1,0 +1,46 @@
+dqi/kit/ -- what these files are and what is proven about them (added in dataset version 2, 2026-11-20)
+
+kv_unfused5/     353 files (322 .py, 31 .json), 1,756,339 bytes. The DQI kit the line runs on: the team's working copy
+                 of the public bundle atakanaldemir/qcc-c44-five-helper-release-sources (credited in NOTICE; its LICENSE
+                 and CREDITS are the third_party__atakanaldemir_dqi_bundle__* files), carried in its final state.
+kv_unfused4_z2/  353 files, 1,756,241 bytes. The tree kv_unfused5 is made from (by tools/dqi_zn_mkunf5.py).
+z9C_oracle.json  7,470 bytes. The zero-trace oracle the chain reads (B5_ZP_ORACLE).
+
+SOURCE ON THE PACKING MACHINE: the snapshot of generator line zc2p (pinned 2026-11-18 03:42 UTC) at
+<HOME>/qcc/ws/dqi_dq3/gen/zc2p/home/qcc/ws/dqi_zn/src/{kv_unfused5,kv_unfused4_z2}, the path the packaged
+dqi_dq3_*.py tools name; the oracle from <HOME>/qcc/ws/dqi_dq3/gen/aux/z9C_oracle.json. Copied unchanged: no file
+needed a path redaction, and the copies equal the snapshot file by file.
+
+CHECKS (2026-11-20 15:35-15:49 UTC, by the packer):
+1. Copies on the packing machine, sha256 of every file: kv_unfused5 of snapshots zc2p, q15b, r37 (a copy of q15b), the
+   line variant kv_unfused5_t54cp and the pinned copy of run r46k3p are all identical; kv_unfused4_z2 of zc2p, q15b,
+   r37 and the frozen snapshot kv_unfused4 of 2026-11-14 are identical; the three oracle copies are identical.
+2. Maker: cp -r kv_unfused4_z2 X && python3 ../tools/dqi_zn_mkunf5.py X  ->  X equals kv_unfused5, all 353 files byte
+   for byte. The two trees differ in one file, research/production/selected.py (sha256 dd2a18b5... -> 6a3afe18...).
+3. Hashes the team recorded before this check (recompute from inside dqi/kit/):
+   (cd kv_unfused5 && find . -name '*.py' -type f | LC_ALL=C sort | xargs sha256sum | sha256sum)
+     = f744011163c2329239ac12cb3d533846aceffef89394a4dcbd4694482399b7a1
+     recorded "py tree f744011163c23292" by the pin script when it made the kit for run q15b on a build machine
+     (2026-11-14 14:25 UTC), with dqi_zn_mkunf5.py sha256 38f96e377f7ad5e8... = tools/dqi_zn_mkunf5.py here
+   find kv_unfused5 -name '*.py' | LC_ALL=C sort | xargs sha256sum | sha256sum
+     = 404a19aed2ec0d2615bf30a3fc5dcc3a1620d52fef0045d8d358f944625405af
+     recorded "py tree 404a19ae" for kv_unfused5 in the kit builder's log (2026-11-14, note of 11:10 UTC)
+   (cd kv_unfused4_z2 && find . -type f | LC_ALL=C sort | xargs sha256sum | sha256sum)
+     = 18c06fb8b4acc67af14db7f9a7d6d75d50c0b50432306476a9101f21f47076f4
+     recorded as kv_unfused4's "tree sha 18c06fb8" (2026-11-14 04:56 UTC)
+   sha256sum z9C_oracle.json
+     = d08ab9478d6e362418cacb1ef73d83bd1127f8d826dd4cde3f7bece542b4a679
+     recorded "sha d08ab947" in the build record (SOURCE.txt) of the DQI line best_q27c9f
+   The two .py hashes cover the 322 .py files; the 31 .json files are covered by the kv_unfused4 tree hash plus check 2.
+
+NOT PROVEN: that the kit and the oracle that the zc14 chain (zd20, which made set s108's DQI file A) read on its build
+machine on 2026-11-19 (<HOME>/qcc/ws/dqi_zn/src/kv_unfused5 and <HOME>/qcc/ws/dqi_int/zptrace/z9C_oracle.json there)
+were these bytes: no hash of those copies from that day is on record, and that machine is off and was not re-checked.
+
+The kit's own source_sha256.json lists 351 of its files: 344 match it, 7 differ from it:
+exp/next/a07/log_source_cap898.py, exp/next/a13/decode_inv72_cap898.py, exp/round7/a18/adaptive_owned_fused_companion.py,
+exp/round7/a18/early_shared_companion.py, research/agents/a14/reverse_fusion.py, research/production/final_root_v3.py,
+research/production/selected.py.
+
+Licence: no file of the kit carries a licence header, copyright line or notice of its own (grep, 0 files); the
+bundle's LICENSE (Apache-2.0) and CREDITS files ride along in the dataset root.

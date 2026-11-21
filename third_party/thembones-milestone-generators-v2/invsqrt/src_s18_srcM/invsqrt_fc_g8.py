@@ -1,0 +1,2076 @@
+#!/usr/bin/env python3
+"""invsqrt_fc_g8.py -- FC: family-C generator for any root split m (default 8), variant SC (own code).
+
+Stages (forward; the inverse half is the mirror of the forward list):
+  NORM    x -> n = x 4^k, flags = binary k                                   (fc1's st_norm)
+  ROOT    non-restoring root of n >> 2(10-m), m steps after the leading 1, in place
+  CENTRE  delta = n - 4^(9-m) d^2, d = 2Q + 1 (one framed add)
+  DIV1    self-consistent division  D = d theta + alpha theta^2  (D = 2^5 delta), the terms beyond first order
+          as per-row corrections of the remainder: exact rows with 1 headroom bit and fe fraction wires (erased at
+          the transition, R rounded), line tail on m + 3 wires with grid-1 corrections on tail rows 1..tk
+  DIV2    P = theta / d (line form, schedule sched2), register + c2 d
+  MAIN    N = 2^(28+m) + 2^(m+1) U, U = -(P + 1) / 2: exact rows b = 25..bt+1, line tail below
+  END     fc1's endpoint (27-slot word routed by k, 27 slot rotations + 10 wrap features)
+  invsqrt_fc_g8.py test N_SAMPLE [stage]       stage-by-stage check against integer references (local sample)
+"""
+import json
+import math
+import os
+import sys
+
+import numpy as np
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
+import invsqrt_fc_kit as K    # noqa: E402
+import invsqrt_fc_arith as A  # noqa: E402
+import invsqrt_fc_gen as G    # noqa: E402
+
+ONE = A.ONE
+MAX_X = 3133452
+CFG = dict(m=8, F1=5, fe=2, hx=1, tk=3, bt=5, sched1=None, sched2=[0, 0, 1, 2, 3, 4, 5, 6, 7], c2=0, cap=64,
+           round0=1)
+
+
+def sched1_of(cfg):
+    m = cfg["m"]
+    return cfg["sched1"] or ([0, 0] + list(range(1, m)))
+
+
+def alpha_of(cfg):
+    S = max(0, 9 - cfg["m"])
+    return 0.75 / (2 ** cfg["F1"] * 4 ** S)
+
+
+# ------------------------------------------------------------------ references
+def ref_root(n, m):
+    sh = 2 * (10 - m)
+    Np = n >> sh
+    rem = ((Np >> (2 * m)) & 3) - 1
+    Q = np.ones_like(n)
+    for j in range(m - 1, -1, -1):
+        pair = (Np >> (2 * j)) & 3
+        neg = rem < 0
+        rem = np.where(neg, 4 * rem + pair + 4 * Q + 3, 4 * rem + pair - 4 * Q - 1)
+        Q = 2 * Q + (rem >= 0)
+    return Q, rem
+
+
+def ref_chain(x, m):
+    n, k = G.ref_norm(x)
+    Q, _ = ref_root(n, m)
+    d = 2 * Q + 1
+    delta = n - (4 ** (9 - m)) * d * d
+    return n, k, Q, d, delta
+
+
+def a_top(cfg):
+    """exact rows of DIV1: theta in [-2^(a+1), 2^(a+1)): a = 10 at m = 7, 8 at m = 8."""
+    # I39 (my copy only): R37 / R49 rule for the 19-digit chain: a = base - (5 - F1)
+    base = 10 if cfg["m"] == 7 else (8 if cfg["m"] == 8 else None)
+    return None if base is None else base - (5 - int(cfg.get("F1", 5)))
+
+
+# ------------------------------------------------------------------ the correction spec (shared by circuit and ref)
+def corr_spec(cfg, j, grid):
+    """bits of the correction after the digit of row j (exact row j >= 0, tail digit j < 0): list of
+    (position e, digit index i) meaning x_i = s_i xor s_j at dividend weight 2^e (e >= grid), and the constant
+    (integer in units 2^grid) to SUBTRACT."""
+    a = a_top(cfg)
+    al = alpha_of(cfg)
+    bits = []
+    dm = 0.0
+    for i in range(j + 1, a + 1):
+        w = al * 2.0 ** (i + j + 2)
+        e = math.floor(math.log2(w))
+        rem = w
+        while rem > 0 and e > -60:
+            if rem >= 2.0 ** e:
+                rem -= 2.0 ** e
+                if e >= grid:
+                    bits.append((e, i))
+                else:
+                    dm += 0.5 * 2.0 ** e
+            e -= 1
+    Kt = al * (2.0 ** (j + a + 2) - 3.0 * 4.0 ** j)
+    if j == 0 and cfg.get("round0", 1) and not cfg.get("odd", 0):
+        Kt -= 2.0 ** (cfg["fe"] and -1)          # +1/2 before the fractions are dropped: R is rounded, not floored
+        if not cfg["fe"]:
+            Kt += 1.0
+    if cfg.get("rowopt") and j >= 0 and "_rowchoice" in cfg and j in cfg["_rowchoice"]:
+        pw = cfg["_rowchoice"][j][1]
+        exact = Kt - dm + cfg.get("_kres", {}).get(j, 0.0)
+        Kq = (1 << pw) * int(round(exact / 2.0 ** (grid + pw)))
+        if j - 1 >= 0:
+            cfg.setdefault("_kres", {})[j - 1] = exact - Kq * 2.0 ** grid
+        return bits, Kq
+    if cfg.get("kev") and j >= 0 and (j in cfg["kev"] or str(j) in cfg["kev"]):
+        # constant rounded to a multiple of 2^pw grid units (no bits at the lowest pw positions); the residual is
+        # carried into the next row's constant (cfg['_kres'] holds it, in dividend units)
+        kv = cfg["kev"]
+        pw = int(kv.get(j, kv.get(str(j), 1))) if isinstance(kv, dict) else 1
+        exact = Kt - dm + cfg.get("_kres", {}).get(j, 0.0)
+        Kq = (1 << pw) * int(round(exact / 2.0 ** (grid + pw)))
+        if j - 1 >= 0:
+            cfg.setdefault("_kres", {})[j - 1] = exact - Kq * 2.0 ** grid
+        return bits, Kq
+    Kq = int(round((Kt - dm + cfg.get("_kres", {}).get(j, 0.0)) / 2.0 ** grid))
+    return bits, Kq
+
+
+def tail_dt(d, kk):
+    if not kk:
+        return d
+    V = d >> 1
+    Av = (((V >> (kk + 1)) + ((V >> kk) & 1)) << (kk + 1)) - (V & 1)
+    return 2 * Av + 1
+
+
+def ref_div1(delta, d, cfg):
+    """integer model of the circuit's DIV1: returns sigma per digit (dict j -> 0/1 array, 'fin'), theta_int."""
+    m, fe, tk = cfg["m"], cfg["fe"], cfg["tk"]
+    a = a_top(cfg)
+    s1 = sched1_of(cfg)
+    FS = 20
+    R = (delta.astype(np.int64) << cfg["F1"]) << FS
+    sig = {}
+    for t in range(a, -1, -1):
+        neg = R < 0
+        s = np.where(neg, -1, 1)
+        R = R - s * (d.astype(np.int64) << (t + FS))
+        sig[t] = neg.astype(np.int64)
+        bits, Kq = corr_spec(cfg, t, -fe)
+        for e, i in bits:
+            R = R + ((sig[i] ^ sig[t]) << (FS + e))
+        R = R - (Kq << (FS - fe))
+    if cfg.get("odd", 0):
+        R = (((R >> FS) >> 1) << (FS + 1)) + (1 << FS)     # the low bits (fractions + LSB) replaced: R_0 odd
+    else:
+        R = (R >> FS) << FS                   # fractions dropped (the +1/2 is in row 0's constant)
+    for k in range(1, len(s1) + 1):
+        neg = R < 0
+        s = np.where(neg, -1, 1)
+        R = R - s * (tail_dt(d, s1[k - 1]).astype(np.int64) << (FS - k))
+        sig[-k] = neg.astype(np.int64)
+        if k <= tk:
+            bits, Kq = corr_spec(cfg, -k, 0)
+            for e, i in bits:
+                R = R + ((sig[i] ^ sig[-k]) << (FS + e))
+            R = R - (Kq << FS)
+    sig["fin"] = (R < 0).astype(np.int64)
+    order = list(range(a, -1, -1)) + [-k for k in range(1, len(s1) + 1)] + ["fin"]
+    q = np.zeros(len(d), dtype=np.int64)
+    nd = len(order)
+    for t, key in enumerate(order):
+        q += (1 - 2 * sig[key]) << (nd - 1 - t)
+    return sig, order, q
+
+
+# ------------------------------------------------------------------ stages
+def st_root(c, X, m):
+    """W(p) = X[p + sh]; after: q_t stored as NOT q at W(t + m + 2) (t = 0..m-1), r_nr at W(0..m+2)."""
+    sh = 2 * (10 - m)
+    W = lambda p: X[p + sh]  # noqa: E731
+    c.cx(W(2 * m), W(2 * m + 1))
+    c.x(W(2 * m + 1))
+    c.x(W(2 * m))
+    for j in range(m - 1, -1, -1):
+        tgt = [W(p) for p in range(2 * j, j + m + 3)]
+        if j == m - 1:
+            for t in tgt:
+                c.x(t)
+            A.add(c, [ONE, None, ONE], tgt)
+            for t in tgt:
+                c.x(t)
+            continue
+        sig = W(j + m + 3)
+        cp = c.alloc(1)[0]
+        c.cx(sig, cp)
+        qsrc = [W(j + m + 3 + k) for k in range(0, m - 1 - j)]
+        A.frame(c, sig, tgt)
+        for w in qsrc:
+            c.x(w)
+        A.add(c, [ONE, cp] + qsrc + [ONE], tgt)
+        for w in qsrc:
+            c.x(w)
+        A.frame(c, sig, tgt)
+        c.cx(sig, cp)
+        c.free_([cp])
+
+
+def st_centre(c, X, m):
+    """delta (22 - m bits, two's complement) on X[0 .. 21-m]; v (m bits, true form) on X[22-m .. 21]."""
+    lo = 2 * (9 - m)
+    cw = X[22 - m]
+    tgt = X[lo:22 - m]
+    cp = c.alloc(1)[0]
+    c.cx(cw, cp)
+    A.frame(c, cw, tgt)
+    qs = [X[22 - m + t] for t in range(0, m)]
+    for w in qs:
+        c.x(w)
+    A.add(c, [ONE, cp] + qs + [ONE], tgt)
+    for w in qs:
+        c.x(w)
+    A.frame(c, cw, tgt)
+    c.cx(cw, cp)
+    c.free_([cp])
+    for w in X[22 - m:22]:
+        c.x(w)
+
+
+def _normalise_columns(cols, lo, top, L):
+    """exact rewrites so that every column holds at most L literals (mod 2^(top+1)): literal = (wire, pol) with
+    pol +1 plain / -1 complemented, or ONE. x + x = 2x; 1 + x = NOT x + 2x; 1 + 1 = 2; x + NOT x = 1."""
+    for p in range(lo, top + 1):
+        col = cols.setdefault(p, [])
+        changed = True
+        while changed:
+            changed = False
+            # x + NOT x -> 1
+            for a in list(col):
+                if a == ONE:
+                    continue
+                b = (a[0], -a[1])
+                if b in col and a in col:
+                    col.remove(a)
+                    col.remove(b)
+                    col.append(ONE)
+                    changed = True
+                    break
+            if changed:
+                continue
+            if len(col) <= L:
+                break
+            # 1 + 1 -> 1 at p+1
+            if col.count(ONE) >= 2:
+                col.remove(ONE)
+                col.remove(ONE)
+                if p + 1 <= top:
+                    cols.setdefault(p + 1, []).append(ONE)
+                changed = True
+                continue
+            # x + x -> x at p+1
+            seen = {}
+            for a in col:
+                if a != ONE and a in seen:
+                    col.remove(a)
+                    col.remove(a)
+                    if p + 1 <= top:
+                        cols.setdefault(p + 1, []).append(a)
+                    changed = True
+                    break
+                seen[a] = 1
+            if changed:
+                continue
+            # 1 + x -> NOT x here, x at p+1
+            if ONE in col:
+                lit = next(a for a in col if a != ONE)
+                col.remove(ONE)
+                col.remove(lit)
+                col.append((lit[0], -lit[1]))
+                if p + 1 <= top:
+                    cols.setdefault(p + 1, []).append(lit)
+                changed = True
+                continue
+    return cols
+
+
+def _add_bits_opt(c, bits, const, R, lo, top, L=2):
+    """as _add_bits, with columns normalised to at most L literals and layers assigned with one polarity per wire."""
+    W = top - lo + 1
+    cm = const % (1 << W)
+    cols = {}
+    for p, w in bits:
+        cols.setdefault(p, []).append((w, 1))
+    for p in range(W):
+        if (cm >> p) & 1:
+            cols.setdefault(lo + p, []).append(ONE)
+    for Lt in range(L, 8):
+        cc = {p: list(v) for p, v in cols.items()}
+        _normalise_columns(cc, lo, top, Lt)
+        if all(len(v) <= Lt for v in cc.values()):
+            break
+    layers = []                                   # each: (dict pos -> literal, dict wire -> pol)
+    for p in sorted(cc):
+        for lit in cc[p]:
+            for Lr in layers:
+                if p in Lr[0]:
+                    continue
+                if lit != ONE and Lr[1].get(lit[0], lit[1]) != lit[1]:
+                    continue
+                Lr[0][p] = lit
+                if lit != ONE:
+                    Lr[1][lit[0]] = lit[1]
+                break
+            else:
+                layers.append(({p: lit}, {} if lit == ONE else {lit[0]: lit[1]}))
+    for pos, pols in layers:
+        neg = [w for w, pl in pols.items() if pl < 0]
+        for w in neg:
+            c.x(w)
+        llo = min(pos)
+        src = []
+        for p in range(llo, top + 1):
+            lit = pos.get(p)
+            src.append(None if lit is None else (ONE if lit == ONE else lit[0]))
+        A.add(c, src, [R[p] for p in range(llo, top + 1)])
+        for w in neg:
+            c.x(w)
+
+
+def row_lits(bits, Kq, a, t, top, fe, comp):
+    """literals (e, digit index, pol) and constant of row t's correction; comp = 1: the top pair as
+    -NOT(x_a) w_a + w_a (its NOT literal on the 1-bits of (-w_a) mod 2^W)."""
+    # comp: bitmask over the top pairs (bit 0 = pair a, bit 1 = pair a - 1, ...): each chosen pair i written as
+    # x_i w_i = w_i - NOT(x_i) w_i, its NOT literal on the 1-bits of (-w_i) mod 2^W
+    W = top + fe + 1
+    chosen = [a - b for b in range(4) if (comp >> b) & 1 and any(i == a - b for _, i in bits)]
+    lits = [(e, i, 1) for e, i in bits if i not in chosen]
+    const = -Kq
+    for ic in chosen:
+        wi = sum(1 << (e + fe) for e, i in bits if i == ic)
+        neg = (-wi) % (1 << W)
+        lits += [(q - fe, ic, -1) for q in range(W) if (neg >> q) & 1]
+        const += wi
+    return lits, const
+
+
+def choose_rows(cfg):
+    """per exact row: the cheapest (comp, pw) by a dry run of the correction add (exact identities; pw rounds the
+    row's constant to a multiple of 2^pw grid units, the residual carried into the next row)."""
+    m, fe, hx = cfg["m"], cfg["fe"], cfg["hx"]
+    a = a_top(cfg)
+    cfg["_kres"] = {}
+    cfg["_rowchoice"] = {}
+    for t in range(a, -1, -1):
+        top = t + m + 2 + hx
+        best = None
+        saved = dict(cfg["_kres"])
+        for pw in range(int(cfg.get("rowopt_pw", 3))):
+            nc = int(cfg.get("rowopt_comp", 2))
+            for comp in (reversed(range(nc)) if cfg.get("rowopt_desc", 1) else range(nc)):
+                cfg["_kres"] = dict(saved)
+                cfg["_rowchoice"][t] = (comp, pw)
+                bits, Kq = corr_spec(cfg, t, -fe)
+                lits, const = row_lits(bits, Kq, a, t, top, fe, comp)
+                dc = K.Circ(n_fixed=64)
+                dc.cap = 10 ** 6
+                Rd = {p: p + fe for p in range(-fe, top + 1)}
+                wires = {}
+                for e, i, pol in lits:
+                    wires.setdefault(i, 40 + i)
+                _add_lits(dc, [(e, wires[i], pol) for e, i, pol in lits], const, Rd, -fe, top)
+                cost = dc.toffolis() + 0.01 * pw
+                if best is None or cost < best[0]:
+                    best = (cost, comp, pw, dict(cfg["_kres"]))
+        cfg["_rowchoice"][t] = (best[1], best[2])
+        cfg["_kres"] = best[3]
+    cfg["_kres"] = {}
+    return cfg["_rowchoice"]
+
+
+def _add_lits(c, lits, const, R, lo, top):
+    """R[lo..top] += sum of literals (position, wire, pol) + const (units 2^lo): greedy layers, one bit per position
+    and one polarity per wire in each layer; complemented wires are flipped around their layer's add."""
+    W = top - lo + 1
+    cm = const % (1 << W)
+    items = sorted(lits, key=lambda q: q[0]) + [(lo + p, ONE, 1) for p in range(W) if (cm >> p) & 1]
+    layers = []
+    for p, w, pol in items:
+        for Lr in layers:
+            if p in Lr[0]:
+                continue
+            if w != ONE and Lr[1].get(w, pol) != pol:
+                continue
+            Lr[0][p] = w
+            if w != ONE:
+                Lr[1][w] = pol
+            break
+        else:
+            layers.append(({p: w}, {} if w == ONE else {w: pol}))
+    for pos, pols in layers:
+        neg = [w for w, pl in pols.items() if pl < 0]
+        for w in neg:
+            c.x(w)
+        llo = min(pos)
+        A.add(c, [pos.get(p) for p in range(llo, top + 1)], [R[p] for p in range(llo, top + 1)])
+        for w in neg:
+            c.x(w)
+
+
+def _add_bits(c, bits, const, R, lo, top):
+    """R[lo..top] += sum of bits (position, wire) + const (units 2^lo, may be negative), greedy layers."""
+    if _OPT["on"]:
+        return _add_bits_opt(c, bits, const, R, lo, top)
+    W = top - lo + 1
+    cm = const % (1 << W)
+    allb = sorted(bits, key=lambda pw: pw[0])
+    for p in range(W):
+        if (cm >> p) & 1:
+            allb.append((lo + p, ONE))
+    layers = []
+    for p, w in allb:
+        for L in layers:
+            if p not in L:
+                L[p] = w
+                break
+        else:
+            layers.append({p: w})
+    # cheapest first is irrelevant for the count; place the layer with the lowest bit last (no effect on exactness)
+    for L in layers:
+        llo = min(L)
+        A.add(c, [L.get(p) for p in range(llo, top + 1)], [R[p] for p in range(llo, top + 1)])
+
+
+def st_div1(c, X, cfg):
+    """the SC division on delta (X[0 .. 21-m]) by d = 2^(m+1) + 2 v + 1 (v = X[22-m .. 21]).
+    Returns (digit wires in row order, sigma-relations to fix later, the window wires, extra wires)."""
+    m, fe, hx, tk, F1 = cfg["m"], cfg["fe"], cfg["hx"], cfg["tk"], cfg["F1"]
+    a = a_top(cfg)
+    s1 = sched1_of(cfg)
+    v = X[22 - m:22]
+    cfg["_v0"] = v[0]
+    nd = 22 - m                                   # delta's bits
+    top_pos = a + m + 3 + hx                      # the sign position before row a
+    Frw = c.alloc(fe)
+    Z = c.alloc(F1)
+    R = {}
+    for i, w in enumerate(Frw):
+        R[-fe + i] = w
+    for i, w in enumerate(Z):
+        R[i] = w
+    for i in range(nd):
+        R[F1 + i] = X[i]
+    ext = c.alloc(top_pos - (F1 + nd) + 1)
+    for i, w in enumerate(ext):
+        R[F1 + nd + i] = w
+        c.cx(X[nd - 1], w)
+    dsrc = [ONE] + list(v) + [ONE]
+    digit = {}
+    for t in range(a, -1, -1):
+        sig = R[t + m + 3 + hx]
+        A.fadd(c, sig, dsrc + [None] * (1 + hx), [R[p] for p in range(t, t + m + 3 + hx)])
+        digit[t] = sig
+        if cfg.get("nocorr"):
+            continue
+        bits, Kq = corr_spec(cfg, t, -fe)
+        for i in range(t + 1, a + 1):
+            c.cx(digit[t], digit[i])
+        top = t + m + 2 + hx
+        if cfg.get("rowopt") and a > t:
+            comp = cfg["_rowchoice"][t][0]
+            lits, const = row_lits(bits, Kq, a, t, top, fe, comp)
+            _add_lits(c, [(e, digit[i], pol) for e, i, pol in lits], const, R, -fe, top)
+        elif cfg.get("topc", 0) and a > t:
+            # x_a w_a - K = -NOT(x_a) w_a + (w_a - K): NOT(x_a) on the 1-bits of (-w_a) mod 2^W
+            W = top + fe + 1
+            wa = sum(1 << (e + fe) for e, i in bits if i == a)
+            lits = [(e, digit[i], 1) for e, i in bits if i != a]
+            neg = (-wa) % (1 << W)
+            lits += [(q - fe, digit[a], -1) for q in range(W) if (neg >> q) & 1]
+            _add_lits(c, lits, -Kq + wa, R, -fe, top)
+        else:
+            _add_bits(c, [(e, digit[i]) for e, i in bits], -Kq, R, -fe, top)
+        for i in range(t + 1, a + 1):
+            c.cx(digit[t], digit[i])
+    # transition: the fraction wires hold (sum of the fractional bits and constants) mod 1: subtract them again
+    odd = int(cfg.get("odd", 0))
+    nb = fe + odd                                  # low bits to erase: the fractions (+ R's LSB when 'odd')
+    fracs = []
+    for t in range(a, -1, -1):
+        if cfg.get("nocorr"):
+            break
+        bits, Kq = corr_spec(cfg, t, -fe)
+        if cfg.get("rowopt") and a > t:
+            lits, const = row_lits(bits, Kq, a, t, t + m + 2 + hx, fe, cfg["_rowchoice"][t][0])
+        elif cfg.get("topc", 0) and a > t:
+            W = t + m + 2 + hx + fe + 1
+            wa = sum(1 << (e + fe) for e, i in bits if i == a)
+            lits = [(e, i, 1) for e, i in bits if i != a]
+            neg = (-wa) % (1 << W)
+            lits += [(q - fe, a, -1) for q in range(W) if (neg >> q) & 1]
+            const = -Kq + wa
+        else:
+            lits = [(e, i, 1) for e, i in bits]
+            const = -Kq
+        for e, i, pol in lits:
+            if e < odd:
+                fracs.append((e, t, i, pol))
+        cmod = const % (1 << nb)
+        for p in range(nb):
+            if (cmod >> p) & 1:
+                fracs.append((p - fe, t, None, 1))
+        if odd and t == 0:
+            fracs.append((0, t, None, 1))          # the row-0 subtraction of d flips R's LSB once
+    for e, t, i, pol in fracs:
+        if i is not None:
+            c.cx(digit[t], digit[i])
+            if pol < 0:
+                c.x(digit[i])
+            w = digit[i]
+        else:
+            w = ONE
+        _sub_frac(c, {k_ - odd: w_ for k_, w_ in R.items()}, nb, e - odd, w)
+        if i is not None:
+            if pol < 0:
+                c.x(digit[i])
+            c.cx(digit[t], digit[i])
+    if odd:
+        c.x(R[0])
+    c.free_(Frw)
+    # tail: R_0 on R[0 .. m+2+hx]; first tail row on R[0 .. m+1+hx], digit R[m+2+hx]
+    tw = m + 2 + hx                               # window wires
+    Vb = list(v) + [ONE]
+    sig = R[tw]
+    tgt = [R[p] for p in range(0, tw)]
+    A.frame(c, sig, tgt)
+    c.x(sig)
+    A.add(c, Vb + [None] * (tw - len(Vb)), tgt, cin=sig)
+    c.x(sig)
+    A.frame(c, sig, tgt)
+    digit[-1] = sig
+    u = list(tgt)
+    tailcorr(c, cfg, 1, digit, u)
+    if os.environ.get("R56_LEV") == "J" and os.environ.get("I39_DIV1J", "1") == "1":
+        # I39 (my copy only): R56-INV-39ROW's J-form tail (module r56_levj) in DIV1, as st_divL calls it
+        import r56_levj as _J
+        u = _J.tail(c, K, u, v, Vb, s1, tw, 0, digit)
+        _R49LOG["r56_div1"] = dict(_J.LOG)
+        digit["fin"] = u[tw - 1]
+        for k in range(2, len(s1) + 1):
+            c.cx(v[0], digit[-k])
+        order = list(range(a, -1, -1)) + [-k for k in range(1, len(s1) + 1)] + ["fin"]
+        return digit, order, u, ext
+    for k in range(2, len(s1) + 1):
+        kk = s1[k - 1]
+        u = [u[tw - 1]] + u[0:tw - 1]
+        su = u[0]
+        src = Vb[kk + 1:]
+        A.fadd(c, su, src + [None] * (tw - 1 - kk - len(src)), u[kk + 1:tw], cin=Vb[kk])
+        c.cx(v[0], u[0])
+        digit[-k] = u[0]
+        if k <= tk:
+            tailcorr(c, cfg, k, digit, u)
+    digit["fin"] = u[tw - 1]
+    for k in range(2, len(s1) + 1):               # rotation-row digit wires hold s xor v0: make them true digits
+        c.cx(v[0], digit[-k])
+    order = list(range(a, -1, -1)) + [-k for k in range(1, len(s1) + 1)] + ["fin"]
+    return digit, order, u, ext
+
+
+_R49LOG = {}
+
+
+def st_divL(c, R, v, a, sched, m, x2=0):
+    """line-form division (no corrections) of the register R (positions 0 .. a+m+3, sign at the top) by d.
+    Exact rows t = a..0 on windows [t, t+m+2] (sign at t+m+3), first tail row on R[0..m+1] (digit R[m+2]),
+    rotation rows on u = R[0..m+1]. Rotation digits are fixed to true digits (xor v0).
+    x2: the first x2 tail rows run as exact rows on x2 extra zero wires below position 0 (their taper must be 0),
+    so the rotation rows start x2 rows later and may taper one step later each (more precision, + x2 wires)."""
+    dsrc = [ONE] + list(v) + [ONE]
+    Vb = list(v) + [ONE]
+    Rd = {p: R[p] for p in range(len(R))}
+    for i in range(1, x2 + 1):
+        assert sched[i - 1] == 0
+        Rd[-i] = c.alloc(1)[0]
+    digit = {}
+    for t in range(a, -1, -1):
+        sig = Rd[t + m + 3]
+        A.fadd(c, sig, dsrc + [None], [Rd[p] for p in range(t, t + m + 3)])
+        digit[t] = sig
+    for i in range(1, x2 + 1):
+        t = -i
+        sig = Rd[t + m + 3]
+        A.fadd(c, sig, dsrc + [None], [Rd[p] for p in range(t, t + m + 3)])
+        digit[-i] = sig
+    assert sched[x2] == 0
+    tw = m + 2
+    base = -x2
+    sig = Rd[base + tw]
+    tgt = [Rd[p] for p in range(base, base + tw)]
+    A.frame(c, sig, tgt)
+    c.x(sig)
+    A.add(c, Vb + [None] * (tw - len(Vb)), tgt, cin=sig)
+    c.x(sig)
+    A.frame(c, sig, tgt)
+    digit[-(x2 + 1)] = sig
+    u = list(tgt)
+    # R49-INV-39W (my copy only; env R49_LEV=1): LEVEL ROWS. A tail row k with taper kk < k - 2 (level l = k - 2 - kk)
+    # adds at positions -l..-1 under the window. Those positions hold the digit wires of rows l + 1 .. 2 (g xor v0):
+    # a fresh wire F_p takes a CNOT copy of the digit wire at position -p at its first use and is the row's target
+    # there (the digit wires stay digits). After the last row the F wires are X-measured; the explicit undo makes
+    # them again by the low recursion alone (l - 1 ANDs per level row) and repays the phases; the mirrored wide
+    # rows then return every F wire to its copy and the mirrored CNOTs clear it.
+    if os.environ.get("R56_LEV") == "J" and x2 == 0:      # R56-INV-39ROW (my copy only): the J form
+        import r56_levj as _J
+        u = _J.tail(c, K, u, v, Vb, sched, tw, x2, digit)
+        _R49LOG["r56"] = dict(_J.LOG)
+        digit["fin"] = u[tw - 1]
+        for k in range(x2 + 2, len(sched) + 1):
+            c.cx(v[0], digit[-k])
+        order = list(range(a, -1, -1)) + [-k for k in range(1, len(sched) + 1)] + ["fin"]
+        return digit, order, u
+    lev_on = bool(os.environ.get("R49_LEV")) and x2 == 0
+    Fw, lev_rows, inits, held = {}, [], {}, []
+    for k in range(x2 + 2, len(sched) + 1):
+        kk = sched[k - 1]
+        lvl = (k - x2 - 2) - kk
+        assert lvl <= 0 or lev_on, "rotation row %d needs taper >= %d" % (k, k - x2 - 2)
+        u = [u[tw - 1]] + u[0:tw - 1]
+        src = Vb[kk + 1:]
+        if lvl <= 0:
+            A.fadd(c, u[0], src + [None] * (tw - 1 - kk - len(src)), u[kk + 1:tw], cin=Vb[kk])
+        elif lvl == 1 and os.environ.get("R49_LEV") == "H":
+            # HELD-CARRY form of a level-1 row (R41's X1 kept as a wire, for every row): the position -1 cell alone
+            # (one AND into a wire that is HELD to the tail's end), then today's row with that wire as its carry-in.
+            if 1 not in Fw:
+                Fw[1] = c.alloc(1)[0]
+                c.cx(u[k - 2], Fw[1])
+                inits[1] = (k, u[k - 2])
+            f_, a_, ci_ = Fw[1], Vb[kk + 1], Vb[kk]
+            A.frame(c, u[0], [f_])
+            t_, kind_ = A._maj_compute(c, a_, f_, ci_)
+            A._sum_into(c, a_, ci_, f_)
+            A.frame(c, u[0], [f_])
+            hi = Vb[kk + 2:]
+            A.fadd(c, u[0], hi + [None] * ((tw - k + 1) - len(hi)), u[k - 1:tw], cin=t_)
+            held.append((k, u[0], a_, ci_, t_, kind_))
+        else:
+            lowt = []
+            for p_ in range(lvl, 0, -1):               # positions -lvl .. -1 (LSB first)
+                if p_ not in Fw:
+                    Fw[p_] = c.alloc(1)[0]
+                    c.cx(u[k - 1 - p_], Fw[p_])
+                    inits[p_] = (k, u[k - 1 - p_])
+                lowt.append(Fw[p_])
+            A.fadd(c, u[0], src + [None] * (tw - 1 - kk - len(src)), lowt + u[k - 1:tw], cin=Vb[kk])
+            lev_rows.append((k, lvl, u[0], kk))
+        c.cx(v[0], u[0])
+        digit[-k] = u[0]
+    if held:
+        assert not lev_rows, "held-carry rows and measured level rows are not mixed here"
+        _R49LOG["held"] = [(k, kind_) for k, _c, _a, _ci, _t, kind_ in held]
+        tgtL = u[len(sched) - 1]                       # the window's lowest wire = the tail's leftover
+        for k, ctl, a_, ci_, t_, kind_ in held:        # every held carry out of the leftover wire: it is affine again
+            if kind_ == "w":
+                c.cx(t_, tgtL)
+            elif kind_ == "alias":
+                c.cx(t_, tgtL)
+            elif kind_ == "c1":
+                c.x(tgtL)
+        f_ = Fw[1]
+        for k, ctl, a_, ci_, t_, kind_ in reversed(held):   # un-step the position -1 cell and erase its carry
+            c.cx(v[0], ctl)                             # (the control holds g xor v0 by now)
+            A.frame(c, ctl, [f_])
+            A._sum_into(c, a_, ci_, f_)
+            A._maj_erase(c, a_, f_, ci_, t_, kind_)    # (frees the carry's wire)
+            A.frame(c, ctl, [f_])
+            c.cx(v[0], ctl)
+        c.cx(inits[1][1], f_)
+        c.free_([f_])
+        Fw = {}
+    if Fw:
+        ps_ = sorted(Fw)
+        fws = [Fw[p_] for p_ in ps_]
+        bid = len(c.blocks)
+        c.blocks[bid] = None
+        c.ops.append(("BBEG", bid))
+        mb = [c.hmr(w_) for w_ in fws]
+        c.free_(fws)
+        c.ops.append(("BEND", bid))
+        save = c.ops
+        c.ops = []
+        got = c.alloc(len(fws))
+        assert sorted(got) == sorted(fws), ("level wires", got, fws)
+        k_low = c.toffolis()
+        for k, lvl, ctl, kk in lev_rows:               # the low recursion alone, in the forward order
+            for p_ in ps_:
+                if inits[p_][0] == k:
+                    c.cx(inits[p_][1], Fw[p_])
+            lowt = [Fw[p_] for p_ in range(lvl, 0, -1)]
+            c.cx(v[0], ctl)                            # the row's control held the raw sign when the row ran
+            A.fadd(c, ctl, Vb[kk + 1:kk + 1 + lvl], lowt, cin=Vb[kk])
+            c.cx(v[0], ctl)
+        for w_, b_ in zip(fws, mb):
+            c.z(w_, b_)
+        _R49LOG["undo_low"] = c.toffolis() - k_low
+        c.blocks[bid] = c.ops
+        c.ops = save
+        c.free_(fws)
+        _R49LOG.update(levels=[(k, lvl) for k, lvl, _c, _k in lev_rows], nF=len(fws))
+    digit["fin"] = u[tw - 1]
+    for k in range(x2 + 2, len(sched) + 1):
+        c.cx(v[0], digit[-k])
+    order = list(range(a, -1, -1)) + [-k for k in range(1, len(sched) + 1)] + ["fin"]
+    return digit, order, u
+
+
+def apply_relations(c, rel, known, u):
+    """clear the leftover window wires: u[pos] = XOR(known[cols]) xor const on every input. Returns the cleared wires."""
+    cleared = []
+    for pos, r in sorted(rel.items()):
+        if r is None:
+            continue                       # not affine: held as garbage until the mirror
+        cols, const = r
+        for col in cols:
+            c.cx(known[col], u[pos])
+        if const:
+            c.x(u[pos])
+        cleared.append(u[pos])
+    return cleared
+
+
+def div2_input(c, dig, order, free_w, c2, v, m):
+    """register of division 2 from division 1's digits (true digits; order from the top): theta = 2B + 1 - 2^n
+    as (n+1)-bit two's complement [1, NOT s_(n-2) .. NOT s_0 ... ]; plus c2 d."""
+    n = len(order)
+    c.x(free_w)
+    R = [free_w]
+    for pos in range(1, n):
+        w = dig[order[n - pos]]
+        c.x(w)
+        R.append(w)
+    R.append(dig[order[0]])
+    if c2:
+        dsrc = [ONE] + list(v) + [ONE]
+        sh = int(round(math.log2(c2)))
+        assert 1 << sh == c2
+        A.add(c, [None] * sh + dsrc, R)
+    return R
+
+
+def st_main(c, U, v, cfg):
+    """main divider on N = 2^(28+m) + 2^(m+1) U (U: 27-m wires, two's complement). Returns the word (27 wires,
+    Y = sum w_j 2^j) and the window's leftover wires."""
+    m, bt = cfg["m"], cfg["bt"]
+    br = max(bt, int(cfg.get("br", bt)))          # rotation (line-tail) form from row br down; taper from bt
+    lowpos = br + 1
+    lazy = bool(cfg.get("narrow"))
+    Lz = [None] * (m + 1 - lowpos) if lazy else c.alloc(m + 1 - lowpos)
+    if cfg.get("_c0stub"):                        # FC3 COUNT-ONLY stub (word wrong): the HO stage's held bit (delivered
+        w_ = (cfg.get("_pre_lz") or {}).get(8)    # by the dump hook, form "dump") is dropped before MAIN: prices the
+        assert w_ is not None                     # D42 layout (no held wire) at this cap; empty explicit undo
+        bid = len(c.blocks)
+        c.blocks[bid] = []
+        c.ops.append(("BBEG", bid))
+        c.hmr(w_)
+        c.free_([w_])
+        c.ops.append(("BEND", bid))
+        cfg["_pre_lz"] = {}
+    pre = {} if cfg.get("h1_hold") else (cfg.get("_pre_lz") or {})   # h1_hold: the stage's bit stays on its own
+    for p_, w_ in pre.items():                        # wire to the mirror (HOLD, -2.5 at W 43 [M]); else R36 DUMP:
+        assert lazy and lowpos <= int(p_) <= m           # a wire holding dividend bit p_ stands in for that low zero
+        Lz[int(p_) - lowpos] = w_
+    top0 = bool(cfg.get("top0"))                  # position 28+m: sign of R_26, 0 on every input [M]: no wire
+    mbu = bool(cfg.get("init_mbu")) and top0 and m == 8 and lazy   # FC3: first add undone by measurement
+    E = c.alloc(m if top0 else m + 1)
+    us = U[-1]
+    for t in range(m):
+        if not mbu:
+            c.cx(us, E[t])
+    if not top0:
+        c.cx(us, E[m])
+        c.x(E[m])
+
+    def pos(p):
+        if p <= m:
+            if Lz[p - lowpos] is None:
+                Lz[p - lowpos] = c.alloc(1)[0]       # the low zeros come to life when the window reaches them
+            return Lz[p - lowpos]
+        if p <= 27:
+            return U[p - m - 1]
+        if top0 and p == 28 + m:
+            return None
+        return E[p - 28]
+
+    dsrc = [ONE] + list(v) + [ONE]
+    Vb = list(v) + [ONE]
+    win = [pos(p) for p in range(26, 26 + m + (2 if top0 else 3))]   # top0: R_26 in [0, 2^(m+2)) [M], mod 2^10
+    cap_saved = c.cap
+    if cfg.get("_cap_top"):                       # FC3 COUNT-ONLY knob: MAIN's first add and rows 25, 24 at another cap
+        c.cap = int(cfg["_cap_top"])
+    if mbu:
+        _init_mbu(c, us, E, win, dsrc, v)
+    else:
+        for t in win:
+            c.x(t)
+        A.add(c, dsrc + ([] if top0 else [None]), win)
+        for t in win:
+            c.x(t)
+    if cfg.get("_cap_init_only"):                 # (count knob: `_cap_top` covers the first add only)
+        c.cap = cap_saved
+    digit = {}
+    for b in range(25, br, -1):
+        sig = pos(b + m + 3)
+        tgt = [pos(p) for p in range(b, b + m + 3)]
+        if sig is None:                           # constant-0 sign: the row subtracts
+            for t in tgt:
+                c.x(t)
+            A.add(c, dsrc + [None], tgt)
+            for t in tgt:
+                c.x(t)
+        else:
+            if b == 23 and cfg.get("_ch1r23"):   # CH1 P7: row 23 at one clean wire less (inside fadd's frames)
+                A.frame(c, sig, tgt)
+                sys.modules["invsqrt_fc2_k4fuse"]._ch1_r23_block38(c, sig, dsrc + [None], tgt, v)
+                A.frame(c, sig, tgt)
+            else:
+                A.fadd(c, sig, dsrc + [None], tgt)
+        digit[b] = sig
+        if b == int(cfg.get("_r64_capend", 24)):   # R64-P3 (r64_inv_stack_p3.py): count-only: the window's last row
+            c.cap = cap_saved                     # (end of the `_cap_top` window)
+        if b == 24 and cfg.get("w25ret") and m == 8:
+            w25 = _retire_digit24(c, digit[24], pos(34), v)
+        if b == 24 and cfg.get("w25ret") and m == 7 and cfg.get("w25ret_m7"):   # FC3 19:35Z: the same relation holds
+            w25 = _retire_digit24(c, digit[24], pos(26 + m), v)   # at m 7 on all inputs (R37 DEF7; q21 = v6, q20 = v5)
+        if b == 23 and cfg.get("_w24ret_m7") and m == 7:   # FC3 19:40Z: digit 23 retired after row 23 (m 7 program)
+            _m7r23 = _M7RET.retire(c, digit[23], pos(25 + m), v, 23, cfg)
+            digit[23] = None
+        if b == 22 and cfg.get("_w23ret_m7") and m == 7:   # FC3 19:40Z: digit 22 retired after row 22 (m 7 program)
+            _m7r22 = _M7RET.retire(c, digit[22], pos(24 + m), v, 22, cfg)
+            digit[22] = None
+        if b == 23 and cfg.get("_w24stub") and m == 8:  # COUNT-ONLY stub (word wrong): digit 23 retired after row 23,
+            bid = len(c.blocks)                          # empty re-creation; prices one more wire in rows 22..0
+            c.blocks[bid] = []
+            c.ops.append(("BBEG", bid))
+            c.hmr(digit[23])
+            c.free_([digit[23]])
+            c.ops.append(("BEND", bid))
+            digit[23] = None
+        if b in (cfg.get("_wstubs") or ()) and digit.get(b) is not None:   # FC3 COUNT-ONLY stub: digit b retired after
+            bid = len(c.blocks)                           # row b with an empty re-creation (prices one more wire in
+            c.blocks[bid] = []                            # rows b-1..0; a real retire adds its program twice)
+            c.ops.append(("BBEG", bid))
+            c.hmr(digit[b])
+            c.free_([digit[b]])
+            c.ops.append(("BEND", bid))
+            digit[b] = None
+    sig = pos(br + m + 3)
+    tgt = [pos(p) for p in range(br + 1, br + m + 3)]
+    A.frame(c, sig, tgt)
+    c.x(sig)
+    A.add(c, Vb + [None] * (len(tgt) - len(Vb)), tgt, cin=sig)
+    c.x(sig)
+    A.frame(c, sig, tgt)
+    digit[br] = sig
+    u = list(tgt)
+    tw = len(u)
+    for b in range(br - 1, -1, -1):
+        kk = max(0, bt - b)
+        u = [u[tw - 1]] + u[0:tw - 1]
+        src = Vb[kk + 1:]
+        A.fadd(c, u[0], src + [None] * (tw - 1 - kk - len(src)), u[kk + 1:tw], cin=Vb[kk])
+        c.cx(v[0], u[0])
+        digit[b] = u[0]
+    fin = u[tw - 1]
+    for b in range(0, br):
+        c.cx(v[0], digit[b])
+    if digit.get(25) is None and not cfg.get("w26late"):
+        digit[25] = c.alloc(1)[0]                 # w_26 = 1 on every input: a fresh wire, set by the inversion
+    if cfg.get("_w24stub") and digit.get(23) is None:
+        digit[23] = c.alloc(1)[0]                 # (count-only stub) a fresh wire where w24's rebuild would land
+    for b_ in (cfg.get("_wstubs") or ()):
+        if digit.get(b_) is None:
+            digit[b_] = c.alloc(1)[0]             # (count-only stub) a fresh wire where the rebuild would land
+    word = [fin] + [digit[b] for b in range(0, 26)]
+    if cfg.get("w25ret") and (m == 8 or (m == 7 and cfg.get("w25ret_m7"))):
+        for j, w in enumerate(word):
+            if j != 25:
+                c.x(w)
+        if m == 7 and cfg.get("_w23ret_m7"):
+            word[23] = _M7RET.rebuild(c, word, v, _m7r22, 22, cfg)
+        if m == 7 and cfg.get("_w24ret_m7"):
+            word[24] = _M7RET.rebuild(c, word, v, _m7r23, 23, cfg)
+        word[25] = _rebuild_w25(c, word[24], v, w25)
+        if word[26] is None:                       # FC3 `w26late` (with F1's patch, whose inversion loop skips None):
+            word[26] = c.alloc(1)[0]               # the const-one token born after the word-bit rebuilds, so their
+            c.x(word[26])                          # temps have its wire (MAIN's end at cap 41)
+    else:
+        for w in word:
+            c.x(w)
+    return word, [w for w in u if w not in word]
+
+
+class _M7Retire:
+    """FC3 (19:40Z): MAIN's digits 23 / 22 (word bits w24 / w23) retired at m = 7 by the exact m 7 programs
+    (research/ws_invsqrt_fc.md 19:33Z; minand files in the word convention, inputs q_i = wire i, w_j = word bit j).
+    The mechanism is F1's (tools/invsqrt_fk_w24ret.py W24, read-only, copied in form): X-measure the digit after
+    its last row (bit m1), re-create it in the explicit undo from (v, digit b-1) in the digit convention on wires free
+    there (+ Z, NEG under the undo's bit m2); after the word's inversion rebuild w_(b+1) into a fresh wire and repay
+    m1 (Z, NEG); its explicit undo is an X-measurement (bit m2). cfg "_m7progs": {"23": file, "22": file}."""
+
+    DEFAULT = {23: "m7_prog_w24.json", 22: "m7_prog_w23.json"}
+
+    def __init__(self):
+        self.log = []
+
+    def prog(self, b, cfg):
+        spec = cfg.get("_m7progs") or {}
+        p = os.path.expanduser(spec.get(str(b), self.DEFAULT[b]))
+        if not os.path.isabs(p):
+            p = os.path.join(os.path.expanduser(cfg.get("fc2_src") or HERE), p)
+        return json.load(open(p))
+
+    @staticmethod
+    def digit_form(P, b, dwire):
+        """word program (w_(b+1) from q.., w_b) -> digit program (d_b from q.., d_(b-1) on wire dwire)."""
+        xname = "w%d" % b
+        xi = P["inputs"].index(xname) if xname in P["inputs"] else None
+
+        def tog(lst, cond=True):
+            lst = list(lst)
+            if not cond:
+                return lst
+            return [i for i in lst if i != -1] if -1 in lst else lst + [-1]
+        g = [{"left": tog(gt["left"], xi in gt["left"]), "right": tog(gt["right"], xi in gt["right"])}
+             for gt in P["gates"]]
+        out = tog(tog(P["outputs"][0], xi in P["outputs"][0]))
+        ins = [("q%d" % dwire) if t == xname else t for t in P["inputs"]]
+        for t in ins:
+            assert t.startswith("q"), "m 7 re-creation program reads a word bit other than w_b: %s" % t
+        _d = {"inputs": ins, "gates": g, "outputs": [out]}
+        if "internal" in P:                                  # I39-HOLD1 (inv_i39_patch_hold1.py): GHOST's width shape kept
+            _d["internal"] = int(P["internal"])
+        if "i39bw" in P:                                     # I39-HOLD2 (inv_i39_patch_hold2.py)
+            _d["i39bw"] = P["i39bw"]
+        return _d
+
+    def retire(self, c, wire, dlow, v, b, cfg):
+        bid = len(c.blocks)
+        c.blocks[bid] = None
+        c.ops.append(("BBEG", bid))
+        m1 = c.hmr(wire)
+        c.free_([wire])
+        c.ops.append(("BEND", bid))
+        m2 = c.bit()
+        cs = K.Circ(n_fixed=c.next)
+        cs.free = [w for w in c.free if w != wire]
+        _make_rebuild(self.digit_form(self.prog(b, cfg), b, dlow), [])(cs, wire)
+        assert cs.next == c.next, "m 7 re-creation of digit %d needs more free wires than there are" % b
+        c.blocks[bid] = list(cs.ops) + [("Z", wire, m2), ("NEG", m2)]
+        self.log.append(dict(digit=b, drop_wire=int(wire), below=int(dlow), free_after=len(c.free)))
+        return (wire, m1, m2)
+
+    def rebuild(self, c, word, v, ret, b, cfg):
+        _, m1, m2 = ret
+        t = c.alloc(1)[0]
+        bid = len(c.blocks)
+        c.blocks[bid] = None
+        c.ops.append(("BBEG", bid))
+        _make_rebuild(self.prog(b, cfg), word)(c, t)
+        c.z(t, m1)
+        c.neg(m1)
+        c.ops.append(("BEND", bid))
+        c.blocks[bid] = [("HMR", t, m2)]
+        self.log.append(dict(rebuild=b, wire=int(t), live=c.live))
+        return t
+
+
+_M7RET = _M7Retire()
+
+
+def _retire_digit24(c, wire, d23, v):
+    """FC: MAIN's digit 24 (= NOT w25) is X-measured right after row 24, its last reader; F1's exact relation
+    w25 = 1 + q21 + q20 w24 (q21 = v7, q20 = v6; sc8 layout, all inputs) rebuilds it later. Explicit undo: the same
+    wire re-created as q21 + q20 NOT(digit 23) (one CCX). Returns the measurement bit."""
+    bid = len(c.blocks)
+    c.blocks[bid] = None
+    c.ops.append(("BBEG", bid))
+    mbit = c.hmr(wire)
+    c.free_([wire])
+    c.ops.append(("BEND", bid))
+    q20, q21 = v[-2], v[-1]                       # (v[6], v[7] at m 8; v[5], v[6] at m 7)
+    c.blocks[bid] = [("CX", q21, wire, None), ("X", d23, None), ("CCX", q20, d23, wire), ("X", d23, None)]
+    return (wire, mbit)
+
+
+def _rebuild_w25(c, w24, v, ret):
+    """w25 = 1 + q21 + q20 w24 into a fresh wire (after the word's inversion), then the measurement's phase repaid:
+    the X-measurement kicked (-1)^(m NOT w25) = (-1)^(m (1 + w25)): Z(w25) and NEG, both if m. Explicit undo:
+    uncompute only (the phase is settled in the forward)."""
+    _, mbit = ret
+    q20, q21 = v[-2], v[-1]                       # (v[6], v[7] at m 8; v[5], v[6] at m 7)
+    bid = len(c.blocks)
+    c.blocks[bid] = None
+    c.ops.append(("BBEG", bid))
+    t = c.alloc(1)[0]
+    c.x(t)
+    c.cx(q21, t)
+    c.ccx(q20, w24, t)
+    c.z(t, mbit)
+    c.neg(mbit)
+    c.ops.append(("BEND", bid))
+    c.blocks[bid] = [("CCX", q20, w24, t), ("CX", q21, t, None), ("X", t, None)]
+    return t
+
+
+def _init_mbu(c, us, E, win, dsrc, v):
+    """FC3 (17:40Z): MAIN's first add R_26 = W - d (W = the 10-bit window, sign-extended (U17, s): its 8 high wires E
+    are copies of s) as ONE block. Forward: the sign copies + the narrow 2-carry add (unchanged count). Explicit undo
+    by measurement: U17 and s restored by CNOTs from R_0, R_1, v0; the 8 E wires X-measured; their kicks
+    (R_j = s + d_j + c_j) and the forward's carry debts repaid from the carry chain c_2..c_9 of NOT(W) + d recomputed
+    on the E wires themselves (8 ANDs, all alive), erased top-down by measurement. 8 ANDs instead of the narrow undo
+    at 2 clean wires (14.0)."""
+    import invsqrt_fc_narrow as NW
+    assert len(win) == 10 and len(E) == 8 and list(win[2:]) == list(E) and len(dsrc) == 10
+    bid = len(c.blocks)
+    c.blocks[bid] = None
+    c.ops.append(("BBEG", bid))
+    for t in E:
+        c.cx(us, t)
+    for t in win:
+        c.x(t)
+    debts = NW.fwd(c, list(dsrc), list(win), None)
+    for t in win:
+        c.x(t)
+    c.ops.append(("BEND", bid))
+    u17, sw = win[0], win[1]
+    ops = [("X", u17, None), ("CX", v[0], sw, None), ("CX", u17, sw, None), ("X", sw, None)]
+    mb = {}
+    for j in range(2, 10):
+        b = c.bit()
+        mb[j] = b
+        ops.append(("HMR", win[j], b))
+
+    def frame(wa, na, wb, nb, wc, nc):
+        o = [("CX", wc, wa, None), ("CX", wc, wb, None)]
+        if na ^ nc:
+            o.append(("X", wa, None))
+        if nb ^ nc:
+            o.append(("X", wb, None))
+        return o
+
+    def unframe(wa, na, wb, nb, wc, nc):
+        o = []
+        if nb ^ nc:
+            o.append(("X", wb, None))
+        if na ^ nc:
+            o.append(("X", wa, None))
+        return o + [("CX", wc, wb, None), ("CX", wc, wa, None)]
+
+    lits = {1: (u17, 1)}                           # c_1 = NOT U17 (d_0 = 1, no carry-in)
+    made = []
+    for j in range(1, 9):                          # c_(j+1) = MAJ(NOT s, v_(j-1), c_j) on E[j-1]
+        wc, nc = lits[j]
+        wb, t = v[j - 1], E[j - 1]
+        ops += frame(sw, 1, wb, 0, wc, nc)
+        ops.append(("ANDC", sw, wb, t))
+        ops += unframe(sw, 1, wb, 0, wc, nc)
+        ops.append(("CX", wc, t, None))
+        if nc:
+            ops.append(("X", t, None))
+        lits[j + 1] = (t, 0)
+        made.append((wc, nc, wb, t))
+    for j in range(2, 10):                         # the kicks of the 8 measured bits
+        b = mb[j]
+        ops.append(("Z", sw, b))
+        if j <= 8:
+            ops.append(("Z", v[j - 1], b))
+        else:
+            ops.append(("NEG", b))                 # d_9 = 1
+        ops.append(("Z", lits[j][0], b))
+    for i, b in debts.items():                     # the forward's carry debts
+        assert 2 <= i <= 9 and lits[i][1] == 0, (i, lits.get(i))
+        ops.append(("Z", lits[i][0], b))
+    for (wc, nc, wb, t) in reversed(made):         # erase the chain top-down
+        if nc:
+            ops.append(("X", t, None))
+        ops.append(("CX", wc, t, None))
+        ops += frame(sw, 1, wb, 0, wc, nc)
+        ops.append(("ANDE", sw, wb, t))
+        ops += unframe(sw, 1, wb, 0, wc, nc)
+    c.blocks[bid] = ops
+
+
+def ref_main(U, d, m, bt, g=None):
+    N = (np.int64(1) << (28 + m)) + (U.astype(np.int64) << (m + 1))
+    if g is not None:                             # R36 DUMP: an HO garbage bit on dividend position m (half a unit)
+        N = N + (np.asarray(g).astype(np.int64) << m)
+    R = N.copy()
+    Qw = np.zeros(len(d), dtype=np.int64)
+    for b in range(26, -1, -1):
+        t = max(0, bt - b)
+        dt = tail_dt(d, t) if t else d
+        s = np.where(R >= 0, 1, -1)
+        R = R - s * (dt << b)
+        Qw = Qw + s * (1 << b)
+    return Qw - (R < 0).astype(np.int64)
+
+
+def ref_U(x, cfg):
+    m = cfg["m"]
+    n, k, Q, d, delta = ref_chain(x, m)
+    sig, order, q1 = ref_div1(delta, d, cfg)
+    a2 = a_top(cfg)
+    sg2, P = G.ref_div(q1 + cfg["c2"] * d, d, a2, cfg["sched2"])
+    return -((P + 1) >> 1), d, k, q1, P
+
+
+def _sub_frac(c, R, fe, e, w):
+    """F = R[-fe..-1] -= w 2^e mod 1 (no borrow out of the fraction wires)."""
+    p = e + fe                                    # bit index inside F
+    if w == ONE:
+        for q in range(p, fe):
+            # subtract 2^p: flip bit p, borrow into higher bits while they were 0
+            pass
+        # explicit ripple for a constant: bits q >= p flip while the borrow runs
+        for q in range(fe - 1, p, -1):
+            # bit q flips iff all of bits p..q-1 were 0
+            ctl = [R[-fe + r] for r in range(p, q)]
+            for cw in ctl:
+                c.x(cw)
+            if len(ctl) == 1:
+                c.cx(ctl[0], R[-fe + q])
+            else:
+                t = c.and_compute(ctl[0], ctl[1])
+                c.cx(t, R[-fe + q])
+                c.and_erase(ctl[0], ctl[1], t)
+            for cw in ctl:
+                c.x(cw)
+        c.x(R[-fe + p])
+        return
+    for q in range(fe - 1, p, -1):
+        ctl = [w] + [R[-fe + r] for r in range(p, q)]
+        for cw in ctl[1:]:
+            c.x(cw)
+        if len(ctl) >= 3:
+            chain = []
+            cur = ctl[0]
+            for w2 in ctl[1:-1]:
+                tmp = c.and_compute(cur, w2)
+                chain.append((cur, w2, tmp))
+                cur = tmp
+            c.ccx(cur, ctl[-1], R[-fe + q])
+            for a_, b_, t_ in reversed(chain):
+                c.and_erase(a_, b_, t_)
+        else:
+            c.ccx(ctl[0], ctl[1], R[-fe + q])
+        for cw in ctl[1:]:
+            c.x(cw)
+    c.cx(w, R[-fe + p])
+
+
+def tailcorr(c, cfg, k, digit, u):
+    """after tail row k: grid-1 dividend-unit correction into the live window u[k-1 ..]."""
+    if cfg.get("nocorr") or k > cfg["tk"]:
+        return
+    bits, Kq = corr_spec(cfg, -k, 0)
+    if not bits and Kq == 0:
+        return
+    tw = len(u)
+    lo = k - 1
+    v0 = cfg["_v0"]
+    Ru = {lo + p: u[lo + p] for p in range(tw - lo)}
+    used = sorted({i for _, i in bits})
+    for i in used:                     # x_i = s_i xor s_{-k}; a rotation-row digit wire holds s xor v0
+        c.cx(digit[-k], digit[i])
+        if k >= 2:
+            c.cx(v0, digit[i])
+    a = a_top(cfg)
+    if cfg.get("rowopt_tail", 0) and any(i == a for _, i in bits):
+        W = tw - lo
+        wa = sum(1 << e for e, i in bits if i == a)
+        cands = [([(e + lo, i, 1) for e, i in bits], -Kq),
+                 ([(e + lo, i, 1) for e, i in bits if i != a]
+                  + [(lo + q, a, -1) for q in range(W) if (((-wa) % (1 << W)) >> q) & 1], -Kq + wa)]
+        best = None
+        for lits, const in cands:
+            dc = K.Circ(n_fixed=64)
+            dc.cap = 10 ** 6
+            Rd = {lo + p: p for p in range(tw - lo)}
+            wmap = {}
+            for _, i, _ in lits:
+                wmap.setdefault(i, 40 + (i % 20))
+            _add_lits(dc, [(e, wmap[i], pol) for e, i, pol in lits], const, Rd, lo, tw - 1)
+            if best is None or dc.toffolis() < best[0]:
+                best = (dc.toffolis(), lits, const)
+        _add_lits(c, [(e, digit[i], pol) for e, i, pol in best[1]], best[2], Ru, lo, tw - 1)
+    elif cfg.get("topct", 0) and any(i == a for _, i in bits):
+        W = tw - lo
+        wa = sum(1 << e for e, i in bits if i == a)
+        lits = [(e + lo, digit[i], 1) for e, i in bits if i != a]
+        neg = (-wa) % (1 << W)
+        lits += [(lo + q, digit[a], -1) for q in range(W) if (neg >> q) & 1]
+        _add_lits(c, lits, -Kq + wa, Ru, lo, tw - 1)
+    else:
+        _add_bits(c, [(e + lo, digit[i]) for e, i in bits], -Kq, Ru, lo, tw - 1)
+    for i in used:
+        c.cx(digit[-k], digit[i])
+        if k >= 2:
+            c.cx(v0, digit[i])
+
+
+# ------------------------------------------------------------------ FC2's u8 parity carry (copied)
+# Copied from FC2's tools/invsqrt_fc2_patch_frac.py (FC2's own code and finding: the held window bit u8 =
+# affine(digits, v) xor bit 2 of N, N = the fraction literal sum), unchanged except un-nested, so that FC's
+# build can run it AFTER DIV1's other affine leftovers are cleared (cfg u8late): its temporaries then sit on the
+# freed wires (W 44).
+def _fc2_parity_carry(c, col, target):
+    """target ^= bit 2 of N, N = sum(col[-2]) + 2 sum(col[-1]) (entries: (set of digit wires, const));
+    the carry of the fraction literals into R_0's last bit. In-place formation of the 2^-2 literals along a
+    spanning forest of their graph (copies for cycle edges and for every 2^-1 literal), then full adders
+    (carry = 1 AND on a fresh wire, sum in place), the weight-4 carries XORed into target, all undone."""
+    undo = []
+
+    def cx(a_, b_):
+        c.cx(a_, b_)
+        undo.append(("cx", a_, b_))
+
+    def xg(a_):
+        c.x(a_)
+        undo.append(("x", a_))
+    fresh = []
+
+    def new():
+        w = c.alloc(1)[0]
+        fresh.append(w)
+        return w
+    w1, w2, k1, k2 = [], [], 0, 0
+    for ws, k in col[-1]:                     # copies first (they need the original digit values)
+        if not ws:
+            k2 += k
+            continue
+        y = new()
+        for w in ws:
+            cx(w, y)
+        if k:
+            xg(y)
+        w2.append(y)
+    # 2^-2 literals in place along a spanning forest (edges = literal wire pairs)
+    adj = {}
+    edges = []
+    for ws, k in col[-2]:
+        if not ws:
+            k1 += k
+            continue
+        u_, v_ = sorted(ws)
+        edges.append((u_, v_, k))
+    parent = {}
+    order_ = []
+    seen = set()
+    tree_edges = set()
+    for u_, v_, k in edges:
+        adj.setdefault(u_, []).append(v_)
+        adj.setdefault(v_, []).append(u_)
+    for r0 in sorted(adj):
+        if r0 in seen:
+            continue
+        seen.add(r0)
+        q = [r0]
+        while q:
+            x0 = q.pop(0)
+            order_.append(x0)
+            for y0 in adj[x0]:
+                if y0 not in seen:
+                    seen.add(y0)
+                    parent[y0] = x0
+                    tree_edges.add((min(x0, y0), max(x0, y0)))
+                    q.append(y0)
+    holder = {}
+    for x0 in reversed(order_):               # leaves first: the parent is still original
+        if x0 in parent:
+            cx(parent[x0], x0)
+            holder[(min(x0, parent[x0]), max(x0, parent[x0]))] = x0
+    used = set()
+    for u_, v_, k in edges:
+        key = (u_, v_)
+        if key in holder and key not in used:
+            used.add(key)
+            w = holder[key]
+        else:                                 # a cycle edge or a repeated literal: copy from originals
+            # originals: undo the in-place formation is not possible here; recompute from the tree:
+            # the value u_ ^ v_ is the XOR of the in-place wires along the tree path between u_ and v_
+            path_u, path_v = [u_], [v_]
+            while path_u[-1] in parent:
+                path_u.append(parent[path_u[-1]])
+            while path_v[-1] in parent:
+                path_v.append(parent[path_v[-1]])
+            su, sv = set(path_u), set(path_v)
+            w = new()
+            for z in path_u[:-1]:
+                if z not in sv or z == path_u[-1]:
+                    cx(z, w)
+            for z in path_v[:-1]:
+                if z not in su:
+                    cx(z, w)
+        if k:
+            xg(w)
+        w1.append(w)
+    # weight 1: reduce to one bit, carries go to weight 2
+    ones = {1: k1 % 2, 2: (k1 // 2 + k2) % 2, 4: ((k1 // 2 + k2) // 2) % 2}
+    cols = {1: list(w1), 2: list(w2), 4: []}
+
+    def fa(a_, b_, cc, dst):
+        if dst == 4:                              # FC: a weight-4 carry only flips the target: XOR it in and erase
+            t = c.alloc(1)[0]                     # it at once (same AND; the wire is free again right away)
+            c.cx(cc, a_); c.cx(cc, b_)
+            c.and_compute(a_, b_, t)
+            c.cx(cc, t)
+            c.cx(t, target)
+            c.cx(cc, t)
+            c.and_erase(a_, b_, t)
+            c.cx(cc, a_); c.cx(cc, b_)
+            cx(a_, cc); cx(b_, cc)
+            return
+        t = new()
+        cx(cc, a_); cx(cc, b_)
+        c.and_compute(a_, b_, t)
+        undo.append(("and", a_, b_, t))
+        cx(cc, t)
+        cx(cc, a_); cx(cc, b_)
+        cx(a_, cc); cx(b_, cc)
+        cols[dst].append(t)
+
+    def ha(a_, b_, dst):
+        if dst == 4:
+            t = c.alloc(1)[0]
+            c.and_compute(a_, b_, t)
+            c.cx(t, target)
+            c.and_erase(a_, b_, t)
+            cx(a_, b_)
+            return
+        t = new()
+        c.and_compute(a_, b_, t)
+        undo.append(("and", a_, b_, t))
+        cx(a_, b_)
+        cols[dst].append(t)
+    for wt, nxt in ((1, 2), (2, 4)):
+        if ones[wt] and wt == 2 and cols[2]:
+            # x + 1 = NOT x (weight 2) + x (weight 4): the weight-4 part goes straight into the target
+            x0 = cols[2][0]
+            c.cx(x0, target)
+            xg(x0)
+        elif ones[wt]:                        # a constant 1 at weight 1: a wire holding 1
+            y = new()
+            xg(y)
+            cols[wt].append(y)
+        while len(cols[wt]) >= 3:
+            a_, b_, cc = cols[wt].pop(), cols[wt].pop(), cols[wt].pop()
+            fa(a_, b_, cc, nxt)
+            cols[wt].append(cc)
+        if len(cols[wt]) == 2:
+            a_, b_ = cols[wt].pop(), cols[wt].pop()
+            ha(a_, b_, nxt)
+            cols[wt].append(b_)
+    for t in cols[4]:
+        c.cx(t, target)
+    if ones[4]:
+        c.x(target)
+    for op in reversed(undo):
+        if op[0] == "cx":
+            c.cx(op[1], op[2])
+        elif op[0] == "x":
+            c.x(op[1])
+        else:
+            c.and_erase(op[1], op[2], op[3], free=False)
+    c.free_(fresh)
+
+
+def _frac_col(cfg, dig, m, hx, fe):
+    """FC2's fraction column (as in its transition): entries (set of digit wires, const) at 2^-2 and 2^-1."""
+    a = a_top(cfg)
+    col = {-2: [], -1: []}
+    for t in range(a, -1, -1):
+        bits, Kq = corr_spec(cfg, t, -fe)
+        if cfg.get("rowopt") and a > t:
+            lits, const = row_lits(bits, Kq, a, t, t + m + 2 + hx, fe, cfg["_rowchoice"][t][0])
+        else:
+            lits = [(e, i, 1) for e, i in bits]
+            const = -Kq
+        for e, i, pol in lits:
+            if e < 0:
+                col[e].append((frozenset({dig[i], dig[t]}) if dig[i] != dig[t] else frozenset(), 1 if pol < 0 else 0))
+        cmod = const % (1 << fe)
+        for p_ in range(fe):
+            if (cmod >> p_) & 1:
+                col[p_ - fe].append((frozenset(), 1))
+    return col
+
+
+# ------------------------------------------------------------------ GF(2) clean-up relations
+def gf2_affine(cols, y):
+    """y = XOR of a subset of cols (+ const) on every sample? cols: list of 0/1 int arrays. Returns
+    (subset indices, const) or None."""
+    n = len(y)
+    M = np.stack([c_.astype(np.uint8) for c_ in cols] + [np.ones(n, dtype=np.uint8)], axis=1)
+    Aug = np.concatenate([M, y.astype(np.uint8)[:, None]], axis=1)
+    rows, ncol = Aug.shape[0], M.shape[1]
+    piv = []
+    r = 0
+    Aug = Aug.copy()
+    for col in range(ncol):
+        sel = np.nonzero(Aug[r:, col])[0]
+        if not len(sel):
+            continue
+        p = r + sel[0]
+        if p != r:
+            Aug[[r, p]] = Aug[[p, r]]
+        hit = np.nonzero(Aug[:, col])[0]
+        hit = hit[hit != r]
+        Aug[hit] ^= Aug[r]
+        piv.append(col)
+        r += 1
+        if r == rows:
+            break
+    if Aug[r:, -1].any():
+        return None
+    sol = np.zeros(ncol, dtype=np.uint8)
+    for i, col in enumerate(piv):
+        sol[col] = Aug[i, -1]
+    idx = [int(i) for i in np.nonzero(sol[:-1])[0]]
+    return idx, int(sol[-1])
+
+
+def derive_relations(cfg, stage, nsamp=4000):
+    """simulate the circuit up to the end of `stage` (div1 / div2) on a sample and express each leftover window
+    wire as an affine function of (digit wires as they hold, v bits). Returns {wire index in u: (cols, const)}."""
+    if stage == "main":
+        rel12 = {"div1": cfg["_rel1"], "div2": cfg["_rel2"]}
+        c, regs = build(cfg, ["root", "centre", "div1", "div2", "main"], relations=rel12)
+        x = sample_x(nsamp)
+        sim = K.Sim(len(x), c.next + 2)
+        sim.set_word(regs["X"], x)
+        sim.run(c.ops)
+        v = regs["X"][22 - cfg["m"]:22]
+        known = list(regs["word"]) + list(v) + list(regs["F"]) + list(regs.get("held1", []))
+        cols = [sim.q[w].astype(np.int64) for w in known]
+        out = {}
+        for pos, w in enumerate(regs["rest"]):
+            out[pos] = gf2_affine(cols, sim.q[w].astype(np.int64))
+        return out, known
+    st = {"div1": ["root", "centre", "div1"], "div2": ["root", "centre", "div1", "div2"]}[stage]
+    c, regs = build(cfg, st, relations=None)
+    x = sample_x(nsamp)
+    sim = K.Sim(len(x), c.next + 2)
+    sim.set_word(regs["X"], x)
+    sim.run(c.ops)
+    key = "1" if stage == "div1" else "2"
+    dig, order, u = regs["dig" + key], regs["ord" + key], regs["u" + key]
+    v = regs["X"][22 - cfg["m"]:22]
+    known = [dig[k_] for k_ in order] + list(v)
+    cols = [sim.q[w].astype(np.int64) for w in known]
+    out = {}
+    for pos, w in enumerate(u):
+        if w in known:
+            continue
+        r = gf2_affine(cols, sim.q[w].astype(np.int64))
+        out[pos] = r
+    return out, known
+
+
+# ------------------------------------------------------------------ test harness
+def sample_x(nsamp, seed=7):
+    return G.sample_x(nsamp, seed)
+
+
+_REL = {}
+_OPT = {"on": False}
+
+
+def relations(cfg):
+    keyc = json.dumps({k: v for k, v in cfg.items() if not k.startswith("_")}, sort_keys=True)
+    if keyc not in _REL:
+        r1, _ = derive_relations(cfg, "div1")
+        _REL[keyc] = {"div1": r1}
+        r2, _ = derive_relations(dict(cfg, _rel1=r1), "div2")
+        _REL[keyc]["div2"] = r2
+        if cfg.get("restclr"):
+            r3, _ = derive_relations(dict(cfg, _rel1=r1, _rel2=r2), "main")
+            _REL[keyc]["main"] = r3
+    return _REL[keyc]
+
+
+def build(cfg, stages, relations=None):
+    m = cfg["m"]
+    _OPT["on"] = bool(cfg.get("opt", 0))
+    if cfg.get("rowopt") and "_rowchoice" not in cfg:
+        choose_rows(cfg)
+    cfg["_kres"] = {}
+    c = K.Circ(n_fixed=22)
+    c.cap = cfg["cap"]
+    c.narrow = bool(cfg.get("narrow"))
+    c.cuccaro_fwd = bool(cfg.get("cuccaro_fwd"))     # rows with < 2 clean wires: Cuccaro form both ways
+    c.blocks = {}
+    X = list(range(22))
+    v = X[22 - m:22]
+    regs = {"X": X, "v": v}
+    c.tag("NORM")
+    regs["F"] = G.st_norm(c, X)
+    if "root" in stages:
+        c.tag("ROOT")
+        st_root(c, X, m)
+    if "centre" in stages:
+        c.tag("CENTRE")
+        st_centre(c, X, m)
+    if "div1" in stages:
+        c.tag("DIV1")
+        if cfg.get("cap_div1"):                      # DIV1 alone at a higher cap (a squeeze pass may bring it back)
+            c.cap = int(cfg["cap_div1"])
+        dig, order, u, ext = st_div1(c, X, cfg)
+        c.cap = cfg["cap"]
+        regs["dig1"], regs["ord1"], regs["u1"], regs["ext1"] = dig, order, u, ext
+        rel1 = relations["div1"] if relations else cfg.get("_rel1")
+        late = None
+        if cfg.get("fc2_u8_late"):                     # FC2's u8 parity carry, applied after the other leftovers
+            late = getattr(sys.modules[__name__], "_fc2_u8_late", None)
+            sys.modules[__name__]._fc2_u8_late = None
+        elif cfg.get("u8late"):                        # my copy of it (FC2's st_div1 runs with fc2_u8 off)
+            late = (_frac_col(cfg, dig, m, cfg["hx"], cfg["fe"]), int(cfg.get("fc2_u8_pos", 8)), _fc2_parity_carry)
+        if late is not None:
+            col, pos, pcarry = late
+            if rel1 is not None:
+                known = [dig[k_] for k_ in order] + list(v)
+                cl = apply_relations(c, {p_: r for p_, r in rel1.items() if p_ != pos}, known, u)
+                c.free_(cl)                            # the carry's temps land on these wires
+                pcarry(c, col, u[pos])
+                cl2 = apply_relations(c, {pos: rel1.get(pos)}, known, u)
+                c.free_(cl2)
+                regs["clr1"] = []
+                regs["clr1_all"] = cl + cl2
+            else:
+                pcarry(c, col, u[pos])                 # relation derivation sees u[pos] after the carry
+        elif rel1 is not None:
+            known = [dig[k_] for k_ in order] + list(v)
+            regs["clr1"] = apply_relations(c, rel1, known, u)
+    if "div2" in stages:
+        c.tag("DIV2")
+        clr = regs.get("clr1", [])
+        if clr:
+            free_w = clr[0]
+            c.free_(clr[1:])
+        else:
+            free_w = c.alloc(1)[0]
+        clr_all = regs.get("clr1_all", clr)
+        regs["held1"] = [w for w in regs["u1"] if w not in [regs["dig1"][k_] for k_ in regs["ord1"]] and w not in clr_all]
+        R2 = div2_input(c, regs["dig1"], regs["ord1"], free_w, cfg["c2"], v, m)
+        dig, order, u = st_divL(c, R2, v, a_top(cfg), cfg["sched2"], m, int(cfg.get("x2", 0)))
+        regs["dig2"], regs["ord2"], regs["u2"] = dig, order, u
+        if relations:
+            known = [dig[k_] for k_ in order] + list(v)
+            regs["clr2"] = apply_relations(c, relations["div2"], known, u)
+            c.free_(regs["clr2"])
+        n2 = len(order)
+        Y = [dig[order[n2 - 1 - j]] for j in range(n2)]       # weight 2^j
+        c.x(Y[n2 - 1])
+        regs["U"] = Y
+    if "main" in stages:
+        nh = int(cfg.get("hold_stub", 0))              # width stub for a held HO carry (FC2's h1): reserved wires,
+        if nh:                                         # never touched, live from here to the mirror
+            regs["hold"] = c.alloc(nh)
+        if cfg.get("dump_stub"):                       # width stub for R36's DUMP: dividend position 8 born here
+            cfg["_pre_lz"] = {8: c.alloc(1)[0]}        # (holds 0 in the stub; h1 would leave its garbage bit)
+        c.tag("MAIN")
+        regs["word"], regs["rest"] = st_main(c, regs["U"], v, cfg)
+        if relations and relations.get("main"):
+            known = list(regs["word"]) + list(v) + list(regs["F"]) + list(regs.get("held1", []))
+            clr = apply_relations(c, relations["main"], known, regs["rest"])
+            c.free_(clr)                                # the endpoint may use these wires
+            regs["clr3"] = clr
+    return c, regs
+
+
+def _make_rebuild_r63(prog, word):
+    """R63-INV-GHOST's staged width-shaped rebuild (sh/patch_g8.py + patch_g8b.py, copied in form) + CH1's "early"
+    erase / recompute of input-only temporaries (tools/inv_ch1_end39.py)."""
+    def wire_of(tok):
+        return word[int(tok[1:])] if tok.startswith("w") else int(tok[1:])
+    ins = [wire_of(t) for t in prog["inputs"]]
+    nin = len(ins)
+    if "stages" in prog:
+        stages = [(st["gates"], int(st["internal"]), list(st["out"]), [tuple(e) for e in st.get("early", [])])
+                  for st in prog["stages"]]
+    else:
+        (out0,) = prog["outputs"]
+        I0 = int(prog["internal"])
+        stages = [(prog["gates"], I0, [i for i in out0 if i < nin + I0], [tuple(e) for e in prog.get("early", [])])]
+        for g in range(I0, len(prog["gates"])):
+            assert nin + g in out0, ("terminal gate not in the output", g)
+    for gates, I, out, early in stages:
+        for g, gt in enumerate(gates):
+            for j in gt["left"] + gt["right"]:
+                assert j < nin + min(g, I), ("gate reads a terminal gate", g, j)
+        assert all(i < nin + I for i in out)
+        for i, j in early:
+            assert all(k < nin for k in gates[i]["left"] + gates[i]["right"]), ("early gate reads a gate", i)
+
+    def rebuild(c, t):
+        for gates, I, out, early in stages:
+            val = {i: ins[i] for i in range(nin)}
+
+            def side(items, other):
+                ws = [val[i] for i in items if i != -1]
+                one = -1 in items
+                excl = [w for w in ws if w not in {val[j] for j in other if j != -1}]
+                if excl:
+                    acc, tmp = excl[0], None
+                else:
+                    acc = tmp = c.alloc(1)[0]
+                done = []
+                for w in ws:
+                    if w != acc:
+                        c.cx(w, acc)
+                        done.append(("cx", w, acc))
+                if one:
+                    c.x(acc)
+                    done.append(("x", acc))
+                if tmp is not None:
+                    done.append(("tmp", tmp))
+                return acc, done
+
+            def undo(done):
+                for d in reversed(done):
+                    if d[0] == "cx":
+                        c.cx(d[1], d[2])
+                    elif d[0] == "x":
+                        c.x(d[1])
+                    else:
+                        c.free_([d[1]])
+
+            def make(g):
+                gt = gates[g]
+                a, da = side(gt["left"], gt["right"])
+                b, db = side(gt["right"], gt["left"])
+                q = c.and_compute(a, b)
+                val[nin + g] = q
+                undo(db)
+                undo(da)
+
+            def erase(g):
+                gt = gates[g]
+                a, da = side(gt["left"], gt["right"])
+                b, db = side(gt["right"], gt["left"])
+                c.and_erase(a, b, val[nin + g])
+                undo(db)
+                undo(da)
+                del val[nin + g]
+
+            live = []
+            for g, gt in enumerate(gates):
+                if g < I:
+                    make(g)
+                    live.append(g)
+                else:
+                    a, da = side(gt["left"], gt["right"])
+                    b, db = side(gt["right"], gt["left"])
+                    c.ccx(a, b, t)
+                    undo(db)
+                    undo(da)
+                for i, j in early:
+                    if j == g and i in live:
+                        erase(i)
+                        live.remove(i)
+            for i in out:
+                if i == -1:
+                    c.x(t)
+                else:
+                    assert (i < nin) or (i - nin in live), ("output reads an erased gate", i)
+                    c.cx(val[i], t)
+            for g in sorted(live, reverse=True):
+                need = [k - nin for k in gates[g]["left"] + gates[g]["right"] if k >= nin]
+                for h in need:
+                    if h not in live:
+                        make(h)
+                        live.append(h)
+                erase(g)
+                live.remove(g)
+            for g in sorted(live, reverse=True):
+                erase(g)
+                live.remove(g)
+    return rebuild
+
+
+def _make_rebuild(prog, word):
+    if "stages" in prog and "internal" not in prog:         # CH1: staged files without the key
+        return _make_rebuild_r63(prog, word)
+    if "i39stages" in prog:                                 # I39-HOLD4 (inv_i39_patch_hold4.py)
+        return _i39_rebuild_stages(prog, word)
+    if "i39bw" in prog:                                     # I39-HOLD2 (inv_i39_patch_hold2.py)
+        return _i39_rebuild_bw(prog, word)
+    if "internal" in prog:                                 # R63-INV-GHOST (my copy only)
+        return _make_rebuild_r63(prog, word)
+    """rebuild program for a retired root bit (copied from F1's tools/invsqrt_fk_nwret.py make_rebuild, F1's
+    design; programs are F1's exact minimum-AND files): each gate = AND(XOR left, XOR right); the last gate is
+    computed straight into the wire, earlier gates into temps erased by HMR + CZ; output = XOR of listed terms."""
+    def wire_of(tok):
+        return word[int(tok[1:])] if tok.startswith("w") else int(tok[1:])
+    ins = [wire_of(t) for t in prog["inputs"]]
+    nin, gates = len(ins), prog["gates"]
+    (out,) = prog["outputs"]
+    last = nin + len(gates) - 1
+    assert last in out
+
+    def rebuild(c, t):
+        val = {i: ins[i] for i in range(nin)}
+
+        def side(items, other):
+            ws = [val[i] for i in items if i != -1]
+            one = -1 in items
+            excl = [w for w in ws if w not in {val[j] for j in other if j != -1}]
+            if excl:
+                acc, tmp = excl[0], None
+            else:
+                acc = tmp = c.alloc(1)[0]
+            done = []
+            for w in ws:
+                if w != acc:
+                    c.cx(w, acc)
+                    done.append(("cx", w, acc))
+            if one:
+                c.x(acc)
+                done.append(("x", acc))
+            if tmp is not None:
+                done.append(("tmp", tmp))
+            return acc, done
+
+        def undo(done):
+            for d in reversed(done):
+                if d[0] == "cx":
+                    c.cx(d[1], d[2])
+                elif d[0] == "x":
+                    c.x(d[1])
+                else:
+                    c.free_([d[1]])
+
+        temps = []
+        for g, gt in enumerate(gates):
+            a, da = side(gt["left"], gt["right"])
+            b, db = side(gt["right"], gt["left"])
+            if nin + g == last:
+                c.and_compute(a, b, t)
+                val[nin + g] = t
+            else:
+                q = c.and_compute(a, b)
+                val[nin + g] = q
+                temps.append((g, q))
+            undo(db)
+            undo(da)
+        for i in out:
+            if i == -1:
+                c.x(t)
+            elif i != last:
+                c.cx(val[i], t)
+        for g, q in reversed(temps):
+            gt = gates[g]
+            a, da = side(gt["left"], gt["right"])
+            b, db = side(gt["right"], gt["left"])
+            c.and_erase(a, b, q)
+            undo(db)
+            undo(da)
+    return rebuild
+
+
+def _lend_wires(c, retire, w1):
+    """FC3 (17:55Z) `ep_lend`: after the walk the retired root bits rebuild in list order. Before the first rebuild the
+    later retired wires (|0> after the walk) and the const-one token w1 (X'd to |0>) go to the allocator, so the first
+    program's temps fit; each later wire is re-claimed right before its own rebuild, w1 last (X'd back to 1)."""
+    later = [wq for (wq, _) in retire[1:]]
+
+    def reclaim(cc, w):
+        assert w in cc.free, ("wire not free at its re-claim", w)
+        cc.free.remove(w)
+        cc.live += 1
+        cc.peak = max(cc.peak, cc.live)
+        if cc.tags:
+            nm = cc.tags[-1][1]
+            cc.stage_peaks[nm] = max(cc.stage_peaks.get(nm, 0), cc.live)
+
+    out = []
+    for i, (wq, rb) in enumerate(retire):
+        def wrapped(cc, t, i=i, rb=rb):
+            if i == 0:
+                cc.x(w1)
+                cc.free_([w1] + later[::-1])       # LIFO: the later retired wires are handed out first
+            else:
+                reclaim(cc, t)
+            rb(cc, t)
+            if i == len(retire) - 1:
+                reclaim(cc, w1)
+                cc.x(w1)
+        out.append((wq, wrapped))
+    return out
+
+
+def st_end_f1(c, word, F, ang, feat, cfg):
+    """F1's ring endpoint (tools/invsqrt_fk_epN.py, read-only import): routes, rotates, features, unroutes.
+    cfg ep_retire: root bits (e.g. ["q20", "q21"], rebuilt in this order) retired across the walk as lanes."""
+    import invsqrt_fk_epN as EPN
+    cap, prof = int(cfg.get("ep_cap", 6)), cfg.get("ep_profile", "generic")
+    if cfg.get("ep_auto"):
+        cap = min(int(cfg.get("ep_max", 9)), c.cap - c.live)   # every wire under the circuit's cap
+    retire = []
+    pdir = os.path.expanduser(cfg.get("ep_prog_dir", "~/qcc/ws/invsqrt_fc/fcsup"))
+    for n in cfg.get("ep_retire", []):
+        prog = json.load(open(os.path.join(pdir, "sc8_%s.prog.json" % n)))
+        retire.append((int(n[1:]), _make_rebuild(prog, word)))
+    if cfg.get("ep_lend") and len(retire) >= 2 and cfg.get("ep_const") is not None:
+        retire = _lend_wires(c, retire, word[int(cfg["ep_const"])])
+    if retire:
+        cap += len(retire)
+        const = cfg.get("ep_const")
+        net = EPN.best_net(27, cap, profile="line" if const is not None else prof)
+        ang = ang if ang is not None else [1 << (p + 27) for p in range(27)]
+        if feat is None:
+            feat = [((1 << (p + 54)) - (1 << (p + 27))) % (1 << 64) for p in range(10)]
+        if prof == "clifford" or const is not None:
+            feat = list(feat)[:7]
+        if const is not None:
+            extra = {"const_lane": True} if cfg.get("ep_const_lane") else {}   # F1's const lane (F1's new epN)
+            return EPN.emit_ring(c, word, F, net, ang, feat, cap, const_token=int(const), const_one=True,
+                                 retire=retire, **extra)
+        return EPN.emit_ring(c, word, F, net, ang, feat, cap, retire=retire)
+    const = cfg.get("ep_const")
+    net = EPN.best_net(27, cap, profile="line" if const is not None else prof)
+    ang = ang if ang is not None else [1 << (p + 27) for p in range(27)]
+    if feat is None:
+        feat = [((1 << (p + 54)) - (1 << (p + 27))) % (1 << 64) for p in range(10)]
+    if prof == "clifford" or const is not None:
+        feat = list(feat)[:7]
+    if const is not None:
+        return EPN.emit_ring(c, word, F, net, ang, feat, cap, const_token=int(const), const_one=True)
+    return EPN.emit_ring(c, word, F, net, ang, feat, cap)
+
+
+def _override_word_progs(cfg):
+    """FC3 (18:12Z): shorter FORWARD rebuild programs for F1's word-bit retires (F1's module, already loaded and
+    applied by the runner, looks `word_prog` up at call time). cfg "_wprog": {"23": path, ...} maps F1's digit index
+    b (the word bit w_(b+1)) to a minand program file in the word convention. The undo's re-creations keep F1's
+    programs (their inputs must be on their wires after row b - 1's undo)."""
+    W = sys.modules.get("invsqrt_fk_w24ret")
+    spec = cfg.get("_wprog") or {}
+    if not spec or W is None or getattr(W, "_fc3_wprog", None) is not None:
+        return
+    base = os.path.expanduser(cfg.get("fc2_src") or HERE)   # relative paths: inside the frozen src folder
+
+    def path(p):
+        p = os.path.expanduser(p)
+        return p if os.path.isabs(p) else os.path.join(base, p)
+    progs = {int(b): json.load(open(path(p))) for b, p in spec.items()}
+    orig = W.word_prog
+
+    def word_prog(b):
+        return progs[b] if b in progs else orig(b)
+    W.word_prog = word_prog
+    W._fc3_wprog = progs
+
+
+def build_full(cfg, ang=None, feat=None):
+    _override_word_progs(cfg)
+    K.KMX_CSWAP_SPLIT = bool(cfg.get("kmx_cswap_split"))   # FC3: the kmx writer's CSWAP form (same count)
+    src = cfg.get("fc2_src")                     # a frozen folder of FC2's patch modules (else the live tools/)
+    for p in cfg.get("fc2", []):                 # FC2's stage patches (tools/invsqrt_fc2_patch_<name>.py)
+        name = "invsqrt_fc2_patch_" + p
+        if src and name not in sys.modules:
+            sys.path.insert(0, os.path.expanduser(src))
+            try:
+                mod = __import__(name)
+            finally:
+                sys.path.pop(0)
+        else:
+            mod = __import__(name)
+        mod.apply(sys.modules[__name__], cfg)
+    rel = relations(cfg)
+    c, regs = build(cfg, ["root", "centre", "div1", "div2", "main"], relations=rel)
+    nfwd = len(c.ops)
+    fwd = list(c.ops)
+    c.tag("END")
+    if cfg.get("_cap_end"):                      # FC3 COUNT-ONLY knob: the endpoint alone at another cap (prices the
+        c.cap = int(cfg["_cap_end"])             # other stages at a cap where today's endpoint does not fit)
+    if cfg.get("ep") == "f1":
+        info = st_end_f1(c, regs["word"], regs["F"], ang, feat, cfg)
+        # extra LP rotations on idle remainder information live at the endpoint (harvest INV 6): MAIN's non-affine
+        # leftover ("rest") and DIV1's held window bits ("held"); angles from cfg["rem_ang"] (LP output)
+        rw = []
+        for kind in cfg.get("rem_rot", []):
+            if kind == "rest":
+                clr = set(regs.get("clr3", []))
+                rw += [w for w in regs["rest"] if w not in clr]
+            elif kind == "held":
+                rw += list(regs.get("held1", []))
+        rem_ang = [int(a) for a in cfg.get("rem_ang", [])] + [0] * len(rw)
+        for j, w in enumerate(rw):
+            oi = c.zp(w, rem_ang[j])
+            info["zps"].append((oi, "rem", j, rem_ang[j] % (1 << 64)))
+        regs["rem_wires"] = rw
+        regs["epinfo"] = info
+        regs["zps"] = [z[0] for z in info["zps"]]
+    else:
+        regs["zps"] = G.st_end(c, regs["word"], regs["F"], ang, feat)
+    c.tag("UNDO")
+    c.ops.extend(K.Circ.mirror_blocks(fwd, c.blocks) if c.blocks else K.Circ.mirror(fwd))
+    regs["nfwd"] = nfwd
+    if cfg.get("_ch1early"):                     # CH1 (tools/inv_ch1_end39.py): END's retires moved back
+        regs["nfwd"] = _ch1_early_retires(c, nfwd, [int(str(q)[1:]) for q in cfg["_ch1early"]])
+    return c, regs
+
+
+def _ch1_early_retires(c, nfwd, wires):
+    """move the X-measurement of each wire at END's start back to just after its last forward use (after the
+    enclosing BBEG..BEND block); returns the forward length (END's start) after the moves."""
+    ops = c.ops
+    i_end = [t[0] for t in c.tags if t[1] == "END"][0]
+    i_rot = next(i for i in range(i_end, len(ops)) if ops[i][0] in ("CSWAP", "ZP", "Z_POW"))
+
+    nw = {"X": 1, "Z": 1, "ZP": 1, "HMR": 1, "CX": 2, "CZ": 2, "SWAP": 2, "CCX": 3, "CCZ": 3, "CSWAP": 3,
+          "ANDC": 3, "ANDE": 3, "CANDC": 3, "CANDE": 3, "XCCX": 3, "XCCZ": 3, "NEG": 0, "BBEG": 0, "BEND": 0}
+
+    def touches(o, w):
+        k = nw.get(o[0], 3)                      # (unknown op kinds: assume three wire fields: conservative)
+        return any(a == w for a in o[1:1 + k])
+    moved = 0
+    for w in wires:
+        hm = [i for i in range(i_end, i_rot) if ops[i][0] == "HMR" and ops[i][1] == w]
+        assert len(hm) == 1, ("no single retire of wire %d at END's start" % w, hm)
+        p = hm[0]
+        q = p - 1
+        while q >= 0 and not touches(ops[q], w):
+            q -= 1
+        assert q >= 0
+        depth, k = 0, 0                          # inside an explicit block of the forward? go past its BEND
+        for k2 in range(q + 1):
+            if ops[k2][0] == "BBEG":
+                depth += 1
+            elif ops[k2][0] == "BEND":
+                depth -= 1
+        if depth > 0:
+            k = q + 1
+            while depth > 0:
+                if ops[k][0] == "BBEG":
+                    depth += 1
+                elif ops[k][0] == "BEND":
+                    depth -= 1
+                k += 1
+            q = k - 1
+        op = ops.pop(p)
+        ops.insert(q + 1, op)
+        c.tags = [(i + 1 if q + 1 <= i <= p else i, nm, lv) for (i, nm, lv) in c.tags]
+        if q + 1 < nfwd:
+            moved += 1
+        c.__dict__.setdefault("_ch1_early_log", []).append(dict(wire=w, back=p - q - 1))
+    # an X on a wire at END's end undone by the mirror's first X on the same wire (the constant token, re-made by END
+    # and erased by the mirror at once) is a cancelling pair: both removed (nothing between them touches the wire)
+    i_undo = [t[0] for t in c.tags if t[1] == "UNDO"][0]
+    for back in range(1, 12):
+        p = i_undo - back
+        if p < 0 or ops[p][0] != "X" or ops[p][2] is not None:
+            continue
+        w = ops[p][1]
+        q = next((k for k in range(i_undo, min(len(ops), i_undo + 12)) if touches(ops[k], w)), None)
+        if q is None or ops[q][0] != "X" or ops[q][1] != w or ops[q][2] is not None:
+            continue
+        if any(touches(ops[k], w) for k in range(p + 1, q)):
+            continue
+        del ops[q]
+        del ops[p]
+        c.tags = [(i - 1 if p < i <= q else (i - 2 if i > q else i), nm, lv) for (i, nm, lv) in c.tags]
+        c.__dict__.setdefault("_ch1_early_log", []).append(dict(cancelled_x_pair=w))
+        break
+    return nfwd + moved
+
+
+def full_check(x, cfg, ang=None, feat=None, tgt_tol=None):
+    c, regs = build_full(cfg, ang, feat)
+    sim = K.Sim(len(x), c.next + 2)
+    sim.fire = []
+    sim.set_word(regs["X"], x)
+    nf = regs["nfwd"]
+    sim.run(c.ops, 0, nf)
+    res = ref_U(x, cfg)                           # an h1 patch may return a 6th item: the DUMP bit per input
+    U, d, k, q1, P = res[:5]
+    g = res[5] if len(res) > 5 else None
+    m = cfg["m"]
+    lim = 1 << (26 - m)
+    out = {"U_range": [int(U.min()), int(U.max())], "U_in_range": bool(((U >= -lim) & (U < lim)).all())}
+    Uc = sim.get_word(regs["U"], signed=True) if False else None
+    Y = ref_main(U, d, m, cfg["bt"], g)
+    Yc = sim.get_word(regs["word"])
+    out["Y_ok"] = bool(np.array_equal(Yc, Y))
+    out["Y_bad"] = int((Yc != Y).sum())
+    out["U"] = U
+    sim.run(c.ops, nf, None)
+    others = [w for w in range(c.next) if w not in regs["X"]]
+    out["x_ok"] = bool(np.array_equal(sim.get_word(regs["X"]), x))
+    out["anc_ok"] = bool(not sim.q[others].any())
+    out["sign_ok"] = bool(not sim.sign.any())
+    tg, tol = G.target_tol(x) if tgt_tol is None else tgt_tol
+    if tgt_tol is not None:
+        tg, tol = tg[x - 1], tol[x - 1]
+    # the sign register folded into the phase (a CCZ feature's -1 is a real half turn)
+    tot = sim.ang + np.where(sim.sign, np.uint64(1 << 63), np.uint64(0))
+    err = (tot - tg).view(np.int64).astype(np.float64)
+    out["err"] = err
+    out["tol"] = tol
+    out["margin"] = float((tol - np.abs(err)).min())
+    out["fire"] = np.array(sim.fire, dtype=np.uint8)
+    out["c"] = c
+    out["regs"] = regs
+    return out
+
+
+def run_test(nsamp, stage, cfg=None):
+    cfg = dict(CFG) if cfg is None else cfg
+    m = cfg["m"]
+    stages = {"root": ["root"], "centre": ["root", "centre"], "div1": ["root", "centre", "div1"]}[stage]
+    x = sample_x(nsamp)
+    c, regs = build(cfg, stages)
+    sim = K.Sim(len(x), c.next + 2)
+    sim.set_word(regs["X"], x)
+    sim.run(c.ops)
+    X = regs["X"]
+    n, k, Q, d, delta = ref_chain(x, m)
+    print(f"stages {stages}: toffolis {c.toffolis()} peak {c.peak} wires {c.next}; per stage {c.stage_counts()}")
+    if stage == "root":
+        sh = 2 * (10 - m)
+        rem = sim.get_word(X[sh:sh + m + 3], signed=True)
+        qb = sim.get_word(X[sh + m + 2:sh + 2 * m + 2])
+        _, rnr = ref_root(n, m)
+        v_c = (~qb) & ((1 << m) - 1)
+        print(f"  ROOT: v ok {np.array_equal(v_c, Q - (1 << m))}  r_nr ok {np.array_equal(rem, rnr)}  "
+              f"low ok {np.array_equal(sim.get_word(X[0:sh]), n & ((1 << sh) - 1))}")
+        return
+    if stage == "centre":
+        dc = sim.get_word(X[0:22 - m], signed=True)
+        vc = sim.get_word(X[22 - m:22])
+        print(f"  CENTRE: v ok {np.array_equal(vc, Q - (1 << m))}  delta ok {np.array_equal(dc, delta)}  "
+              f"range {delta.min()} .. {delta.max()}")
+        return
+    sig, order, q = ref_div1(delta, d, cfg)
+    dig = regs["dig1"]
+    v = Q - (1 << m)
+    vb = [(v >> t) & 1 for t in range(m)]
+    print("  DIV1 digit wires against the reference (exact / complement / xor v_t):")
+    nbad = 0
+    for key in order:
+        got = sim.q[dig[key]].astype(np.int64)
+        g = sig[key]
+        rel = "exact" if np.array_equal(got, g) else ("not" if np.array_equal(got ^ 1, g) else None)
+        if rel is None:
+            xs = [t for t in range(m) if np.array_equal(got ^ vb[t], g)]
+            rel = f"xor_v{xs}" if xs else "MISMATCH"
+        if rel == "MISMATCH":
+            nbad += 1
+        print(f"    {str(key):>4}: {rel}  (wrong on {int((got != g).sum())})")
+    print(f"  digits mismatching: {nbad}")
+
+
+if __name__ == "__main__":
+    if sys.argv[1] == "test":
+        run_test(int(sys.argv[2]), sys.argv[3] if len(sys.argv) > 3 else "div1")
+    elif sys.argv[1] == "rel":
+        cfg = dict(CFG)
+        if len(sys.argv) > 2:
+            cfg.update(json.loads(sys.argv[2]))
+        r = relations(cfg)
+        print(json.dumps({k: {str(p): v for p, v in d.items()} for k, d in r.items()}))
+    elif sys.argv[1] == "full":
+        cfg = dict(CFG)
+        if len(sys.argv) > 3:
+            cfg.update(json.loads(sys.argv[3]))
+        x = sample_x(int(sys.argv[2]))
+        o = full_check(x, cfg)
+        c = o["c"]
+        print(f"full: toffolis {c.toffolis()} peak {c.peak} wires {c.next}")
+        print("  per stage:", c.stage_counts(), " peaks:", c.stage_peaks)
+        print(f"  U range {o['U_range']} in range {o['U_in_range']}  Y ok {o['Y_ok']} (bad {o['Y_bad']})  "
+              f"x restored {o['x_ok']}  ancillas zero {o['anc_ok']}  sign ok {o['sign_ok']}  "
+              f"margin (ideal angles) {o['margin']:.4g}")

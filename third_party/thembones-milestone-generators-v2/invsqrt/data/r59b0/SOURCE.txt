@@ -1,0 +1,24 @@
+r59b (FC fifteenth holder, Nov 17 04:10Z) = FC best/k9f with END's ring router (5 reflections, 61 pairs) replaced by the
+SECOND 59-pair router with one control per pair, designed, found and first verified by design seat R55-INV-ROUTER
+(router59b: its 13-point coset network coset23b_full.json, m = 4, from box_out/npat/cal_L7_T23.json; the hook
+_r55_net + 3 lines in best_net of src/invsqrt_fk_epN.py, env R55_NET = router.json; emit_ring unchanged).
+Same token -> slot map in every class: same angles and cfg as k9f (files here), same LP margin 5.19173e7.
+Routing 96 against the ring's 101 (21 held pairs): -5.000 Toffolis per shot against k9f.
+Rebuilt through FC's chain from source: bash tools/sh/invsqrt_fc_s15rebuild.sh r59b 4,5 (emit with R55_NET,
+P1's affine pass 19 sites, FC's post-chain -3.000 + T fold 1): raw emit 027e1229756fb938...e143e4d5, final
+01b8975ed3db09c95e31ea41ef514224b6622355031e9bb0fcbaa19eff3c907c = R55-INV-ROUTER's best/r59b bit for bit.
+Verifier (R55-INV-ROUTER, box 4 lane, on this identical file): PASS 64,441.85 (salt0) / 64,441.80 (alt-salt-1),
+Toffolis 1,373.625, T 3, 40 qubits, worst 0.99955. Source folder: best/r59b0 (src, angles.json, cfg.json, router.json).
+
+CREDITS BLOCK of best/k9f (kept word for word):
+k9f (FC twelfth holder, Nov 16) = k9d's source (s6/src_w10b, set m6/sets/w10b.json: the six-bit word at 10 ANDs through
+its carry-in slot) + R48-INV-ROT2's cubic "e6e" (verified by ROT2 on k9c's source at 64,721.85 / 64,721.79): the cubic
+as the mux-equal gates m6 = (Tf6^Tf7)*Tf9 and m7 = (Tf7^Tf8)*Tf9 plus 4 own gates (6 ANDs), carry-in literal
+Tf7^Tf9 (h1c "cubcin": [2, 4]), stored table [0,0,0,0,0,0,0,0,0,1,0,1,0,1,0,1,2,2,3,3,5,6,7,8,8,9,10,11,14,15,18,19]
+(effective table = stored + carry-in: 9 moves of k9b's table inside the LP's tolerance), LP margin 51,917,278. In FC's
+chain m6 keeps the two service chains and m7 gives P1's public pass one Toffoli. cfg h1c: "cubtab", "cubcin" [2, 4],
+"cubprog" = cub_rot2e6e_acc.json (ROT2's program file, copied). src s6/src_w10e, set m6/sets/w10e.json.
+1,400.625 before P1's pass, P1's pass 19 sites, public pass -1, service 2 chains of 2, T fold.
+Build: bash tools/sh/invsqrt_fc_s12mkcub.sh w10e w10b s12/e6e/e6e.stored.json s12/e6e/cub_rot2e6e_acc.json "[2,4]",
+then bash tools/sh/invsqrt_fc_s7chain.sh w10e 2,3 (chain part frozen in best/k9f0); bash mk_k9f.sh rebuilds from source.
+Reproduce: the chain part with tools/sh/invsqrt_fc_s7chain.sh w10e (src s6/src_w10e, set m6/sets/w10e.json; frozen in best/k9f0), then bash mk_k9f.sh (the two sha256 it prints must be equal).

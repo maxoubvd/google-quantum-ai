@@ -1,0 +1,51 @@
+best_q31zc13 -- DQI, built by B5 (25th holder) 2026-11-19. best_q31zc12's recipe (chain zd9) with ONE module added
+LAST, tools/dqi_int_mon1.py (sha256 0a78607149462066006de4b5e0a9e5e2b7d4ddd9a6a032e925d2e4ff64cc6681, copy here): ledger
+O-7 / rank 7 (R62-DQI-CONVN idea 6 at the converter's level 1; priced on the line's code by DQ5 on Nov 18 at about -10 a
+decode and left there for want of a cheap exact controlled scaling at +12 wires), chain zd17:
+  THE CONVERTER'S BASE LEVEL (m = 1) WITHOUT ITS `first` CONTEXT. Today level 1 divides v0 and q by a = g[0] in `first`,
+  q_post then divides v0 by the q-slot (q / a), `last` divides v0 by a again and multiplies q back: the first division
+  cancels against the q-slot's. Here: the line's own q_post at m = 1 (root_child_post -> a08 -> q7) with its masked
+  products held back; then ONE context of a: (1) every parent top t <- t (F ? a^-1 : 1) (with the gap flag F = 1 the
+  child's v0 reaches t undivided), (2) the held masked products replayed unchanged, (3) v0 /= a (the scope's runops).
+  q is never scaled, so q_post's token is on the q-slot's own inverse; the reverse is the mirror (one context of a with
+  the forward's token: v0 *= a, the masked products, t <- t (F ? a : 1); the line's reverse q_post with its masked
+  products held back; a08's tail without its three scale_before_inverse).
+  THE CONTROLLED SCALING (cscale), exact wherever a ai = 1 (inside the context: the kit's a = 0 trick): per top u = F t
+  (12 ANDs), t ^= u (x + 1) (one K-product), HMR u, whose phase F (m . (t y)) is repaid through ONE shared w = F y
+  (12 ANDs) as the free bilinear phase (m . (t w)) (ar.phase_product) and w's own HMR by conditioned CZs:
+  2 x (12 + 42) + 12 = 120 for both tops at +12 wires (DQ5's +12 form was 2 x 96: its u was erased through t a).
+  INSTALL: by code identity (as dqi_int_zcache / dqi_int_fdots): every live function with a08's base_case code
+  (scalar_compact_v3.py:186, a closure over scope / original) gets a trampoline code with the same free variables that
+  calls the monic base of that closure's own scope; a rebuilt copy of the original serves refusals (none in this build:
+  21 objects patched, calls forward 1 / reverse 1, refused {} [M mhr/zd17_mon1.json]).
+COUNT [P]: forward - first's context (58) - its 3 scalings (126) - last's q scaling (42) + 120 = -106; reverse - the
+  q scaling (42) - the tail's 3 scale_before_inverse (126) + 120 = -48: -154 a decode.
+EXACTNESS: values written out for F = 0 and F = 1 [P, the module's docstring]; kill tests [M]: (a) cscale alone on every
+  a != 0 x F in {0, 1} (8,190 shots, both forms): 0 wrong, 0 phase, 0 dirty, 120 Toffoli-like, +12 qubits; (b) the
+  converter alone before / after (tools/dqi_int_mon1ct.py, line environment), three seeds x 2,560 shots incl. 512 a seed
+  with F = 1 at the base (a gap at level 2), 512 with a = 0 (a zero last remainder) and 512 with both: forward words equal
+  on every shot, round trip clean on every shot, qubits equal, static -111 / -159 there.
+CHAIN (box 6, tools/sh/dqi_int_zc5b.sh, chain zd17, 00:39:01Z; pin q8u restored 00:04Z by tools/sh/dqi_int_q8urestore.sh,
+  proved by the control rebuild zd9r = best_q31zc12 byte for byte): marker 901f50a3 345,041.2 at Q 902, quick 0 / 0
+  (zd9's 345,194.8: -153.6); 901 port 64 runs, 0 parks, 0 uncovered (zd9 69); r901 195d6b90 345,180.6 (zd9 345,335.1);
+  P1 975 links (= zd9's); file A 1db86151 quick 344,024.8; official box 6 344,025.7 / 344,025.8, errors 0 / 0.
+FILE: dqi.kmb = zd17's file A, sha256 1db861512be0f7586e994cba43d36f0cfb01614e459cc280e3ed477bb91a8e56. Official lane
+  (box 4) 01:11Z: salt "" 344,025.68 errors 0 / 0 = 3.32696e11 (332,695,686,018); alt-salt-1 344,025.79 errors 0 / 0 =
+  3.32696e11 (332,695,797,570) [V] = best_q31zc12 - 154.1 / - 154.0 Toffolis.
+EXACTNESS ON THE LINE: paired against best_q31zc12's chain file A (f0581f60, ~/qcc/ws/dqi_int/p901/zd9/A) on the child's
+  own draws of salt "" and alt-salt-1..11 (zd17_vs_zd9A.tsv here; tools/dqi_int_rate.py): 3 failed shots in 12 runs
+  (alt-salt-3: 0:211 phase and 47:207 value; alt-salt-9: 377:213 value), EVERY one failed by the parent on the same
+  input: child-only 0, parent-only 0 [M].
+RE-ROLLS (box 6, rr_zd17A.txt here): a 1e21e62a and e 1962b7a2 clean on both official salts; b, c, d failed one value
+  shot each on salt "" (draws: b and c remade byte for byte and paired against best_q31zc12's file on their own salt-""
+  draws: b 290:27 and c 32:87, both failed by the parent too, child-only 0 [M pairzc/zd17rr{b,c}_vs_zd9A.tsv]). Folders
+  best_q31zc13_a (re-roll a) and best_q31zc13_b (re-roll e), each through the official lane.
+REPRODUCE (box 6, fresh folders; never two launches in the same minute):
+  B5_INV17_MAP=dqi_int_inv17map3.py B5_ZC_PARENT=zd9 B5_ZC_PTAG=zd9A bash ~/Quantum/tools/sh/dqi_int_zc5b.sh <fresh> <c1,c2> <c1-c2> <pair cores> \
+    dqi_dq3_kpn.py,dqi_dq3_inv24.py,dqi_dq3_om36.py,dqi_dq5_c12.py,dqi_int_div6k.py,dqi_dq5_c12n3.py,dqi_int_fdots.py,dqi_int_prek.py,r81_dqi_fold_k22_K154.txt,r81_dqi_fold_k23_K224.txt,dqi_int_mon1.py \
+    dqi_dq3_kpn,dqi_dq3_inv24,dqi_dq3_om36,dqi_dq5_c12,dqi_int_div6k,dqi_dq5_c12n3,dqi_int_fdots,dqi_int_prek,dqi_int_mon1 \
+    "DQI_INT_FDOTS_OUT=<json> DQI_INT_PREK_OUT=<json> DQI_INT_MHR_EARLYF=1 DQI_INT_MHR_EARLY_LEVELS=11,13 DQI_INT_MON1_OUT=<json>"
+  with tools/dqi_int_mon1.py = the copy in this folder (later versions add switches that are off by default:
+  DQI_INT_MON1_MERGE, DQI_INT_MON1_WIDE); then bash ~/Quantum/tools/sh/dqi_int_p901pub3.sh <fresh> <cores> 2 (re-rolls).
+Credits: as best_q31zc12, plus R62-DQI-CONVN (idea 6, monic remainders), DQ5 (the count on the line's code, the order of
+  the gap repair, both directions); public mathematics: in-place scaling with measurement-based erasure.

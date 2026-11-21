@@ -1,0 +1,86 @@
+{
+ "gates": [
+  {
+   "left": [
+    0,
+    2,
+    3,
+    4,
+    5
+   ],
+   "right": [
+    1,
+    3
+   ]
+  },
+  {
+   "left": [
+    0,
+    2,
+    4,
+    6,
+    7
+   ],
+   "right": [
+    1,
+    2,
+    3,
+    4,
+    7
+   ]
+  },
+  {
+   "left": [
+    0,
+    4,
+    5,
+    8
+   ],
+   "right": [
+    2,
+    4,
+    5
+   ]
+  },
+  {
+   "left": [
+    0,
+    2,
+    3,
+    5,
+    7
+   ],
+   "right": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    7,
+    8
+   ]
+  }
+ ],
+ "outputs": [
+  [
+   -1,
+   1,
+   2,
+   3,
+   4,
+   9,
+   10
+  ]
+ ],
+ "inputs": [
+  "q17",
+  "q18",
+  "q19",
+  "q20",
+  "q21",
+  "q28",
+  "q32"
+ ],
+ "internal": 2,
+ "note": "FC16: w23 (= NOT digit 22) from v2..v6, digit 21 (wire 28) and R22 bit 30 (wire 32, live at the re-creation); GHOST shape (4, 2); wire ids of FC s16/r64 frame"
+}

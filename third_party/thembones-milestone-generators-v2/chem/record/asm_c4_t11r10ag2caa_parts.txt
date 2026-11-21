@@ -1,0 +1,14 @@
+1=dir:<HOME>/qcc/ws/chem_c4/a6_t11r10ag2ca/p/k1c/b1
+2=<HOME>/qcc/ws/chem_c4/a6_t11r10ag2ca/p/k2c/lp/L2/pairs/p23/b1/angle_k_2.kmx
+3=<HOME>/qcc/ws/chem_c4/a6_t11r10ag2ca/p/k3f/b/p6/angle_k_3.kmx
+4=<HOME>/qcc/ws/chem_c4/a6_t11r10ag2ca/p/R4c/L4/best/angle_k_4.kmx
+5=dir:<HOME>/qcc/ws/chem_c4/a6_t11r10ag2ca/p/k5c/b5
+6=<HOME>/qcc/ws/chem_c4/a6_t11r10ag2ca/p/k6/lp/L6/best/angle_k_6.kmx
+7=dir:<HOME>/qcc/ws/chem_c4/a6_t11r10ag2ca/p/k7/p/b7
+8=<HOME>/qcc/ws/chem_c4/a6_t11r10ag2ca/p/R8/L8/best/angle_k_8.kmx
+9=<HOME>/qcc/ws/chem_c4/a6_t11r10ag2ca/p/k9/b/p0/angle_k_9.kmx
+10=<HOME>/qcc/ws/chem_c4/a6_t11r10ag2ca/p/k10s/b/p0/angle_k_10.kmx
+11=<HOME>/qcc/ws/chem_c4/a6_t11r10ag2ca/p/k11v/scr/full/s5tp/angle_k_11.kmx
+12=<HOME>/qcc/ws/chem_c4/a6_t11r10ag2ca/p/k12o/b/p1/angle_k_12.kmx
+13=<HOME>/qcc/ws/chem_c4/a6_t11r10ag2ca/p/R13/L13/best/angle_k_13.kmx
+14=<HOME>/qcc/ws/chem_c4/a6_t11r10ag2ca/p/R13/L14/best/angle_k_14.kmx

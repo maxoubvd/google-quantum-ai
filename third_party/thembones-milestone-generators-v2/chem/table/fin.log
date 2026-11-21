@@ -1,0 +1,109 @@
+=== attempt 1 of 3 (T7ARGS '--rounds 2'; free refit target 19.9985) 15:46:31Z
+15:46:31Z
+table7c (k0 obcar) exit 1
+[table7] offsets: 0 -> E_gap 957.4237, Lambda 1280.13; least E_gap (107 iterations) -> E_gap 4.076947 (floor 3.914898), Lambda 283.264, |W| 32.885  (12 s)
+[table7] provisional rows (nearest words): rows' own error_1 95.5890 mHa; {"error_1": 0.09558896249200763, "error_2": 0.01993006052089914, "Lambda": 283.26442150032767, "E_gap": 4.076947001602093, "lambda_eff": 47.886183507758815}  (21 s)
+[table7] THE ROUNDING'S OWN error_2 (official, its weights): 19.9301 mHa = 397.21 mHa^2
+[table7] --- free refit (no error_1 limit)
+[table7c] one-body rows IN CARRIER FORM (t10 obcar, mode ge) under 63 relations, 22 tries (fine 3): error_1 best 22.637 mHa (try 9), median inf; {'forced': 2416, 'broken_after_rounding': 0, 'repaired_rows': 0, 'unrepaired_rows': 0, 'broken': 0, 'e_staged': 0.023746013028647782, 'moved_rows': 74, 'gflips': 1158, 'pluspole': 0, 's
+[table7] one-body rows, round 1: rows' own error_1 22.6372 mHa; {"error_1": 0.022637190171368737, "error_2": 0.019996698060770004, "Lambda": 283.05533737063985, "E_gap": 3.914924985219841, "lambda_eff": 46.9143281663971}  (3127 s)
+[table7] --- refit with the rows fixed, round 1
+[table7c] t10: round-1 refit relaxed to error_1 <= 23.9900 mHa
+wrote t11_r10ag2ca/rel_final.txt: 63 relations
+17:11:46Z
+rows 76: max |angle - grid| 1.60e-14 words; max |decoded new - (+-)decoded old| 6.38e-16; rows with the global sign flipped 37; words with no amplitude entering 49
+before: words outside the signed range 0.2356; after: 0.0000 (words at +32: 0, at -32: 108); top two bits differ on 0 of 5700 words; two-body rows: top two bits differ on 0 of 85725 words
+written t11_r10ag2ca/table_s.npz
+t11_r10ag2ca/table_s.npz: shape (9, 127, 46) brot 7  error_1 23.0813 mHa  error_2 19.9960 mHa  E_gap 3.914931  Lambda 283.0767  lambda_eff 46.916151  passes_accuracy False
+  price at 3550 loader Toffolis per pass: T 13600 (fixed 6500) x Q 405 x lambda_eff = 258,414,158 (-10.63% against the entry 289,164,662); minority-sign share of sum|w| 1.84e-04; trivial two-body words 8.3%
+17:12:01Z
+BEST {"error_1": 0.019996849219980975, "error_2": 0.019995473850278653, "Lambda": 283.35105104229325, "E_gap": 3.914901458141685, "lambda_eff": 46.93885844751602}
+saved t11_r10ag2ca/all.npz (775 s)
+decoded vectors: largest deviation 8.327e-16 (up to each row's sign); carriers exact on all 75 columns: True; bit-0 changes 0; words changed 32211 of 91425
+wrote t11_r10ag2ca/all_c.npz
+  k6 ((0, 1), (1, 1), (2, 1), (3, 1), (4, 1)): broken one-body 2, two-body 0
+  k8 ((0, 1), (2, 1), (4, 1)): broken one-body 0, two-body 0
+  k8 ((1, 1), (2, 1), (3, 1)): broken one-body 1, two-body 0
+  k9 ((0, 1), (1, 1), (2, 1), (3, 1), (4, 1)): broken one-body 1, two-body 0
+  k10 ((0, 1), (1, 1), (2, 1), (3, 1), (4, 1)): broken one-body 5, two-body 0
+  k12 ((0, 1), (1, 1), (2, 1), (3, 1), (4, 1)): broken one-body 4, two-body 0
+  k13 ((0, 1), (2, 1), (4, 1)): broken one-body 1, two-body 0
+  k13 ((1, 1), (2, 1), (3, 1)): broken one-body 1, two-body 0
+  k14 ((2, 1), (3, 1), (4, 1)): broken one-body 1, two-body 0
+  k14 ((0, 1), (1, 1), (2, 1)): broken one-body 0, two-body 0
+  k3 ((0, 1), (1, 1), (2, 1), (3, 1), (4, 1)): broken one-body 1, two-body 0
+t11_r10ag2ca/all_c.npz: carriers exact on 75/75 columns (0 wrong entries); 63 relations: BROKEN one-body 19, two-body 0
+17:24:57Z
+repair: 19 broken (row, relation) pairs
+t11_r10ag2ca/all_c.npz: 19 (row, relation) pairs broken on 11 rows (one-body 11, two-body 0)
+REPAIRED: rows left 1; relations broken now 5; first-order price two-body 0.000 mHa^2 of error_2^2, one-body 0.000 mHa^2 of error_1^2
+saved t11_r10ag2ca/all_cr0.npz
+BEST {"error_1": 0.019998242113504986, "error_2": 0.019996072791840847, "Lambda": 283.31171784813023, "E_gap": 3.914901108299091, "lambda_eff": 46.93557569379295}
+saved t11_r10ag2ca/all_r.npz (742 s)
+decoded vectors: largest deviation 0.000e+00 (up to each row's sign); carriers exact on all 75 columns: True; bit-0 changes 0; words changed 0 of 91425
+wrote t11_r10ag2ca/all_c.npz
+  k13 ((0, 1), (2, 1), (4, 1)): broken one-body 1, two-body 0
+  k13 ((1, 1), (2, 1), (3, 1)): broken one-body 0, two-body 0
+  k14 ((2, 1), (3, 1), (4, 1)): broken one-body 0, two-body 0
+  k14 ((0, 1), (1, 1), (2, 1)): broken one-body 0, two-body 0
+  k3 ((0, 1), (1, 1), (2, 1), (3, 1), (4, 1)): broken one-body 0, two-body 0
+t11_r10ag2ca/all_c.npz: carriers exact on 75/75 columns (0 wrong entries); 63 relations: BROKEN one-body 5, two-body 0
+t11_r10ag2ca/all_c.npz: shape (9, 127, 46) brot 7  error_1 19.9982 mHa  error_2 19.9961 mHa  E_gap 3.914901  Lambda 283.3117  lambda_eff 46.935576  passes_accuracy True
+  price at 3550 loader Toffolis per pass: T 13600 (fixed 6500) x Q 405 x lambda_eff = 258,521,151 (-10.60% against the entry 289,164,662); minority-sign share of sum|w| 5.36e-04; trivial two-body words 8.3%
+17:38:08Z
+ROWS GATE, attempt 1: CHECK_FAIL RETRY: the rows chain did not complete; error_1 over 20.0 mHa: rows chain complete False, table.json error_1 23.081 mHa; final E_gap 3.914901, lambda_eff 46.935576, passes_accuracy True; PRICE 9 127 46 rows 1219 T 13480 Q 405 lambda_eff 46.935576 cost 256,240,082 (loaders 3490 a pass)
+=== attempt 2 of 3 (T7ARGS '--rounds 2 --ob-seed 11'; free refit target 19.9651) 17:38:08Z
+17:38:08Z
+table7c (k0 obcar) exit 0
+[table7c] one-body rows IN CARRIER FORM (t10 obcar, mode ge) under 63 relations, 22 tries (fine 3): error_1 best 23.135 mHa (try 16), median inf; {'forced': 2359, 'broken_after_rounding': 0, 'repaired_rows': 0, 'unrepaired_rows': 0, 'broken': 0, 'e_staged': 0.024141900278197403, 'moved_rows': 74, 'gflips': 1146, 'pluspole': 0, '
+[table7] one-body rows, round 1: rows' own error_1 23.1345 mHa; {"error_1": 0.02313450703496616, "error_2": 0.0199619413844783, "Lambda": 283.8654001094796, "E_gap": 3.914924985514517, "lambda_eff": 46.98187796567043}  (2342 s)
+[table7] --- refit with the rows fixed, round 1
+[table7c] t10: round-1 refit relaxed to error_1 <= 23.9900 mHa
+[table7c] one-body rows IN CARRIER FORM (t10 obcar, mode ge) under 63 relations, 22 tries (fine 3): error_1 best 22.588 mHa (try 19), median inf; {'forced': 2395, 'broken_after_rounding': 0, 'repaired_rows': 0, 'unrepaired_rows': 0, 'broken': 0, 'e_staged': 0.023546361447538383, 'moved_rows': 74, 'gflips': 1212, 'pluspole': 0, '
+[table7] one-body rows, round 2: rows' own error_1 22.5877 mHa; {"error_1": 0.02258771541799972, "error_2": 0.01999609551937291, "Lambda": 283.21793935954554, "E_gap": 3.914924869346578, "lambda_eff": 46.92789438867808}  (5327 s)
+[table7] --- refit with the rows fixed, round 2
+[table7] DONE {"error_1": 0.019987524674089485, "error_2": 0.019996543529032372, "Lambda": 283.46777835501035, "E_gap": 3.914925083427079, "lambda_eff": 46.948733670269625}  (5699 s) -> t11_r10ag2ca/table.npz
+wrote t11_r10ag2ca/rel_final.txt: 63 relations
+19:13:08Z
+rows 76: max |angle - grid| 1.78e-14 words; max |decoded new - (+-)decoded old| 6.25e-16; rows with the global sign flipped 37; words with no amplitude entering 36
+before: words outside the signed range 0.2340; after: 0.0000 (words at +32: 0, at -32: 107); top two bits differ on 0 of 5700 words; two-body rows: top two bits differ on 0 of 85725 words
+written t11_r10ag2ca/table_s.npz
+t11_r10ag2ca/table_s.npz: shape (9, 127, 46) brot 7  error_1 19.9875 mHa  error_2 19.9965 mHa  E_gap 3.914925  Lambda 283.4678  lambda_eff 46.948734  passes_accuracy True
+  price at 3550 loader Toffolis per pass: T 13600 (fixed 6500) x Q 405 x lambda_eff = 258,593,625 (-10.57% against the entry 289,164,662); minority-sign share of sum|w| 7.10e-04; trivial two-body words 8.3%
+19:13:17Z
+BEST {"error_1": 0.019997113020367364, "error_2": 0.019999199888107718, "Lambda": 283.2881164718179, "E_gap": 3.914901009455207, "lambda_eff": 46.9336064709557}
+saved t11_r10ag2ca/all.npz (901 s)
+decoded vectors: largest deviation 8.327e-16 (up to each row's sign); carriers exact on all 75 columns: True; bit-0 changes 0; words changed 32205 of 91425
+wrote t11_r10ag2ca/all_c.npz
+  k6 ((0, 1), (1, 1), (2, 1), (3, 1), (4, 1)): broken one-body 1, two-body 0
+  k8 ((0, 1), (2, 1), (4, 1)): broken one-body 2, two-body 0
+  k8 ((1, 1), (2, 1), (3, 1)): broken one-body 0, two-body 0
+  k9 ((0, 1), (1, 1), (2, 1), (3, 1), (4, 1)): broken one-body 0, two-body 0
+  k10 ((0, 1), (1, 1), (2, 1), (3, 1), (4, 1)): broken one-body 2, two-body 0
+  k12 ((0, 1), (1, 1), (2, 1), (3, 1), (4, 1)): broken one-body 1, two-body 0
+  k13 ((0, 1), (2, 1), (4, 1)): broken one-body 1, two-body 0
+  k13 ((1, 1), (2, 1), (3, 1)): broken one-body 1, two-body 0
+  k14 ((2, 1), (3, 1), (4, 1)): broken one-body 0, two-body 0
+  k14 ((0, 1), (1, 1), (2, 1)): broken one-body 2, two-body 0
+  k3 ((0, 1), (1, 1), (2, 1), (3, 1), (4, 1)): broken one-body 1, two-body 0
+t11_r10ag2ca/all_c.npz: carriers exact on 75/75 columns (0 wrong entries); 63 relations: BROKEN one-body 12, two-body 0
+19:28:20Z
+repair: 12 broken (row, relation) pairs
+t11_r10ag2ca/all_c.npz: 12 (row, relation) pairs broken on 7 rows (one-body 7, two-body 0)
+REPAIRED: rows left 0; relations broken now 0; first-order price two-body 0.000 mHa^2 of error_2^2, one-body -0.049 mHa^2 of error_1^2
+saved t11_r10ag2ca/all_cr0.npz
+BEST {"error_1": 0.019995851428408682, "error_2": 0.01999919988810772, "Lambda": 283.28811647181794, "E_gap": 3.914901009455207, "lambda_eff": 46.9336064709557}
+saved t11_r10ag2ca/all_r.npz (1073 s)
+decoded vectors: largest deviation 0.000e+00 (up to each row's sign); carriers exact on all 75 columns: True; bit-0 changes 0; words changed 0 of 91425
+wrote t11_r10ag2ca/all_c.npz
+  k13 ((0, 1), (2, 1), (4, 1)): broken one-body 0, two-body 0
+  k13 ((1, 1), (2, 1), (3, 1)): broken one-body 0, two-body 0
+  k14 ((2, 1), (3, 1), (4, 1)): broken one-body 0, two-body 0
+  k14 ((0, 1), (1, 1), (2, 1)): broken one-body 0, two-body 0
+  k3 ((0, 1), (1, 1), (2, 1), (3, 1), (4, 1)): broken one-body 0, two-body 0
+t11_r10ag2ca/all_c.npz: carriers exact on 75/75 columns (0 wrong entries); 63 relations: BROKEN one-body 0, two-body 0
+t11_r10ag2ca/all_c.npz: shape (9, 127, 46) brot 7  error_1 19.9959 mHa  error_2 19.9992 mHa  E_gap 3.914901  Lambda 283.2881  lambda_eff 46.933606  passes_accuracy True
+  price at 3550 loader Toffolis per pass: T 13600 (fixed 6500) x Q 405 x lambda_eff = 258,510,304 (-10.60% against the entry 289,164,662); minority-sign share of sum|w| 4.18e-04; trivial two-body words 8.3%
+19:47:09Z
+ROWS GATE, attempt 2: CHECK_OK rows chain complete True, table.json error_1 19.988 mHa; final E_gap 3.914901, lambda_eff 46.933606, passes_accuracy True; PRICE 9 127 46 rows 1219 T 13480 Q 405 lambda_eff 46.933606 cost 256,229,331 (loaders 3490 a pass)
+ROWS GATE PASSED (attempt 2): CHECK_OK rows chain complete True, table.json error_1 19.988 mHa; final E_gap 3.914901, lambda_eff 46.933606, passes_accuracy True; PRICE 9 127 46 rows 1219 T 13480 Q 405 lambda_eff 46.933606 cost 256,229,331 (loaders 3490 a pass)

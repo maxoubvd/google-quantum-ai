@@ -1,0 +1,13 @@
+S5-INV-H1END (session quantum-a5), 2026-11-19T15:31Z: fc19_b312 (63,098.90 [V], sha 75819c6a) with H1's word un-add
+(the b196 stretch, fc19_b312 text ops 18,028-18,526) re-emitted at ONE MORE clean wire: q11 (T6) is LENT over the un-add.
+  Lend: after the carry-in fold (CX q9 q8, CX q11 q8, CX q12 q8) q11 is X-measured; its phase is repaid by Cliffords from
+  q11 = T5 + W5 + MAJ(T5 + T7, W3, W4) (fc19_b312 wires: q10, q36, q12, q32, q33), 0 misses on all 3,133,452 inputs at
+  ops 18,028 / 18,300 / 18,498; the un-add then runs as FC's game at L 8, Cc 3 (no in-place Cuccaro cells); before the carry-in
+  unfold q11 is re-made by ONE AND: q11 = T7 + W5 + (T5 + T7 + W3)(T5 + T7 + W4).
+  Price [M generator count]: block 31's undo 52.625 -> 51.500; the file -1.125 a shot (DP (8, 3) - 1 = 11.0 against 13.125, + 1).
+Reproduce: python -I tools/s5_inv_h1end_genpatch.py <copy of ~/qcc/ws/invsqrt_fc/s18/srcM>; then
+  bash tools/s5_inv_h1end_build.sh s5lend1 11   (FC's s19hold pipeline unchanged, S5LEND=1, cfg_b312g.json, R59's angles)
+On another file with fc19_b312's H1 undo: python -I tools/s5_inv_h1end_patch_b196.py TARGET OUT (window transplant).
+Checks: bash tools/s5_inv_h1end_finish.sh s5lend1 (exact proof against fc19_b312 on all inputs, tools/r63_inv_ghost_chk.py);
+  official verifier both salts: box_verify_salt0.json, box_verify_alt-salt-1.json in this folder.
+sha256: c639a045edc88aedbe87a7befb716ae89fa3e2ad3227e3b3568787d7b104745c

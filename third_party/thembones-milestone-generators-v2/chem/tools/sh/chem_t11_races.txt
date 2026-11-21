@@ -1,0 +1,57 @@
+# T11 race tickets (card 33), read by tools/sh/chem_t11_race.sh (my copy of T10's chem_t10_race.sh). One line a ticket.
+# Fields as T10's chem_t10_races.txt: RACE LAYOUT PARENT PARENT_MD5_12 COUNT EDGES PARENT_SRC MAXEND
+#   LAYOUT  rel/t10s4/<LAYOUT>.txt (local copy WSL ~/qcc/ws/chem_t11/rel/t10s4/ = C3's ~/qcc/ws/chem_c3/proj/ files)
+#   COUNT   loader Toffolis a pass in pB1's frame (P57x nine wired = 3,511) = C3's rung count on e4 (base 3,490) + 21
+#   EDGES   tree/<EDGES> (R52-searched column order for the wired set; local copies WSL ~/qcc/ws/chem_t11/tree/)
+#   MAXEND  the END driver's gate = T10's rung gate 399.34 + 4.5 a rung over nine wired (the lead's 05:55Z price); my
+#           NUMBER counts only ENDs under the wall 399.9.
+# v1 (06:01Z Nov 19, written before any start): TICKET 1 of my brief: ELEVEN wired G11P57x (k3 + k11 wired = G11w11's 55
+# wires line by line, P57x's 12 bit-1 relations kept; C3 md5 bf7d7c39074c) from FS's best C 46 END g2f (149.18 mHa^2,
+# md5 ed7e0735118b, under cyc46's 150.19); C3's rung 11 = 3,446 on e4 (3,448 on k4k14) = 3,467 in pB1's frame.
+# r11g2f G11P57x g2f ed7e0735118b 3467 order_g11k3x11s0_tree.npz ~/qcc/ws/chem_fs/pts/g2f.npz 408.34
+# v2 (06:04Z, written before any start; SUPERSEDES v1, which never started): FS's newer best C 46 END g2c = 148.45 mHa^2
+# (md5 5d118953d9bf [M md5 here], FS 05:58:52Z): ticket 1 = G11P57x from g2c; count 3,446.0 on e4 [M C3 05:57Z whole entry].
+r11g2c G11P57x g2c 5d118953d9bf 3467 order_g11k3x11s0_tree.npz ~/qcc/ws/chem_fs/pts/g2c.npz 408.34
+# v3 (06:39Z, written before any start; REFILL v2 of my log, the lead 06:28Z / R94): the split on the best C 46 parent g2c
+# (148.45, md5 5d118953d9bf); launched only by tools/sh/chem_t11_split.sh after the deciding read (SPLIT: 3 + 3; DEAD: 4 + 4).
+r9g2c P57x g2c 5d118953d9bf 3511 order_g9k2m1s0_tree.npz ~/qcc/ws/chem_fs/pts/g2c.npz 399.34
+r10ag2c G10P57x_r1 g2c 5d118953d9bf 3482 order_g10k3s0_tree.npz ~/qcc/ws/chem_fs/pts/g2c.npz 402.21
+# v4 (08:16Z Nov 19 (date -u), seat 2, written before any start; the lead's 08:09Z order (b)): FS's NEW BEST C 46 PARENT
+# g3F = 147.73 mHa^2 (md5 c3621902a89e [M md5 in WSL 08:10Z]; FS genwatch 07:29:15Z at the top of ws_chem_t10.md), 0.72
+# under g2c. Ten wired (C3's G10P57x = rung 10: 3,468 on e4 = 3,489 in pB1's frame; gate 403.84 = T10's rung gate) and
+# ten wired with ONE bit-1 relation on k3 (C3's G10P57x_r1, 41949b2686ba; k3 221 by R89's form = 3,461 on e4 = 3,482;
+# gate 402.21 = R85's tool): the SAME lines as T10's v4 tickets (its tools/sh/chem_t10_races.txt), seed names t11_ (no
+# name twice: T10's seeds are t10_r10g3F*, t10_r10g3FB*, t10_r10ag3F*).
+r10g3F G10P57x g3F c3621902a89e 3489 order_g10k3s0_tree.npz ~/qcc/ws/chem_fs/pts/g3F.npz 403.84
+r10ag3F G10P57x_r1 g3F c3621902a89e 3482 order_g10k3s0_tree.npz ~/qcc/ws/chem_fs/pts/g3F.npz 402.21
+# v5 (08:36Z, seat 2, written before any start; the lead's 08:27Z order + ticket rule): the paid layout P57x (nine wired)
+# on FS's NEWER best C 46 parent g3F2 = 147.55 mHa^2 (md5 45bdb6de55eb [M md5 in WSL 08:34Z]; FS genwatch 08:12:53Z);
+# count 3,511 in pB1's frame, gate 399.34 (as r9g2c). Same pair as T10's card-34 race t10_r9g3F2*; my seeds t11_r9g3F2*.
+r9g3F2 P57x g3F2 45bdb6de55eb 3511 order_g9k2m1s0_tree.npz ~/qcc/ws/chem_fs/pts/g3F2.npz 399.34
+# v6 (09:12Z, seat 2, written before any start; the lead's 08:55Z wired-k0 ticket): K0P57x (P57x + C4's wired k0, md5
+# f5e196a5e374) on FS's g3F2 (147.55, md5 45bdb6de55eb); count 3,481 in pB1's frame (C4: -30 a pass [M]); gate 402.244 (R85).
+r10k0g3F2 K0P57x g3F2 45bdb6de55eb 3481 order_g9k2m1s0_tree.npz ~/qcc/ws/chem_fs/pts/g3F2.npz 402.244
+# v7 (13:21Z Nov 19, seat 2, written before any start; the lead's 13:13Z order (2): the wired-k0 ROUND 2): K0P57x (round 1's
+# masks unless C4's g2c masks arrive by 13:43Z: then a twin layout K0P57xg2c and a line r10k0g2cm) on g2c (148.45, md5
+# 5d118953d9bf), the tree searched WITH k0 (order_g9k0s0: k0-proxy 85.058 against the nine-wired order's 88.333 [M]);
+# count 3,481, gate 402.244.
+r10k0g2c K0P57x g2c 5d118953d9bf 3481 order_g9k0s0_tree.npz ~/qcc/ws/chem_fs/pts/g2c.npz 402.244
+r10k0g2cm K0P57xg2c g2c 5d118953d9bf 3481 order_g9k0s0_tree.npz ~/qcc/ws/chem_fs/pts/g2c.npz 402.244
+# v8 (15:45Z Nov 19, seat 2, written before any start; the lead's 15:40Z order: THE ELEVEN-WIRED CO-DESIGN, started only if
+# k0 round 2 passes its stage-117 line): K0G10P57xg2c (G10P57x + the wired k0 with C4's g2c masks 0 5 13 15 12, md5
+# 556e66b02bc6) on g2c; the tree searched with ALL ELEVEN wires in the objective on g2c's own dumps (tools/sh/chem_t11_ord11.sh:
+# best of seeds 0 / 1 copied as order_g10k0s0_tree.npz); count 3,459 in pB1's frame [P: G10P57x 3,489 - k0's 30 (C4 [M] on
+# P57x); C4's official count asked]; gate 403.035 (R85's tool on 3,459, the method of the ten-wired gate 402.208 on 3,482).
+r11k0g2c K0G10P57xg2c g2c 5d118953d9bf 3459 order_g10k0s0_tree.npz ~/qcc/ws/chem_fs/pts/g2c.npz 403.035
+# v9 (16:27Z Nov 19, seat 2, written before its start; the lead's 16:28Z: eleven seed 2 restarted on ROUND 1's k0 masks, seed 1
+# keeps C4's g2c masks: one of each): K0G10P57x (G10P57x + k0 lines 10 11 7 0 7 of K0P57x, md5 73a2b8638b61); all else as r11k0g2c.
+r11k0g2c1 K0G10P57x g2c 5d118953d9bf 3459 order_g10k0s0_tree.npz ~/qcc/ws/chem_fs/pts/g2c.npz 404.0
+# v10 (19:29Z Nov 19, seat 2, written before its start; the lead's 19:28Z (2): THE TWELFTH WIRE): K0G11P57x = G11P57x (C3's rung 11:
+# nine + k3 + k11) + round 1's k0 lines (md5 4d58fa76e3aa); tree searched with all twelve wires on g2c's own dumps
+# (tools/sh/chem_t11_ord12.sh); count 3,437 in pB1's frame [P: G11P57x 3,467 - k0's 30]; gate 403.827 (R85's tool on 3,437).
+r12k0g2c1 K0G11P57x g2c 5d118953d9bf 3437 order_g11k0s0_tree.npz ~/qcc/ws/chem_fs/pts/g2c.npz 406.0
+# v11 (20:0xZ Nov 19): the lead's 19:58Z (1): END STOPS eleven-wired 404.0, twelve-wired 406.0 (the table step's price decides the landing).
+# v12 (20:05Z Nov 19, seat 2, written before its start; the lead's 19:58Z (4): THE THIRTEENTH WIRE = k1, the cheapest of k1 / k5 / k7
+# by the search objective with k0 (219.681 / 225.238 / 224.220 [M ord13]): K0G12P57xk1 = K0G11P57x + k1's masks 93 114 21 109 3
+# (md5 a3644c303afe); count 3,415 [E: 3,437 - 22, k11's measured saving]; END stop 409.0 [P: +2.9 a wire on the twelve's 406.0 line].
+r13k0g2c1 K0G12P57xk1 g2c 5d118953d9bf 3415 order_g12k0s0_tree.npz ~/qcc/ws/chem_fs/pts/g2c.npz 409.0

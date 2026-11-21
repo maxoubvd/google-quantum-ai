@@ -1,0 +1,11 @@
+f901 zd20: input 5997fd13cecb0585 start 01:15:50Z
+dwx: links admitted 975 sha 2c043a9afc55a640 01:26:33Z
+dwx quick: dqi      cost 5.13134e+11  Q 901  Tof 343997.6  errors 0/0  R 1.83749  [26.5s]
+file A = dwx final (INV17 applied before re-assignment)
+file A 2c043a9afc55a640 01:27:01Z
+A quick: dqi      cost 5.13134e+11  Q 901  Tof 343997.6  errors 0/0  R 1.83749  [31.3s]
+A official salt0: dqi      cost 3.34196e+11  Q 901  Tof 343997.6  errors 1/0  R 1.19673  [195.2s]
+A official alt-salt-1: dqi      cost 3.34197e+11  Q 901  Tof 343998.0  errors 1/0  R 1.19673  [219.7s]
+paired A vs best_q24k3a: salt0	1	0	1	0	1	0	0	40:1:CV:PV
+paired A vs best_q24k3a: alt-salt-1	1	0	1	0	1	0	0	42:248:CV:PV
+DONE 01:40:40Z

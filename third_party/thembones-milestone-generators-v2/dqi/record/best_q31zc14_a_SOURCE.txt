@@ -1,0 +1,3 @@
+best_q31zc14_a -- RE-ROLL f of chain zd20's file A (B5, 2026-11-19): the same gates as best_q31zc14 (only the INFO_TAG
+differs, so the verifier draws other inputs). Recipe, gates, pair table and credits: ../best_q31zc14/SOURCE.txt.
+sha256 24b8f30322e63b8e9366654b14297aa950834ecdebac4013ae9323379d58bede. Official lane (box 4): [salt0] dqi cost 3.32669e+11 Q 901 Tof 343998.1 errors 0/0 R 1.19126 [32.7s];[alt-salt-1] dqi cost 3.32669e+11 Q 901 Tof 343997.7 errors 0/0 R 1.19126 [32.1s];

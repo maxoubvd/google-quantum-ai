@@ -1,0 +1,44 @@
+23:33:14 k1: 251 <- dir:<HOME>/qcc/ws/chem_c4/a6_t11r10ag2ca/p/k1c/b1
+23:33:18 k2: 223 <- <HOME>/qcc/ws/chem_c4/a6_t11r10ag2ca/p/k2c/lp/L2/pairs/p23/b1/angle_k_2.kmx
+23:33:22 k3: 221 <- <HOME>/qcc/ws/chem_c4/a6_t11r10ag2ca/p/k3f/b/p6/angle_k_3.kmx
+23:33:26 k4: 222 <- <HOME>/qcc/ws/chem_c4/a6_t11r10ag2ca/p/R4c/L4/best/angle_k_4.kmx
+23:33:51 k5: 251 <- dir:<HOME>/qcc/ws/chem_c4/a6_t11r10ag2ca/p/k5c/b5
+23:33:55 k6: 222 <- <HOME>/qcc/ws/chem_c4/a6_t11r10ag2ca/p/k6/lp/L6/best/angle_k_6.kmx
+23:34:20 k7: 251 <- dir:<HOME>/qcc/ws/chem_c4/a6_t11r10ag2ca/p/k7/p/b7
+23:34:24 k8: 217 <- <HOME>/qcc/ws/chem_c4/a6_t11r10ag2ca/p/R8/L8/best/angle_k_8.kmx
+23:34:28 k9: 221 <- <HOME>/qcc/ws/chem_c4/a6_t11r10ag2ca/p/k9/b/p0/angle_k_9.kmx
+23:34:33 k10: 221 <- <HOME>/qcc/ws/chem_c4/a6_t11r10ag2ca/p/k10s/b/p0/angle_k_10.kmx
+23:34:37 k11: 250 <- <HOME>/qcc/ws/chem_c4/a6_t11r10ag2ca/p/k11v/scr/full/s5tp/angle_k_11.kmx
+23:34:42 k12: 221 <- <HOME>/qcc/ws/chem_c4/a6_t11r10ag2ca/p/k12o/b/p1/angle_k_12.kmx
+23:34:46 k13: 217 <- <HOME>/qcc/ws/chem_c4/a6_t11r10ag2ca/p/R13/L13/best/angle_k_13.kmx
+23:34:50 k14: 217 <- <HOME>/qcc/ws/chem_c4/a6_t11r10ag2ca/p/R13/L14/best/angle_k_14.kmx
+23:34:50 k0: 263 <- <HOME>/qcc/ws/chem_c4/k0p_t11r10ag2ca/angle_k_0.kmx
+23:34:50 RAW <HOME>/qcc/ws/chem_wr7/fin/t11_r10ag2ca/all_c.npz (9d7b24f0); words b1f3ff99
+C3 RAW-WEIGHT entry (tools/chem_c3_entry_raw.py): weights of <HOME>/qcc/ws/chem_wr7/fin/t11_r10ag2ca/all_c.npz; base folder <HOME>/qcc/ws/chem_c4/best/c4_pB1q9 (layout only)
+  angle_words: 661 dead words rewritten (of 2400 dead), per batch [0, 0, 0, 99, 22, 0, 13, 0, 63, 137, 90, 23, 89, 59, 66]
+  k0: 263 (angle_k_0.kmx, qubits 125)
+  k1: 251 (angle_k_1.kmx, qubits 128)
+  k2: 223 (angle_k_2.kmx, qubits 120)
+  k3: 221 (angle_k_3.kmx, qubits 120)
+  k4: 222 (angle_k_4.kmx, qubits 120)
+  k5: 251 (angle_k_5.kmx, qubits 128)
+  k6: 222 (angle_k_6.kmx, qubits 120)
+  k7: 251 (angle_k_7.kmx, qubits 128)
+  k8: 217 (angle_k_8.kmx, qubits 121)
+  k9: 221 (angle_k_9.kmx, qubits 120)
+  k10: 221 (angle_k_10.kmx, qubits 120)
+  k11: 250 (angle_k_11.kmx, qubits 128)
+  k12: 221 (angle_k_12.kmx, qubits 120)
+  k13: 217 (angle_k_13.kmx, qubits 121)
+  k14: 217 (angle_k_14.kmx, qubits 121)
+per pass 3468
+SOURCE.txt: credits block appended (7 lines)
+chem     cost 2.55393e+08  lambda_eff 46.93361  T 13436.0  Q 405  err1 19.996  err2 19.999 mHa  [29.3s]
+[salt0] chem     cost 2.55393e+08  lambda_eff 46.93361  T 13436.0  Q 405  err1 19.996  err2 19.999 mHa  [20.2s]
+[salt0]   ratio chem: 13.13897
+[alt-salt-1] chem     cost 2.55393e+08  lambda_eff 46.93361  T 13436.0  Q 405  err1 19.996  err2 19.999 mHa  [20.5s]
+[alt-salt-1]   ratio chem: 13.13897
+JSON: <HOME>/qcc/ws/chem_c4/best/c4_t11r10ag2caa/box_verify_salt0.json <HOME>/qcc/ws/chem_c4/best/c4_t11r10ag2caa/box_verify_alt-salt-1.json
+salt0 {"chem": {"status": "PASS", "score": 255392974.30022314, "lambda_eff": 46.9336064709557, "toffoli_count": 13436.0, "num_qubits": 405, "brot": 7, "batch_size": 5, "num_circuits": 15, "reaction_depth": 167, "num_ops": 489081, "verified_shots": 78016, "submission_sha256": "6d37e5fb776bf48f41b7c6851258ef90444175b7fb167388dfd593dd0c067e33", "resources": {"brot": 7, "keep_bits": 10, "angles_toffoli_per_
+alt-salt-1 {"chem": {"status": "PASS", "score": 255392974.30022314, "lambda_eff": 46.9336064709557, "toffoli_count": 13436.0, "num_qubits": 405, "brot": 7, "batch_size": 5, "num_circuits": 15, "reaction_depth": 167, "num_ops": 489081, "verified_shots": 78016, "submission_sha256": "6d37e5fb776bf48f41b7c6851258ef90444175b7fb167388dfd593dd0c067e33", "resources": {"brot": 7, "keep_bits": 10, "angles_toffoli_per_
+23:36:23 rawasm c4_t11r10ag2caa done

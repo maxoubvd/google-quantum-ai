@@ -1,0 +1,36 @@
+C3 RAW-WEIGHT entry (tools/chem_c3_entry_raw.py): weights of <HOME>/qcc/ws/chem_wr7/fin/t11_r10ag2ca/all_c.npz; base folder <HOME>/qcc/ws/chem_c4/best/c4_pB1q9 (layout only)
+  angle_words: 661 dead words rewritten (of 2400 dead), per batch [0, 0, 0, 99, 22, 0, 13, 0, 63, 137, 90, 23, 89, 59, 66]
+  k0: 263 (angle_k_0.kmx, qubits 125)
+  k1: 251 (angle_k_1.kmx, qubits 128)
+  k2: 223 (angle_k_2.kmx, qubits 120)
+  k3: 221 (angle_k_3.kmx, qubits 120)
+  k4: 222 (angle_k_4.kmx, qubits 120)
+  k5: 251 (angle_k_5.kmx, qubits 128)
+  k6: 222 (angle_k_6.kmx, qubits 120)
+  k7: 251 (angle_k_7.kmx, qubits 128)
+  k8: 217 (angle_k_8.kmx, qubits 121)
+  k9: 221 (angle_k_9.kmx, qubits 120)
+  k10: 221 (angle_k_10.kmx, qubits 120)
+  k11: 250 (angle_k_11.kmx, qubits 128)
+  k12: 221 (angle_k_12.kmx, qubits 120)
+  k13: 217 (angle_k_13.kmx, qubits 121)
+  k14: 217 (angle_k_14.kmx, qubits 121)
+per pass 3468
+
+Builder C4 (research/ws_chem_c4.md): the replaced wired loaders use TWO POOL-FREE 38-PRODUCT GROUPS: two
+disjoint 6-output groups (outputs in the wire basis) each planned at 38 products by an exact search (every
+hyperplane of the group's relation space, priced by Lovasz's randomized matroid-parity rank, public
+mathematics), every product non-silent on the next group's kill coordinate; groups 3 and 4 by the production
+engine (designer R59's TieKill over builder C2's placed-kill engine and C-4 closure), group 3 at 42 by
+builder C2's annealer; emitted and checked by builder C2's emit_c4. Tools: chem_c4_dump.py, chem_c4_wb.py,
+chem_c4_ns.py, chem_c4_pair.py, chem_c4_pre.py, chem_c4_build.py, tools/sh/chem_c4_loader.sh. Base entry: <HOME>/qcc/ws/chem_c4/best/c4_pB1q9
+Builder C4 (holder 6's unattended port, tools/sh/chem_c4_port4.sh LAYOUT 10) on t11_r10ag2ca with the table's own weights: k1-k14 by tonight's levers (R86's group-4 form with design seat R89's strict drop; R89's k8 / k14 form and supply-aware pairs; builder C3's S5T+ / V route on the kept loaders; 25-output wired loaders by loader2), k0 by builder C3's k0 pipeline (c4).
+  CREDIT (added 2026-11-16 12:40Z, research/midprize/CREDITS_and_lineage.md section 3): the loaders' high-cache form
+  at 68 ANDs and the "sector closure" that meets its condition were learned from Syed Asad Ali's public Apache-2.0
+  chemistry plans, read as data (research/ws_chem_ld2.md, the C-4 model entry); our fitting objective was first
+  rebuilt from Lera / marculera's public Apache-2.0 pipeline (marculera/dfthc-compact-pipeline; research/
+  ws_chem_factor.md), and public loader notebooks (Lera, maoxin) were read for the engine's early ideas. The
+  objective and file format are the hosts' starter kit's. The table, its labels, rounding, finishing chain and the
+  loader compiler are our own.
+
+PN-CHEM channel gauge (tools/lead_gauge.py, 2026-11-20 01:35 UTC): only W and H2_I changed, rotated per group by an orthogonal matrix that keeps the Gram matrix (drift 7.1e-15); Lambda 283.28811647 -> 283.26971338, lambda_eff 46.933606471 -> 46.932071378; error_1/error_2/E_gap unchanged to 3.2e-14 relative. Credits (idea public, code ours): Kirill Tymchishin, exact gauge (kaggle.com/code/kirilltym/quantum-circuits-exact-gauge-5-word-qrom); Alex Chilton, LLM gauge (kaggle.com/code/alexchilton/28-24-lb-which-circuits-survive-private-salt, cell 5); Agniv Banerjee / SomeJoint, exact gauge sweeps (kaggle.com/code/somejoint/quantum-circuits-24-65-local-gm-chem-refit, cell 4); Isabe11aM00re, per-rank column gauge (kaggle.com/code/isabe11am00re/qcc-v47-submission, v3); James Barlow / manwithacat, refit alternated with the column gauge (kaggle.com/code/manwithacat/vqcc-hedge-wizardry-notebook, HW-03/HW-04).

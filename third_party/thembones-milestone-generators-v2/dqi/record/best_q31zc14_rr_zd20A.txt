@@ -1,0 +1,6 @@
+a 859ff092df1a45fc | salt0 dqi      cost 3.32669e+11  Q 901  Tof 343998.0  errors 0/0  R 1.19126  [145.6s] | alt-salt-1 dqi      cost 3.32669e+11  Q 901  Tof 343997.9  errors 0/0  R 1.19126  [122.9s]
+b f4e04792fb923c04 | salt0 dqi      cost 3.35497e+11  Q 901  Tof 343997.9  errors 2/0  R 1.20139  [146.5s]
+c 5384c89ce1b4443d | salt0 dqi      cost 3.34197e+11  Q 901  Tof 343997.8  errors 1/0  R 1.19673  [154.7s]
+d f976e315802046f0 | salt0 dqi      cost 3.32669e+11  Q 901  Tof 343997.9  errors 0/0  R 1.19126  [156.9s] | alt-salt-1 dqi      cost 3.34196e+11  Q 901  Tof 343997.7  errors 0/1  R 1.19673  [157.6s]
+e c78c07d9c71a50ba | salt0 dqi      cost 3.34197e+11  Q 901  Tof 343998.0  errors 1/0  R 1.19673  [138.6s]
+f 24b8f30322e63b8e | salt0 dqi      cost 3.32669e+11  Q 901  Tof 343998.1  errors 0/0  R 1.19126  [184.9s] | alt-salt-1 dqi      cost 3.32669e+11  Q 901  Tof 343997.7  errors 0/0  R 1.19126  [138.8s]

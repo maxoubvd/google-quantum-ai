@@ -53,4 +53,8 @@ in third_party/PROVENANCE.md:
   Redrouthu, rupam2020 and boristown chained by goodpjw2008): not stored in this repository; pinned, with the
   authors' NOTICE and credits verbatim, in third_party/public-frontier-2026-11-21/.
 
+- third_party/thembones-milestone-generators-v2/: team ThemBones (Danish Ali), milestone generators, Apache-2.0,
+  with their NOTICE and upstream licences verbatim (Syed Asad Ali named first as original builder). Our scripts that
+  run them are in generators/thembones/ (TEAM.md).
+
 (Entries are added here as third-party work is included.)

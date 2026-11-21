@@ -1,0 +1,18 @@
+repro901 zd20 variant l9r4oxg extra B5_ZP_ORACLE=<HOME>/qcc/ws/dqi_int/zptrace/z9C_oracle.json B5_ZP_DEFER=1 B5_ZP_DOOM=1 B5_ZP_BELADY=1 B5_ZP_VICTIMS=1 B5_ZP_MAXGAP=100 DQI_INT_EXT=dqi_int_tail901,dqi_zn_pdl2,dqi_zn_kpark,dqi_zn_alias,dqi_int_aliaslog,dqi_z2_pdr,r46_dqi_syn_tail,r46_dqi_ext_fgret,r48_dqi_ret2_lateflag,dqi_int_root4,dqi_int_merge49b,dqi_int_zpk2,dqi_int_kcg,dqi_int_mhr,dqi_int_zcache,dqi_int_rinvc,dqi_int_iicache,dqi_dq3_npair,dqi_dq3_w901,dqi_dq3_hflag,dqi_dq3_kpn,dqi_dq3_inv24,dqi_dq3_om36,dqi_dq5_c12,dqi_int_div6k,dqi_dq5_c12n3,dqi_int_fdots,dqi_int_prek,dqi_int_mon1 DQI_INT_KCG_A=1 DQI_INT_KCG_C=1 DQI_INT_MHR_OUT=<HOME>/qcc/ws/dqi_int/mhr/zd20.json DQI_INT_MHR_E=1 DQI_INT_MHR_XOFF=1 DQI_INT_MHR_LEVELS=11,13 DQI_INT_ZC_CEIL=901 DQI_INT_ZC_OUT=<HOME>/qcc/ws/dqi_int/mhr/zd20_zc.json DQI_INT_RC_OUT=<HOME>/qcc/ws/dqi_int/mhr/zd20_rc.json DQI_DQ3_W901_NAMES=inverse24_forward_flagfree DQI_INT_FDOTS_OUT=<HOME>/qcc/ws/dqi_int/mhr/zd20_dots.json DQI_INT_PREK_OUT=<HOME>/qcc/ws/dqi_int/mhr/zd20_prek.json DQI_INT_MHR_EARLYF=1 DQI_INT_MHR_EARLY_LEVELS=11,13 DQI_INT_MON1_OUT=<HOME>/qcc/ws/dqi_int/mhr/zd20_mon1.json DQI_INT_MON1_MERGE=1 start 01:01:30Z
+r49c zd20p (l9r4oxg, markers) started on 8,9; marker file -> <HOME>/qcc/ws/dqi_int/r46/zd20p/dqi.kmb
+marker 2cb5055fc3fa1bae quick: dqi      cost 5.1579e+11  Q 902  Tof 345012.0  errors 0/0  R 1.83749  [29.4s]
+round 1 exclude '': coverage: 64 runs, 0 added parks, 0 uncovered
+spec c869f6601bc8c9ee (18 lines)
+park: parked wire 851 over 42003188..67633706: other readers [] written <HOME>/qcc/ws/dqi_int/p901/zd20/k.kmb: Q 913, bits 146838, ops 85114147, static Toffoli-class 372746 (+154; chains 154) (1
+realloc: touches outside any segment (never-executed ops): 0 written <HOME>/qcc/ws/dqi_int/p901/zd20/r901/dqi.kmb: Q 901 (13s) 
+quick r901: dqi      cost 5.14858e+11  Q 901  Tof 345153.0  errors 0/0  R 1.83749  [26.0s]
+sha r901 5997fd13cecb0585 done 01:15:49Z
+dwx: links admitted 975 sha 2c043a9afc55a640 01:26:33Z
+file A = dwx final (INV17 applied before re-assignment)
+file A 2c043a9afc55a640 01:27:01Z
+A quick: dqi      cost 5.13134e+11  Q 901  Tof 343997.6  errors 0/0  R 1.83749  [31.3s]
+A official salt0: dqi      cost 3.34196e+11  Q 901  Tof 343997.6  errors 1/0  R 1.19673  [195.2s]
+A official alt-salt-1: dqi      cost 3.34197e+11  Q 901  Tof 343998.0  errors 1/0  R 1.19673  [219.7s]
+paired A vs best_q24k3a: salt0	1	0	1	0	1	0	0	40:1:CV:PV
+paired A vs best_q24k3a: alt-salt-1	1	0	1	0	1	0	0	42:248:CV:PV
+DONE 01:40:40Z

@@ -1,0 +1,23 @@
+{
+ "error_1": 0.019995851428408682,
+ "error_2": 0.01999919988810772,
+ "Lambda": 283.28811647181794,
+ "E_gap": 3.914901009455207,
+ "lambda_eff": 46.9336064709557,
+ "shape": [
+  9,
+  127,
+  46
+ ],
+ "brot": 7,
+ "passes_accuracy": true,
+ "fixed_toffoli": 6500,
+ "loader_per_pass": 3550,
+ "T": 13600,
+ "Q": 405,
+ "cost": 258510304.442024,
+ "vs_entry_pct": -10.601004075205955,
+ "minority_sign_share": 0.00041849378638622733,
+ "trivial_two_body_words": 0.08277631962671332,
+ "table": "<HOME>/qcc/ws/chem_t11/pfin/t11_r10ag2ca/all_c.npz"
+}

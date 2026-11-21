@@ -1,0 +1,26 @@
+# T10 seat 4: THE TICKET TABLE v4 (written 17:45Z Nov 18, before any start): CARD 30 SLOT B (the old cards will not start;
+# LEAD_NOTES 17:14Z / 17:35Z), gated at MAXEND = 399.34 + saving / 6.3 (R85-CHEM-BUDGET). One run a slot; two runs a GPU.
+# card gpu name layout(rel/t10s4/<x>.txt) seed(- = no jitter) count-a-pass kill-projected-END-max factor CPUS SDYN CONDC
+30 0 t10_p56a  P56  -  3515 399.3 2 4,68 5 6,7,69,70,71
+30 1 t10_p56b  P56  47 3515 399.3 2 12,76 13 14,15,77,78,79
+30 2 t10_p7s61 P57x 61 3511 400.0 1 32,96 33 34-39
+30 3 t10_p55a  P55  -  3520 398.4 2 20,84 21 22,23,85,86,87
+# v5 (20:45Z): CARD 30 ALONE (FS's fits ended): the late LM window (R85 item 4) on pB1's layout, no jitter: identical to
+# pB1 until the window opens (a determinism check against pB1's logged curve); TOOLF=chem_t10_frelgcjl.py, XTRA per run:
+# l75a --lm2-from 0.75 --lm2-until 1.0 --lm2-steps 8 --lm2-seconds 120; l75b 15 / 300; l75c 30 / 600; l60a from 0.6, 8 / 120
+30 0 t10_l75a  P57x -  3511 399.0 1 4,68 5 6,7,69,70,71
+30 1 t10_l75b  P57x -  3511 399.0 1 12,76 13 14,15,77,78,79
+30 2 t10_l75c  P57x -  3511 399.0 1 32,96 33 34-39
+30 3 t10_l60a  P57x -  3511 399.0 1 20,84 21 22,23,85,86,87
+30 0 t10_l75d  P57x -  3511 399.0 1 4,68 5 6,7,69,70,71
+30 2 t10_l75cR P57x -  3511 399.0 1 24,88 25 26,27,89,90,91
+# v6 (22:22Z, PRE-REGISTERED, start ONLY if the A/B t10_l75c vs t10_l75cR reads the late window 2.0 mHa^2 or more better at
+# the END): the relation layouts + the late window [0.6, 1] 8 / 120 (l60a's setting): TOOLF=chem_t10_frelgcjl.py
+# XTRA="--lm2-from 0.6 --lm2-until 1.0 --lm2-steps 8 --lm2-seconds 120"; gate MAXEND 399.34 + saving / 6.3 (Q2a 400.61, Q3a 401.24, Q1 399.97)
+30 1 t10_q2L  Q2a  -  3503 401.8 2 12,76 13 14,15,77,78,79
+30 2 t10_q3L  Q3a  -  3499 402.3 2 32,96 33 34-39
+30 3 t10_q1L  Q1k6 -  3507 401.6 2 20,84 21 22,23,85,86,87
+# v7 (23:42Z): the late window as the recipe (A/B -0.843 [M]): P57x natural draws with --lm2-from 0.75 --lm2-until 1.0
+# --lm2-steps 30 --lm2-seconds 600, started by ~/qcc/ws/chem_t10/s4/nextrun.sh when the GPU's END driver has finished
+30 2 t10_l75e  P57x -  3511 399.8 1 32,96 33 34-39
+30 3 t10_l75f  P57x -  3511 399.8 1 20,84 21 22,23,85,86,87

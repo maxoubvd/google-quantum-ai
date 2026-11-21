@@ -1,0 +1,42 @@
+best_q31zc12 -- DQI, built by B5 (24th holder) 2026-11-18. best_q31zc11's recipe (chain zd4) with the 21st holder's EARLY
+HOLD of the gap flag at the two variant-E restores (levels 11 and 13) switched on, and ONE FIX to it, chain zd9:
+  tools/dqi_int_mhr.py (sha256 2d945a2c44e10c00, was b51c73b54b74b26d in best_q31zc11): DQI_INT_MHR_EARLYF=1
+    DQI_INT_MHR_EARLY_LEVELS=11,13. At those restores the level's gap flag F is not read between E's entry and
+    look_solve's hold_flag(b, F) after direct_post, so the kit's hold (hmr into a new bit + free) is done at E's entry;
+    the conv then needs no 902nd wire (the 901 spec port adds 0 parks against best_q31zc11's 2), and the caller's hold
+    returns that same bit. THE FIX (ZPTICK, default on): that hold never reached zpark's own hold wrapper, so zpark's
+    call clock (the time base of its oracle zptrace/z9C_oracle.json) ran one kit call behind from there on: 55 oracle
+    misses, 9 victim evictions lost and P1 37 links short in unconvert (measured on zd5 / zd6 / zd7 today and on
+    Nov 17's E16 / E17). The early hold now does what zpark's hold does for a flag it does not park: tick the clock,
+    drop the flag from zpark's live map, file the mask under its key. No gate is emitted by the fix.
+EXACTNESS: the early hold is the kit's own hold moved to an earlier moment at which F is not read (exact by form); the
+  fix changes zpark's bookkeeping only (zpark's evictions and hand-overs stay exact by its design: an HMR whose phase
+  the owner's consume repays); zpark's counters equal the base's (b5_k1_miss 0, b5_clock 906, victims 25, gap 3)
+  [M build.log]; markers and file A quick 0 / 0; paired salts below [M].
+CHAIN (box 6, tools/sh/dqi_int_zc5b.sh, chain zd9, 21:14Z): marker 89e03a65 345,194.8 at Q 902, quick 0 / 0; spec
+  port 69 runs, 0 parks added, 0 uncovered; r901 quick 345,335.1 (zd4 345,356.4); P1 975 links of 5,073 (= zd4's);
+  file A f0581f60 quick 344,179.3; official box 6: salt "" 344,179.8 errors 0 / 0, alt-salt-1 344,179.8 errors 0 / 0.
+FILE: dqi.kmb = zd9's file A, sha256 f0581f6005710f5a488fc7ed942de0331e2e66da1e7788f8bf568f0dee7670e6. Official lane
+  (box 4) 21:46Z: salt "" 344,179.79 errors 0 / 0 = 3.32845e11 (332,844,722,950); alt-salt-1 344,179.81 errors 0 / 0 =
+  3.32845e11 (332,844,743,018) [V] = best_q31zc11 - 22.0 / - 21.7 Toffolis (box_verify_*.json here).
+EXACTNESS ON THE LINE: paired against best_q31zc11's chain file A (a39e8353, ~/qcc/ws/dqi_int/p901/zd4/A) on the child's
+  own draws of salt "" and alt-salt-1..11 (zd9_vs_zd4A.tsv here; tools/dqi_int_rate.py, 1,340 s): 4 failed shots in 12
+  runs (alt-salt-4 value, alt-salt-5 phase, alt-salt-6 value, alt-salt-10 value), EVERY one failed by the parent on the
+  same input: child-only 0, parent-only 0 [M].
+RE-ROLLS (box 6, rr_zd9A.txt here): a 4b6d48e0 and e 4836e673 clean on both official salts; b, c, d failed one shot
+  each on one salt (draws). Folders best_q31zc12_a (re-roll a: lane 344,179.96 / 344,179.89, 0 / 0) and best_q31zc12_b
+  (re-roll e: lane 344,179.66 / 344,179.79, 0 / 0), 3.32845e11 each [V].
+REPRODUCE (box 6, fresh folders; never two launches in the same minute):
+  B5_INV17_MAP=dqi_int_inv17map3.py B5_ZC_PARENT=zd4 B5_ZC_PTAG=zd4A bash ~/Quantum/tools/sh/dqi_int_zc5b.sh <fresh> <c1,c2> <c1-c2> <pair cores> \
+    dqi_dq3_kpn.py,dqi_dq3_inv24.py,dqi_dq3_om36.py,dqi_dq5_c12.py,dqi_int_div6k.py,dqi_dq5_c12n3.py,dqi_int_fdots.py,dqi_int_prek.py,r81_dqi_fold_k22_K154.txt,r81_dqi_fold_k23_K224.txt \
+    dqi_dq3_kpn,dqi_dq3_inv24,dqi_dq3_om36,dqi_dq5_c12,dqi_int_div6k,dqi_dq5_c12n3,dqi_int_fdots,dqi_int_prek \
+    "DQI_INT_FDOTS_OUT=<json> DQI_INT_PREK_OUT=<json> DQI_INT_MHR_EARLYF=1 DQI_INT_MHR_EARLY_LEVELS=11,13"
+  then bash ~/Quantum/tools/sh/dqi_int_p901pub3.sh <fresh> <cores> 2 (re-rolls). Every step writes fresh folders.
+Credits: as best_q31zc11 (projective finish and CRT closing after Syed Asad Ali's public DQI decoder, Apache-2.0,
+  re-implemented by D1; Z1's zero-node frame; P1's exact post-pass; B6's dr division; J's converter caches; R54's
+  tensors; R55's zero intervals; R62-DQI-CONVN's KCG; the measured-heads restore idea from the R70-DQI-GAP seat; B7's
+  reverse 24-bit inverse rinv27; the 22nd B5 holder's cached 12-bit inverses; DQ3's rows npair, ff24, hflag, inv24, kpn,
+  om36; DQ5's c12, c12n3; B5's div6k; R46-DQI-EXT's INV17 sites; R44-XFER's dqidrop build2; D1's pair kernel and
+  R33-DQI-FIELD's mixed programs; R81-DQI-FOLD's K(2,2) / K(2,3) schemes and installer; R46-DQI-CONV's zpark and the
+  16th holder's oracle schedule); public mathematics: flip graphs (M. Kauers, J. Moosbauer, arXiv 2212.01175), plus
+  transitions (Y. Arai, Y. Ichikawa, K. Hukushima, arXiv 2312.17094), Toom-Cook evaluation / interpolation.

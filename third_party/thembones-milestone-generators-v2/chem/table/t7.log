@@ -1,0 +1,157 @@
+[table7] in/t11_r10ag2ca_src.npz: shape (9, 127, 46), brot 7, words in [0, 127] (stored mod 128); decoded vectors agree with the rounding to 6.7e-16  (10 s)
+[table7] offsets: 0 -> E_gap 957.4237, Lambda 1280.13; least E_gap (107 iterations) -> E_gap 4.076947 (floor 3.914898), Lambda 283.264, |W| 32.885  (13 s)
+[table7] provisional rows (nearest words): rows' own error_1 95.5890 mHa; {"error_1": 0.09558896249200763, "error_2": 0.01993006052089914, "Lambda": 283.26442150032767, "E_gap": 4.076947001602093, "lambda_eff": 47.886183507758815}  (22 s)
+[table7] THE ROUNDING'S OWN error_2 (official, its weights): 19.9301 mHa = 397.21 mHa^2
+[table7] --- free refit (no error_1 limit)
+[table7c] t10: the free refit held to error_2 <= 19.9651 mHa (room kept for the rows)
+start official {"error_1": 0.09598571518541178, "error_2": 0.020239339173824207, "Lambda": 283.2643860334472, "E_gap": 4.078424717892631, "lambda_eff": 47.894795116123674}
+start formula  e2 20.23934 e1 95.98572 gap 4.0784247 Lambda 283.26439 lambda_eff 47.89480
+  rotate: lambda_eff 47.89388 e2 20.2393 e1 95.9857 gap 4.078425  (1 s)
+outer 0: 1 its  e2 20.3664  e1 95.8858  gap 3.922111  Lambda 283.1920  lambda_eff 46.96848  y [0. 0. 0.] rho 1  (2 s)
+outer 1: 0 its  e2 20.3664  e1 95.8858  gap 3.922111  Lambda 283.1920  lambda_eff 46.96848  y [0.404 0.    0.   ] rho 2  (3 s)
+outer 2: 55 its  e2 20.0927  e1 98.6584  gap 3.914915  Lambda 283.1262  lambda_eff 46.92018  y [1.213 0.    0.   ] rho 4  (7 s)
+outer 3: 1 its  e2 20.0927  e1 98.6584  gap 3.914915  Lambda 283.1262  lambda_eff 46.92018  y [1.735 0.    0.039] rho 8  (7 s)
+outer 4: 46 its  e2 20.0788  e1 100.7941  gap 3.914927  Lambda 283.0124  lambda_eff 46.91076  y [2.781 0.    0.116] rho 16  (10 s)
+  rotate: lambda_eff 46.91076 e2 20.0788 e1 100.7941 gap 3.914927  (11 s)
+outer 5: 18 its  e2 20.0426  e1 101.2016  gap 3.915238  Lambda 282.9989  lambda_eff 46.91148  y [4.647 0.    0.086] rho 32  (13 s)
+outer 6: 400 its  e2 20.0188  e1 108.2825  gap 3.914924  Lambda 282.9221  lambda_eff 46.90320  y [7.224 0.    0.   ] rho 64  (30 s)
+outer 7: 400 its  e2 20.0118  e1 103.9764  gap 3.914925  Lambda 282.9601  lambda_eff 46.90638  y [10.853  0.     0.078] rho 128  (46 s)
+outer 8: 27 its  e2 20.0118  e1 103.9342  gap 3.914926  Lambda 282.9604  lambda_eff 46.90640  y [17.217  0.     0.123] rho 256  (48 s)
+outer 9: 3 its  e2 20.0118  e1 103.9342  gap 3.914925  Lambda 282.9604  lambda_eff 46.90640  y [29.936  0.     0.   ] rho 512  (48 s)
+  rotate: lambda_eff 46.90640 e2 20.0118 e1 103.9342 gap 3.914925  (49 s)
+outer 10: 258 its  e2 19.9881  e1 96.5580  gap 3.914951  Lambda 283.2461  lambda_eff 46.93039  y [55.375  0.     0.077] rho 1024  (66 s)
+outer 11: 18 its  e2 19.9881  e1 96.5579  gap 3.914935  Lambda 283.2460  lambda_eff 46.93030  y [82.002  0.     0.   ] rho 2000  (70 s)
+outer 12: 191 its  e2 19.9625  e1 95.8679  gap 3.914933  Lambda 283.8721  lambda_eff 46.98249  y [134.034   0.      0.   ] rho 2000  (78 s)
+   feasible, official {"error_1": 0.0958679053160182, "error_2": 0.019962515153432905, "Lambda": 283.8721364765475, "E_gap": 3.914932903193403, "lambda_eff": 46.98248647259084}
+outer 13: 1 its  e2 19.9625  e1 95.8679  gap 3.914933  Lambda 283.8721  lambda_eff 46.98249  y [134.865   0.      0.   ] rho 2000  (88 s)
+outer 14: 0 its  e2 19.9625  e1 95.8679  gap 3.914933  Lambda 283.8721  lambda_eff 46.98249  y [135.695   0.      0.   ] rho 2000  (97 s)
+  rotate: lambda_eff 46.98244 e2 19.9625 e1 95.8679 gap 3.914933  (107 s)
+outer 15: 53 its  e2 19.9619  e1 95.8708  gap 3.914950  Lambda 283.8655  lambda_eff 46.98203  y [136.525   0.      0.   ] rho 2000  (112 s)
+   feasible, official {"error_1": 0.095870792334482, "error_2": 0.019961922155001453, "Lambda": 283.8654752234532, "E_gap": 3.914949914345925, "lambda_eff": 46.98203276776995}
+outer 16: 1 its  e2 19.9619  e1 95.8708  gap 3.914950  Lambda 283.8655  lambda_eff 46.98203  y [136.17   0.     0.  ] rho 2000  (122 s)
+outer 17: 14 its  e2 19.9619  e1 95.8711  gap 3.914925  Lambda 283.8654  lambda_eff 46.98188  y [135.814   0.      0.   ] rho 2000  (133 s)
+   feasible, official {"error_1": 0.09587110913689835, "error_2": 0.0199619413844783, "Lambda": 283.8654001094796, "E_gap": 3.914924985514517, "lambda_eff": 46.98187796567043}
+outer 18: 7 its  e2 19.9619  e1 95.8711  gap 3.914925  Lambda 283.8654  lambda_eff 46.98188  y [1.35497e+02 0.00000e+00 2.90000e-02] rho 2000  (143 s)
+outer 19: 1 its  e2 19.9619  e1 95.8711  gap 3.914925  Lambda 283.8654  lambda_eff 46.98188  y [1.35179e+02 0.00000e+00 2.50000e-02] rho 2000  (152 s)
+  rotate: lambda_eff 46.98188 e2 19.9619 e1 95.8711 gap 3.914925  (162 s)
+outer 20: 1 its  e2 19.9619  e1 95.8711  gap 3.914925  Lambda 283.8654  lambda_eff 46.98188  y [1.34862e+02 0.00000e+00 2.10000e-02] rho 2000  (162 s)
+outer 21: 2 its  e2 19.9619  e1 95.8711  gap 3.914925  Lambda 283.8654  lambda_eff 46.98188  y [1.34545e+02 0.00000e+00 1.70000e-02] rho 2000  (172 s)
+outer 22: 3 its  e2 19.9619  e1 95.8711  gap 3.914925  Lambda 283.8654  lambda_eff 46.98188  y [1.34228e+02 0.00000e+00 1.20000e-02] rho 2000  (181 s)
+outer 23: 1 its  e2 19.9619  e1 95.8711  gap 3.914925  Lambda 283.8654  lambda_eff 46.98188  y [1.3391e+02 0.0000e+00 9.0000e-03] rho 2000  (191 s)
+outer 24: 1 its  e2 19.9619  e1 95.8711  gap 3.914925  Lambda 283.8654  lambda_eff 46.98188  y [1.33593e+02 0.00000e+00 5.00000e-03] rho 2000  (200 s)
+  rotate: lambda_eff 46.98188 e2 19.9619 e1 95.8711 gap 3.914925  (210 s)
+outer 25: 1 its  e2 19.9619  e1 95.8711  gap 3.914925  Lambda 283.8654  lambda_eff 46.98188  y [1.33276e+02 0.00000e+00 1.00000e-03] rho 2000  (211 s)
+outer 26: 1 its  e2 19.9619  e1 95.8711  gap 3.914925  Lambda 283.8654  lambda_eff 46.98188  y [132.959   0.      0.   ] rho 2000  (220 s)
+outer 27: 1 its  e2 19.9619  e1 95.8711  gap 3.914925  Lambda 283.8654  lambda_eff 46.98188  y [132.641   0.      0.   ] rho 2000  (230 s)
+outer 28: 2 its  e2 19.9619  e1 95.8711  gap 3.914925  Lambda 283.8654  lambda_eff 46.98188  y [132.324   0.      0.   ] rho 2000  (239 s)
+outer 29: 1 its  e2 19.9619  e1 95.8711  gap 3.914925  Lambda 283.8654  lambda_eff 46.98188  y [132.007   0.      0.   ] rho 2000  (249 s)
+[table7c] one-body rows IN CARRIER FORM (t10 obcar, mode ge) under 63 relations, 22 tries (fine 3): error_1 best 23.135 mHa (try 16), median inf; {'forced': 2359, 'broken_after_rounding': 0, 'repaired_rows': 0, 'unrepaired_rows': 0, 'broken': 0, 'e_staged': 0.024141900278197403, 'moved_rows': 74, 'gflips': 1146, 'pluspole': 0, 'seconds': 398.5, 'kernel_sets': 20, 'free_cols': 5, 'moves': 1394, 'moved': 1203, 'sweeps': 11, 'e_in': 0.024141900278197403, 'dp_tried': 80, 'dp_taken': 79, 'e_out': 0.023134507034964003}
+[table7] one-body rows, round 1: rows' own error_1 23.1345 mHa; {"error_1": 0.02313450703496616, "error_2": 0.0199619413844783, "Lambda": 283.8654001094796, "E_gap": 3.914924985514517, "lambda_eff": 46.98187796567043}  (2342 s)
+[table7] --- refit with the rows fixed, round 1
+[table7c] t10: round-1 refit relaxed to error_1 <= 23.9900 mHa
+start official {"error_1": 0.024422242085898542, "error_2": 0.020195497613835663, "Lambda": 283.8677920745864, "E_gap": 3.9223534206794284, "lambda_eff": 47.02631980255553}
+start formula  e2 20.19550 e1 24.42224 gap 3.9223534 Lambda 283.86779 lambda_eff 47.02632
+  rotate: lambda_eff 47.02632 e2 20.1955 e1 24.4222 gap 3.922353  (1 s)
+outer 0: 400 its  e2 20.3457  e1 24.0438  gap 3.914860  Lambda 283.4029  lambda_eff 46.94293  y [0. 0. 0.] rho 1  (17 s)
+outer 1: 400 its  e2 20.0950  e1 23.9827  gap 3.914889  Lambda 283.3241  lambda_eff 46.93654  y [0.35  0.057 0.065] rho 2  (32 s)
+outer 2: 400 its  e2 20.0914  e1 24.0370  gap 3.914932  Lambda 283.2384  lambda_eff 46.92965  y [0.549 0.048 0.137] rho 4  (47 s)
+outer 3: 400 its  e2 20.0436  e1 23.9547  gap 3.914923  Lambda 283.2278  lambda_eff 46.92871  y [0.933 0.248 0.107] rho 8  (63 s)
+outer 4: 389 its  e2 20.0331  e1 24.0162  gap 3.914926  Lambda 283.2086  lambda_eff 46.92712  y [1.317 0.    0.124] rho 16  (80 s)
+  rotate: lambda_eff 46.92697 e2 20.0331 e1 24.0162 gap 3.914926  (81 s)
+outer 5: 158 its  e2 20.0270  e1 23.9609  gap 3.914926  Lambda 283.2039  lambda_eff 46.92673  y [1.919 0.468 0.107] rho 32  (88 s)
+outer 6: 257 its  e2 20.0240  e1 23.9877  gap 3.914925  Lambda 283.2037  lambda_eff 46.92670  y [2.926 0.    0.08 ] rho 64  (103 s)
+outer 7: 141 its  e2 20.0123  e1 23.9895  gap 3.914925  Lambda 283.2214  lambda_eff 46.92819  y [4.749 0.043 0.062] rho 128  (111 s)
+outer 8: 245 its  e2 20.0078  e1 23.9851  gap 3.914930  Lambda 283.2177  lambda_eff 46.92791  y [6.894e+00 3.630e-01 2.000e-03] rho 256  (124 s)
+outer 9: 286 its  e2 19.9947  e1 23.9872  gap 3.914925  Lambda 283.2447  lambda_eff 46.93013  y [10.035  0.     0.   ] rho 512  (138 s)
+   feasible, official {"error_1": 0.02398722940159339, "error_2": 0.01999472790320183, "Lambda": 283.24467614889255, "E_gap": 3.914924914497533, "lambda_eff": 46.93012510128239}
+  rotate: lambda_eff 46.93013 e2 19.9947 e1 23.9872 gap 3.914925  (148 s)
+outer 10: 20 its  e2 19.9946  e1 23.9869  gap 3.914929  Lambda 283.2440  lambda_eff 46.93009  y [9.639 0.117 0.044] rho 512  (150 s)
+   feasible, official {"error_1": 0.023986885844017067, "error_2": 0.01999460469918848, "Lambda": 283.24400090063796, "E_gap": 3.914929054411914, "lambda_eff": 46.930093412718506}
+outer 11: 20 its  e2 19.9945  e1 23.9838  gap 3.914929  Lambda 283.2441  lambda_eff 46.93010  y [9.181 0.059 0.   ] rho 512  (161 s)
+outer 12: 7 its  e2 19.9945  e1 23.9838  gap 3.914925  Lambda 283.2441  lambda_eff 46.93007  y [8.653 0.    0.   ] rho 512  (171 s)
+   feasible, official {"error_1": 0.023983806531507557, "error_2": 0.019994471510530513, "Lambda": 283.244082405717, "E_gap": 3.9149247940549685, "lambda_eff": 46.93007485414736}
+outer 13: 53 its  e2 19.9944  e1 23.9873  gap 3.914925  Lambda 283.2437  lambda_eff 46.93005  y [8.126 0.    0.105] rho 512  (184 s)
+   feasible, official {"error_1": 0.02398733604133365, "error_2": 0.019994372161863446, "Lambda": 283.2437002121648, "E_gap": 3.91492521471082, "lambda_eff": 46.930045475158174}
+outer 14: 79 its  e2 19.9939  e1 23.9867  gap 3.914925  Lambda 283.2394  lambda_eff 46.92968  y [7.549 0.172 0.   ] rho 512  (197 s)
+   feasible, official {"error_1": 0.023986700884400722, "error_2": 0.01999390061339542, "Lambda": 283.2394040531083, "E_gap": 3.9149248601279396, "lambda_eff": 46.92968497582552}
+  rotate: lambda_eff 46.92968 e2 19.9939 e1 23.9867 gap 3.914925  (208 s)
+outer 15: 13 its  e2 19.9939  e1 23.9870  gap 3.914925  Lambda 283.2394  lambda_eff 46.92968  y [6.73  0.019 0.072] rho 512  (208 s)
+   feasible, official {"error_1": 0.023987022635915373, "error_2": 0.019993900985150942, "Lambda": 283.23939752252926, "E_gap": 3.914924899749167, "lambda_eff": 46.92968466686228}
+outer 16: 102 its  e2 19.9939  e1 23.9870  gap 3.914925  Lambda 283.2371  lambda_eff 46.92949  y [5.911 0.03  0.123] rho 512  (223 s)
+   feasible, official {"error_1": 0.023987020309897005, "error_2": 0.01999389111703361, "Lambda": 283.2370861356395, "E_gap": 3.9149250364316686, "lambda_eff": 46.929492661607334}
+outer 17: 156 its  e2 19.9945  e1 23.9871  gap 3.914925  Lambda 283.2327  lambda_eff 46.92912  y [5.087 0.041 0.104] rho 512  (241 s)
+   feasible, official {"error_1": 0.0239870644542274, "error_2": 0.01999445631209886, "Lambda": 283.23266798205077, "E_gap": 3.9149250778209534, "lambda_eff": 46.92912433784783}
+outer 18: 30 its  e2 19.9943  e1 23.9872  gap 3.914925  Lambda 283.2317  lambda_eff 46.92904  y [4.553 0.074 0.064] rho 512  (252 s)
+   feasible, official {"error_1": 0.023987174095680172, "error_2": 0.01999432498188862, "Lambda": 283.23166405599034, "E_gap": 3.914924915516167, "lambda_eff": 46.92903962215372}
+outer 19: 79 its  e2 19.9946  e1 23.9869  gap 3.914925  Lambda 283.2302  lambda_eff 46.92892  y [3.951 0.163 0.108] rho 512  (265 s)
+   feasible, official {"error_1": 0.023986889722969196, "error_2": 0.01999463783403426, "Lambda": 283.2301838152108, "E_gap": 3.9149250889749965, "lambda_eff": 46.92891716941753}
+  rotate: lambda_eff 46.92892 e2 19.9946 e1 23.9869 gap 3.914925  (275 s)
+outer 20: 18 its  e2 19.9946  e1 23.9868  gap 3.914925  Lambda 283.2302  lambda_eff 46.92892  y [3.51  0.107 0.062] rho 512  (276 s)
+   feasible, official {"error_1": 0.023986842533569384, "error_2": 0.01999463794178268, "Lambda": 283.23018427388024, "E_gap": 3.9149248862668173, "lambda_eff": 46.928916001186195}
+outer 21: 146 its  e2 19.9972  e1 23.9870  gap 3.914925  Lambda 283.2188  lambda_eff 46.92797  y [3.068 0.026 0.12 ] rho 512  (292 s)
+   feasible, official {"error_1": 0.023986951157144182, "error_2": 0.019997189360527412, "Lambda": 283.2187693100691, "E_gap": 3.914925110828335, "lambda_eff": 46.92796506387614}
+outer 22: 16 its  e2 19.9972  e1 23.9871  gap 3.914925  Lambda 283.2188  lambda_eff 46.92796  y [3.933e+00 1.000e-03 6.400e-02] rho 512  (303 s)
+   feasible, official {"error_1": 0.023987051009923415, "error_2": 0.019997189345102355, "Lambda": 283.2187674564336, "E_gap": 3.9149249341535324, "lambda_eff": 46.9279638577127}
+outer 23: 22 its  e2 19.9968  e1 23.9871  gap 3.914928  Lambda 283.2185  lambda_eff 46.92796  y [4.798 0.027 0.097] rho 512  (315 s)
+   feasible, official {"error_1": 0.023987053425426952, "error_2": 0.019996835560600962, "Lambda": 283.2185092649636, "E_gap": 3.9149277854448883, "lambda_eff": 46.92795928848946}
+outer 24: 159 its  e2 19.9962  e1 23.9869  gap 3.914925  Lambda 283.2183  lambda_eff 46.92793  y [5.482 0.054 0.   ] rho 512  (332 s)
+   feasible, official {"error_1": 0.02398685275351398, "error_2": 0.019996192762501763, "Lambda": 283.2183106194821, "E_gap": 3.914924892862473, "lambda_eff": 46.92792550071417}
+  rotate: lambda_eff 46.92793 e2 19.9962 e1 23.9869 gap 3.914925  (342 s)
+outer 25: 122 its  e2 19.9961  e1 23.9870  gap 3.914925  Lambda 283.2179  lambda_eff 46.92789  y [5.837 0.    0.055] rho 512  (351 s)
+   feasible, official {"error_1": 0.023987030833562795, "error_2": 0.01999609551937291, "Lambda": 283.21793935954554, "E_gap": 3.914924869346578, "lambda_eff": 46.92789438867808}
+outer 26: 3 its  e2 19.9961  e1 23.9870  gap 3.914925  Lambda 283.2179  lambda_eff 46.92790  y [6.142 0.016 0.122] rho 512  (360 s)
+outer 27: 9 its  e2 19.9961  e1 23.9870  gap 3.914925  Lambda 283.2179  lambda_eff 46.92790  y [6.447 0.032 0.123] rho 512  (370 s)
+outer 28: 1 its  e2 19.9961  e1 23.9870  gap 3.914925  Lambda 283.2179  lambda_eff 46.92790  y [6.751 0.009 0.122] rho 512  (380 s)
+outer 29: 1 its  e2 19.9961  e1 23.9870  gap 3.914925  Lambda 283.2179  lambda_eff 46.92790  y [7.056 0.    0.122] rho 512  (390 s)
+[table7c] one-body rows IN CARRIER FORM (t10 obcar, mode ge) under 63 relations, 22 tries (fine 3): error_1 best 22.588 mHa (try 19), median inf; {'forced': 2395, 'broken_after_rounding': 0, 'repaired_rows': 0, 'unrepaired_rows': 0, 'broken': 0, 'e_staged': 0.023546361447538383, 'moved_rows': 74, 'gflips': 1212, 'pluspole': 0, 'seconds': 587.0, 'kernel_sets': 20, 'free_cols': 5, 'moves': 1394, 'moved': 1172, 'sweeps': 12, 'e_in': 0.023546361447538383, 'dp_tried': 75, 'dp_taken': 73, 'e_out': 0.02258771541800052}
+[table7] one-body rows, round 2: rows' own error_1 22.5877 mHa; {"error_1": 0.02258771541799972, "error_2": 0.01999609551937291, "Lambda": 283.21793935954554, "E_gap": 3.914924869346578, "lambda_eff": 46.92789438867808}  (5327 s)
+[table7] --- refit with the rows fixed, round 2
+start official {"error_1": 0.024598001457748746, "error_2": 0.02023921191725105, "Lambda": 283.2188716442929, "E_gap": 3.9128847856118227, "lambda_eff": 46.915828462947665}
+start formula  e2 20.23921 e1 24.59800 gap 3.9128848 Lambda 283.21887 lambda_eff 46.91583
+  rotate: lambda_eff 46.91583 e2 20.2392 e1 24.5980 gap 3.912885  (1 s)
+outer 0: 400 its  e2 20.2762  e1 20.1212  gap 3.914797  Lambda 283.1005  lambda_eff 46.91734  y [0. 0. 0.] rho 1  (15 s)
+outer 1: 400 its  e2 20.1412  e1 20.0191  gap 3.914924  Lambda 283.0921  lambda_eff 46.91739  y [0.281 0.134 0.128] rho 2  (29 s)
+outer 2: 400 its  e2 20.1025  e1 19.9871  gap 3.914926  Lambda 283.0640  lambda_eff 46.91506  y [0.572 0.198 0.13 ] rho 4  (43 s)
+outer 3: 400 its  e2 20.0837  e1 19.9916  gap 3.914925  Lambda 283.0597  lambda_eff 46.91469  y [1.    0.199 0.124] rho 8  (57 s)
+outer 4: 400 its  e2 20.0688  e1 19.9947  gap 3.914925  Lambda 283.0647  lambda_eff 46.91511  y [1.706 0.236 0.125] rho 16  (71 s)
+  rotate: lambda_eff 46.91511 e2 20.0688 e1 19.9947 gap 3.914925  (72 s)
+outer 5: 400 its  e2 20.0603  e1 19.9894  gap 3.914925  Lambda 283.0680  lambda_eff 46.91538  y [2.879 0.359 0.132] rho 32  (86 s)
+outer 6: 400 its  e2 20.0529  e1 19.9942  gap 3.914925  Lambda 283.0748  lambda_eff 46.91595  y [4.953 0.434 0.133] rho 64  (100 s)
+outer 7: 336 its  e2 20.0464  e1 19.9893  gap 3.914927  Lambda 283.0889  lambda_eff 46.91714  y [8.629 0.893 0.128] rho 128  (112 s)
+outer 8: 400 its  e2 20.0410  e1 19.9955  gap 3.914924  Lambda 283.0965  lambda_eff 46.91776  y [15.141  1.182  0.   ] rho 256  (127 s)
+outer 9: 182 its  e2 20.0208  e1 19.9847  gap 3.914970  Lambda 283.2059  lambda_eff 46.92715  y [26.801  3.354  0.144] rho 512  (136 s)
+  rotate: lambda_eff 46.92715 e2 20.0208 e1 19.9847 gap 3.914970  (137 s)
+outer 10: 0 its  e2 20.0208  e1 19.9847  gap 3.914970  Lambda 283.2059  lambda_eff 46.92715  y [39.734  2.16   0.   ] rho 1024  (138 s)
+outer 11: 383 its  e2 20.0041  e1 19.9884  gap 3.914927  Lambda 283.3356  lambda_eff 46.93772  y [65.598  0.     0.   ] rho 2000  (157 s)
+outer 12: 0 its  e2 20.0041  e1 19.9884  gap 3.914927  Lambda 283.3356  lambda_eff 46.93772  y [82.799  2.858  0.   ] rho 2000  (158 s)
+outer 13: 4 its  e2 20.0041  e1 19.9884  gap 3.914926  Lambda 283.3356  lambda_eff 46.93771  y [99.999  5.716  0.   ] rho 2000  (161 s)
+outer 14: 33 its  e2 20.0037  e1 19.9861  gap 3.914926  Lambda 283.3375  lambda_eff 46.93787  y [117.201   8.573   0.   ] rho 2000  (163 s)
+  rotate: lambda_eff 46.93787 e2 20.0037 e1 19.9861 gap 3.914926  (164 s)
+outer 15: 161 its  e2 19.9908  e1 19.9865  gap 3.914925  Lambda 283.6455  lambda_eff 46.96355  y [133.644   6.686   0.   ] rho 2000  (175 s)
+   feasible, official {"error_1": 0.019986471638119195, "error_2": 0.019990766409609645, "Lambda": 283.645471604103, "E_gap": 3.914925094231876, "lambda_eff": 46.963548745839354}
+outer 16: 1 its  e2 19.9908  e1 19.9865  gap 3.914925  Lambda 283.6455  lambda_eff 46.96355  y [124.177   5.63    0.   ] rho 2000  (184 s)
+outer 17: 146 its  e2 19.9891  e1 19.9867  gap 3.914927  Lambda 283.6332  lambda_eff 46.96254  y [114.71    4.573   0.   ] rho 2000  (200 s)
+   feasible, official {"error_1": 0.01998671252876423, "error_2": 0.019989121482127524, "Lambda": 283.63322417323775, "E_gap": 3.91492708237638, "lambda_eff": 46.96253961930461}
+outer 18: 1 its  e2 19.9891  e1 19.9867  gap 3.914927  Lambda 283.6332  lambda_eff 46.96254  y [101.953   3.998   0.   ] rho 2000  (210 s)
+   feasible, official {"error_1": 0.01998671252876426, "error_2": 0.019989121482127534, "Lambda": 283.63322417323775, "E_gap": 3.914927082372742, "lambda_eff": 46.962539619282936}
+outer 19: 0 its  e2 19.9891  e1 19.9867  gap 3.914927  Lambda 283.6332  lambda_eff 46.96254  y [89.196  3.423  0.   ] rho 2000  (219 s)
+  rotate: lambda_eff 46.96254 e2 19.9891 e1 19.9867 gap 3.914927  (229 s)
+outer 20: 0 its  e2 19.9891  e1 19.9867  gap 3.914927  Lambda 283.6332  lambda_eff 46.96254  y [76.439  2.848  0.   ] rho 2000  (230 s)
+outer 21: 400 its  e2 19.9890  e1 19.9868  gap 3.914925  Lambda 283.6058  lambda_eff 46.96024  y [63.682  2.273  0.   ] rho 2000  (255 s)
+   feasible, official {"error_1": 0.01998683944794233, "error_2": 0.019989020866085526, "Lambda": 283.6058462968141, "E_gap": 3.914924977816554, "lambda_eff": 46.96024473384341}
+outer 22: 30 its  e2 19.9890  e1 19.9867  gap 3.914925  Lambda 283.6056  lambda_eff 46.96023  y [5.0724e+01 1.9520e+00 4.4000e-02] rho 2000  (266 s)
+   feasible, official {"error_1": 0.019986658140094104, "error_2": 0.01998902890252758, "Lambda": 283.6056339050325, "E_gap": 3.9149249743422843, "lambda_eff": 46.960227006726065}
+outer 23: 4 its  e2 19.9890  e1 19.9867  gap 3.914925  Lambda 283.6056  lambda_eff 46.96023  y [37.781  1.268  0.096] rho 2000  (276 s)
+outer 24: 3 its  e2 19.9890  e1 19.9867  gap 3.914925  Lambda 283.6056  lambda_eff 46.96023  y [24.839  0.585  0.105] rho 2000  (286 s)
+  rotate: lambda_eff 46.96023 e2 19.9890 e1 19.9867 gap 3.914925  (296 s)
+outer 25: 130 its  e2 19.9947  e1 19.9871  gap 3.914926  Lambda 283.5392  lambda_eff 46.95469  y [11.897  0.     0.118] rho 2000  (302 s)
+   feasible, official {"error_1": 0.019987088021498567, "error_2": 0.019994748245884826, "Lambda": 283.5392043218962, "E_gap": 3.9149260335689178, "lambda_eff": 46.95469496467952}
+outer 26: 139 its  e2 19.9928  e1 19.9873  gap 3.914927  Lambda 283.5202  lambda_eff 46.95312  y [10.393  0.176  0.   ] rho 2000  (317 s)
+   feasible, official {"error_1": 0.0199873133249566, "error_2": 0.01999284428999792, "Lambda": 283.52023681372634, "E_gap": 3.9149268024448247, "lambda_eff": 46.95311806905502}
+outer 27: 71 its  e2 19.9956  e1 19.9865  gap 3.914925  Lambda 283.4976  lambda_eff 46.95122  y [5.082 0.803 0.   ] rho 2000  (330 s)
+   feasible, official {"error_1": 0.019986539368073653, "error_2": 0.019995597871640982, "Lambda": 283.4976167535533, "E_gap": 3.914925163724547, "lambda_eff": 46.951222224041025}
+outer 28: 2 its  e2 19.9956  e1 19.9865  gap 3.914925  Lambda 283.4976  lambda_eff 46.95122  y [5.278 0.    0.   ] rho 2000  (340 s)
+   feasible, official {"error_1": 0.019986539212113116, "error_2": 0.019995598062469176, "Lambda": 283.4976166826107, "E_gap": 3.91492493867554, "lambda_eff": 46.95122087801551}
+outer 29: 121 its  e2 19.9965  e1 19.9875  gap 3.914925  Lambda 283.4678  lambda_eff 46.94873  y [5.474 0.    0.123] rho 2000  (354 s)
+   feasible, official {"error_1": 0.019987524674089485, "error_2": 0.019996543529032372, "Lambda": 283.46777835501035, "E_gap": 3.914925083427079, "lambda_eff": 46.948733670269625}
+[table7] DONE {"error_1": 0.019987524674089485, "error_2": 0.019996543529032372, "Lambda": 283.46777835501035, "E_gap": 3.914925083427079, "lambda_eff": 46.948733670269625}  (5699 s) -> t11_r10ag2ca/table.npz

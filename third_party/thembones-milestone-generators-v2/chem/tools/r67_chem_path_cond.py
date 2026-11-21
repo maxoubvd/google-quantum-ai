@@ -1,0 +1,186 @@
+#!/usr/bin/env python
+"""r67_chem_path_cond (design seat R67-CHEM-PATH): the CONDITIONAL stiffness of every free word of one group, for the
+freeze ORDER of the staged rounding (tools/r67_chem_path_round.py --rank-cond RHO).
+
+The builders rank by S_kk = H_kk - H_kw H_ww^-1 H_wk: the stiffness of a word when the weights of its group are
+re-solved and EVERY OTHER WORD IS HELD (tools/r48_chem_q7c_sdiag.py). Here the full matrix S = Haa - Haw Hww^-1 Hwa
+of the group is built (the same Gauss-Newton model, same weights eliminated) and a word's rank value is
+    d_k = 1 / ((S_FF + RHO diag(S_FF))^-1)_kk          (F = the words still free)
+= its stiffness when the weights AND every other free word of its group are re-solved: what its rounding costs if
+it is decided now (nearest plane's own price; R48-CHEM-LAT's "conditional order", 0.94 to 0.965 of the S_kk order
+in the one-group model, never read in a real run). RHO keeps the fully absorbable words in their S_kk order.
+
+    group_cond(th_g, w_g, K_g, edges, frozen_g, rho, cpu) -> d (B, 75) [0 on frozen words], S_kk (B, 75)
+    python r67_chem_path_cond.py POINT.npz TREE.npz --group 0 [--rho 0.01] [--chunks 20]      (--model: see main)
+The model mode prices orders in the one-group linear model: expected damage of nearest plane with uniform offsets
+= (step^2 / 12) x sum of the pivots of S in the decision order.
+"""
+import os
+import sys
+import time
+
+import numpy as np
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+_TGT = {}
+
+
+def group_S(th_g, w_g, K_g, edges):
+    """S (na, na) of one group at the angles th_g (+ K_g half turns, units of pi) and weights w_g (B, C); per radian^2, Ha^2."""
+    import scipy.linalg as sl
+    from r48_chem_q7c_round import Target, decode_np
+    from r48_chem_q7c_absorb import tangents
+    if "t" not in _TGT:
+        t_ = Target()
+        _TGT["t"] = (t_.i, t_.j)
+    I, J = _TGT["t"]
+    s = np.sqrt(np.where(I == J, 1.0, 2.0))
+    B, C = w_g.shape
+    U = decode_np(th_g + K_g, edges)
+    U = U / np.linalg.norm(U, axis=1, keepdims=True)
+    u, V = tangents(U, edges)
+    Tn = V.shape[1]
+    p = (u[:, I] * u[:, J]) * s
+    A = w_g.T @ (U[:, I] * U[:, J])
+    q = ((V[:, :, I] * u[:, None, J] + u[:, None, I] * V[:, :, J]) * s).reshape(B * Tn, -1)
+    del V
+    g = (w_g @ A) * s
+    ar = A * s
+    bk = np.repeat(np.arange(B), Tn)
+    Haa = q @ q.T
+    Ggg = g @ g.T
+    Haa *= Ggg[np.ix_(bk, bk)]
+    X1 = (q @ g.T)[:, bk]
+    Haa += X1 * X1.T
+    del X1
+    Haa *= 2.0
+    Gqp, Gqa = q @ p.T, q @ ar.T
+    Ggp, Gga = g @ p.T, g @ ar.T
+    Gpp, Gaa, Gap = p @ p.T, ar @ ar.T, ar @ p.T
+    del q
+    wb, wc = np.repeat(np.arange(B), C), np.tile(np.arange(C), B)
+    Haw = Gga[np.ix_(bk, wc)] * Gqp[:, wb]
+    Haw += Ggp[np.ix_(bk, wb)] * Gqa[:, wc]
+    Haw *= 2.0
+    Hww = Gaa[np.ix_(wc, wc)] * Gpp[np.ix_(wb, wb)]
+    X2 = Gap[np.ix_(wc, wb)]
+    Hww += X2 * X2.T
+    del X2
+    Hww *= 2.0
+    nw = B * C
+    Hww[np.diag_indices(nw)] += 1e-10 * np.trace(Hww) / nw
+    X = sl.cho_solve(sl.cho_factor(Hww, overwrite_a=True), Haw.T)
+    Haa -= Haw @ X
+    return Haa
+
+
+def cond_of(S, free, rho):
+    """d_k = 1 / ((S_FF + rho diag)^-1)_kk for the free indices (flat bool mask); zeros elsewhere."""
+    import scipy.linalg as sl
+    F = np.flatnonzero(free)
+    d = np.zeros(S.shape[0])
+    if len(F) == 0:
+        return d
+    SF = S[np.ix_(F, F)]
+    SF = 0.5 * (SF + SF.T)
+    dg = np.maximum(np.diag(SF), 0.0)
+    SF[np.diag_indices_from(SF)] += rho * dg + 1e-9 * float(dg.max())
+    c, info = sl.lapack.dpotrf(SF, lower=1, overwrite_a=1)
+    if info != 0:       # not positive definite even with the ridge: a stronger ridge, once
+        SF = S[np.ix_(F, F)]
+        SF = 0.5 * (SF + SF.T)
+        SF[np.diag_indices_from(SF)] += rho * dg + 1e-5 * float(dg.max())
+        c, info = sl.lapack.dpotrf(SF, lower=1, overwrite_a=1)
+        assert info == 0, "S_FF is not positive definite"
+    inv, info = sl.lapack.dpotri(c, lower=1, overwrite_c=1)
+    assert info == 0
+    d[F] = 1.0 / np.diag(inv)
+    return d
+
+
+def group_cond(th_g, w_g, K_g, edges, frozen_g, rho, cpu=None):
+    """The tool's worker: d (B, 75) of the free words (0 on frozen ones) and S_kk (B, 75) of one group."""
+    if cpu is not None:
+        os.sched_setaffinity(0, {int(cpu)})
+    S = group_S(th_g, w_g, K_g, edges)
+    sd = np.maximum(np.diag(S).copy(), 0.0)
+    d = cond_of(S, ~np.asarray(frozen_g, bool).reshape(-1), rho)
+    return d.reshape(frozen_g.shape), sd.reshape(frozen_g.shape)
+
+
+def pivots(S, order):
+    """Pivots of nearest plane when the words are decided in `order` (first decided first): d[i] = stiffness of
+    order[i] given that the words decided before it are fixed and the later ones are free."""
+    import scipy.linalg as sl
+    rev = np.asarray(order)[::-1]            # Cholesky eliminates from the first variable: the LAST decided goes first
+    M = S[np.ix_(rev, rev)]
+    M = 0.5 * (M + M.T)
+    M[np.diag_indices_from(M)] += 1e-9 * float(np.diag(M).max())
+    c, info = sl.lapack.dpotrf(M, lower=0, overwrite_a=1)
+    assert info == 0
+    # M = U'U: U_kk^2 = the Schur complement of variables 0..k-1 in the leading block = the stiffness of variable k
+    # when variables 0..k-1 are free (minimised over) and the later ones are held. In `rev` order variables 0..k-1 are
+    # the words decided AFTER k and the later ones the words decided BEFORE it: exactly the nearest-plane pivot.
+    return (np.diag(c) ** 2)[::-1]
+
+
+def main():
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument("point")
+    ap.add_argument("tree")
+    ap.add_argument("--group", type=int, default=0)
+    ap.add_argument("--rho", default="0.01")
+    ap.add_argument("--chunks", type=int, default=24, help="recomputes of the conditional table along the order (the tool recomputes "
+                                                           "about every 6 stages)")
+    ap.add_argument("--bits", type=int, default=7)
+    a = ap.parse_args()
+    from r48_chem_q7c_round import N, angles_and_mass
+    z = np.load(a.point)
+    U, W = np.array(z["U"], np.float64), np.array(z["W"], np.float64)
+    U /= np.linalg.norm(U, axis=2, keepdims=True)
+    edges = np.array(np.load(a.tree)["edges"], np.int64)
+    g = a.group
+    th = angles_and_mass(U[g], edges)[0]
+    t0 = time.time()
+    S = group_S(th, W[g], np.zeros_like(th), edges)
+    n = S.shape[0]
+    sd = np.maximum(np.diag(S), 0.0)
+    step2 = (np.pi / (1 << (a.bits - 1))) ** 2
+    unit = 1e6 * step2 / 12.0
+    print(f"group {g}: S {S.shape} built in {time.time() - t0:.0f} s; sum S_kk x step^2/12 = {unit * sd.sum():.1f} mHa^2 "
+          f"(every word rounded alone, weights re-solved)", flush=True)
+    o_sk = np.argsort(-sd, kind="stable")
+    p_sk = pivots(S, o_sk)
+    print(f"ORDER S_kk (the builders'): nearest plane expects {unit * p_sk.sum():.2f} mHa^2; by share of the order "
+          + " ".join(f"{f:g}%: {unit * p_sk[:int(round(f / 100 * n))].sum():.2f}" for f in (1, 4, 10, 25, 64, 100)), flush=True)
+    for rho in [float(x) for x in a.rho.split(",")]:
+        d0 = cond_of(S, np.ones(n, bool), rho)
+        r_ = d0 / np.maximum(sd, 1e-300)
+        print(f"rho {rho:g}: conditional / S_kk: median {np.median(r_):.4f}, 10% {np.quantile(r_, 0.1):.4f}, 90% {np.quantile(r_, 0.9):.4f}; "
+              f"of the 1% stiffest by S_kk: median {np.median(r_[o_sk[:n // 100]]):.4f}", flush=True)
+        o_st = np.argsort(-d0, kind="stable")
+        p_st = pivots(S, o_st)
+        print(f"  ORDER conditional, table computed ONCE: {unit * p_st.sum():.2f} mHa^2 = x{p_st.sum() / p_sk.sum():.4f} of the S_kk order", flush=True)
+        # recomputed along the order: `chunks` equal steps of the frozen share
+        free = np.ones(n, bool)
+        order = []
+        cuts = np.unique(np.round(np.linspace(0, n, a.chunks + 1)).astype(int))
+        # finer steps at the head, as the tool's schedule: 0.25, 0.5, 1, 2, 4% first
+        head = [int(round(f * n)) for f in (0.0025, 0.005, 0.01, 0.02, 0.04)]
+        cuts = np.unique(np.concatenate([cuts, head]))
+        for lo_, hi_ in zip(cuts[:-1], cuts[1:]):
+            d = cond_of(S, free, rho)
+            d[~free] = -1.0
+            pick = np.argsort(-d, kind="stable")[:hi_ - lo_]
+            order += pick.tolist()
+            free[pick] = False
+        p_dy = pivots(S, np.array(order))
+        print(f"  ORDER conditional, table recomputed {len(cuts) - 1} times: {unit * p_dy.sum():.2f} mHa^2 = x{p_dy.sum() / p_sk.sum():.4f} of the S_kk order; "
+              "by share " + " ".join(f"{f:g}%: {unit * p_dy[:int(round(f / 100 * n))].sum():.2f}" for f in (1, 4, 10, 25, 64, 100))
+              + f"  ({time.time() - t0:.0f} s)", flush=True)
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,35 @@
+best_q31zc14 -- DQI, built by B5 (25th holder) 2026-11-19. best_q31zc13's recipe (chain zd17) with the same module in its
+next version, tools/dqi_int_mon1.py (sha256 e7bcbe33135d0ff3aaf3cc033a759296508b9716c43fa47fd5dff9871bb39df2, copy here)
+and ONE switch on, DQI_INT_MON1_MERGE=1 (mon1's fix round 3), chain zd20:
+  THE REVERSE BASE LEVEL WITHOUT a08's TAIL. In best_q31zc13 the reverse of level 1 still opens a SECOND inverse of a
+  after its q_post (a08's prefix / finish / erase_normpair) only to pay the first context's carried phase and to hand
+  level 2 the bit F AND [a = 0]; that tail costs about 69 executed [M, count-only run]. Here the reverse's one context of
+  a is the line's own inverse_apply_safe step for step (its inverse_zero, consume, erase, reached through Z1's pdl2
+  wrapper and the kit's one-line inverse_apply; bytecode-checked against the kit's body, module and closure forms): it
+  consumes the forward's token, runs the mirror action, makes the hand-off bit F AND [a = 0] from its own zero flag (one
+  AND, exactly the bit a08's tail made) and pays its own phase in place (erase with defer False: phase_inverse36_zero,
+  <= 36 mean); no carry, no tail. The hand-off bit is live through the reverse q_post (+1 wire there: the 901 port reads
+  64 runs, 0 parks, 0 uncovered, as zd17). pdl2's late queue is asserted unchanged in the merged context.
+EXACTNESS: the converter alone before / after (tools/dqi_int_mon1ct.py, line environment, seed 29, 2,560 shots incl. 512
+  with F = 1 at the base, 512 with a = 0, 512 with both): merged 1, forward words equal on every shot, round trip clean
+  on every shot, qubits equal; executed round trip -195 a shot against best_q31zc13's -159 [M].
+CHAIN (box 6, tools/sh/dqi_int_zc5b.sh, chain zd20, 01:01:30Z): module patched 21, calls 1 / 1, refused {}, merged 1
+  [M mhr/zd20_mon1.json]; marker 2cb5055f 345,012.0 at Q 902, quick 0 / 0 (zd17's 345,041.2: -29.2); port 64 runs,
+  0 parks, 0 uncovered; r901 5997fd13 345,153.0 (zd17 345,180.6: -27.6); P1 975 links; file A 2c043a9a quick 343,997.6;
+  official box 6 343,997.6 errors 1 / 0 and 343,998.0 errors 1 / 0: both shots (40:1 value, 42:248 value) failed by
+  best_q24k3a too on the same input (inherited draws): file A is not the published file.
+FILE: dqi.kmb = RE-ROLL a of zd20's file A (one INFO_TAG, r46zd20Aa: the same circuit), sha256
+  859ff092df1a45fc48088b12eda6a36e0fe8d2be9b92c52aa6d4ee1033af6ebc. Official lane (box 4) 02:06Z: salt "" 343,998.03 errors
+  0 / 0 = 3.32669e11 (332,668,953,072); alt-salt-1 343,997.90 errors 0 / 0 = 3.32669e11 (332,668,825,427) [V] =
+  best_q31zc13 - 27.7 / - 27.9 = best_q31zc12 - 181.8 / - 181.9 Toffolis.
+EXACTNESS ON THE LINE: paired against best_q31zc12's chain file A (f0581f60) on the child's own draws of salt "" and
+  alt-salt-1..11 (zd20_vs_zd9A.tsv here): 2 failed shots in 12 runs (salt "" 40:1 value, alt-salt-1 42:248 value), both
+  failed by the parent on the same input: child-only 0, parent-only 0 [M].
+RE-ROLLS (box 6, rr_zd20A.txt here): a 859ff092 clean on both official salts (this file); b, c, e failed value shots on
+  salt "", d one phase shot on alt-salt-1: b (7:70, 353:124), c (172:149) and d (77:107 phase) remade byte for byte and
+  paired against best_q31zc12's file on their own draws: every shot failed by the parent too, child-only 0 [M
+  pairzc/zd20rr{b,c,d}_vs_zd9A.tsv]. Further clean re-rolls go out as best_q31zc14_a / _b.
+REPRODUCE (box 6, fresh folders; never two launches in the same minute): best_q31zc13's line with this folder's
+  tools/dqi_int_mon1.py and DQI_INT_MON1_MERGE=1 added to the quoted variables; then
+  bash ~/Quantum/tools/sh/dqi_int_p901pub3.sh <fresh> <cores> 2 (re-rolls).
+Credits: as best_q31zc13.

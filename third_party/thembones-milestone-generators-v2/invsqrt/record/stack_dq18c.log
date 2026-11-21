@@ -1,0 +1,45 @@
+== f9_i1_stack q18 dq18c S5LEND=1 cores 3 start 04:53:45Z; program <HOME>/qcc/ws/f9_i1/prog/dq18c.staged.json; base <HOME>/qcc/ws/s5/inv_h1end/best/b196lend/invsqrt.kmx
+patched <HOME>/qcc/ws/f9_i1/src/dq18c/invsqrt_fc2_patch_h1c.py
+q18 program: 6 ANDs
+== emit 04:53:50Z (5 s) S5LEND=1
+S5LEND: lent q11; T5 q10 T7 q12 W3 q28 W4 q36 W5 q37; Cc 3; L 8; srcw [34, 32, 30, 28, 36, 37, None, None, None, None]; Rt [29, 27, 35, 31, 0, 1, 2, 3, 4, 1000000]
+S5LEND: un-add form game
+S5LEND: lent q11; T5 q10 T7 q12 W3 q28 W4 q36 W5 q37; Cc 3; L 8; srcw [34, 32, 30, 28, 36, 37, None, None, None, None]; Rt [29, 27, 35, 31, 0, 1, 2, 3, 4, 1000000]
+S5LEND: un-add form game
+R55 net: pairs 59, cap 3, model cost 99, held 19
+emit <HOME>/qcc/ws/f9_i1/files/dq18c: sha 8358a08eecabd6ed3bc7 toffolis_exp 1401.88 static 1493 wires 40 peak 40 kmb qubits 40; w24 log [{'w22_lend': 28, 'dlow': 32, 'ands': 6}, {'w22_lend': 28, 'dlow': 32, 'ands': 6}]
+== all-input check of the emit against fc18_M's emit 04:54:36Z (51 s)
+base M: 3133452 inputs, 40 wires, x restored True, dirty wires [], Toffoli-like 1351.000 a shot (outcomes 0) [25 s]
+new, outcomes zero: x restored True, dirty wires [], phase differs from the base on 0 inputs, Toffoli-like 1349.000 a shot, 40 wires [70 s]
+new, outcomes one: x restored True, dirty wires [], phase differs from the base on 0 inputs, Toffoli-like 1448.000 a shot, 40 wires [264 s]
+new, outcomes rand seed 1: x restored True, dirty wires [], phase differs from the base on 0 inputs, Toffoli-like 1401.874 a shot, 40 wires [12 s]
+new, outcomes rand seed 2: x restored True, dirty wires [], phase differs from the base on 0 inputs, Toffoli-like 1401.872 a shot, 40 wires [11 s]
+CHECK PASS: Toffoli-like a shot with random outcomes = 1401.873 (mean of the two seeds; the exact expectation is the generator's toffolis_exp)
+== width step (relabel) 05:01:00Z (435 s)
+HMR q21: moved back over 5 ops; now right after: CX q21 q37
+removed 666 X pairs: [(595, 598, 'q20'), (594, 599, 'q21'), (614, 615, 'q18'), (
+<HOME>/qcc/ws/f9_i1/files/dq18c_x/invsqrt.kmx: wires before 40, peak busy 39, labels after 39 (38 s) -> <HOME>/qcc/ws/f9_i1/files/dq18c_w/invsqrt.kmx
+== all-input check (emit vs relabelled) 05:01:39Z (474 s)
+new, outcomes rand seed 2: x restored True, dirty wires [], phase differs from the base on 0 inputs, Toffoli-like 1401.872 a shot, 39 wires [6 s]
+CHECK PASS: Toffoli-like a shot with random outcomes = 1401.873 (mean of the two seeds; the exact expectation is the generator's toffolis_exp)
+== P1 pass + post-chain 05:02:09Z (504 s)
+sites 19, rewritten 19, skipped [] expected Toffoli-class: 1427.000 -> 1408.000 CHECK PASS 9.6 s 
+dq18c_w.aff: fair-coin Toffoli-class 1408.000 -> 1405.000 (-3.000); CHECK against the input PASS
+T-type Z_POWs folded: 1 (T -1 per shot); CHECK against the input PASS
+post-chain final: <HOME>/qcc/ws/f9_i1/files/dq18c_w.pc/dq18c_w.aff/final.kmb  sha ed481836e5a6403b  05:10:50Z (1025 s)
+== R91 split-debt pass (the b312 carry) 05:10:50Z (1025 s)
+r91pass: b312 -> coin b270, HMR op 16589, t op 16764
+b270: delete 5 ops ['CCX q12 q13 q29 if b270', 'CZ q12 q14 if b270', 'PUSH_CONDITION if b270', 'CZ q12 q13 if b1001', 'POP_CONDITION']; insert 8 after op 16589, 2 after op 16764 (CCX q11 q29 q33)
+ops 24616 -> 24621 qubits 39 bits 1358
+new, outcomes rand seed 2: x restored True, dirty wires [], phase differs from the base on 0 inputs, Toffoli-like 1379.374 a shot, 39 wires [8 s]
+CHECK PASS: Toffoli-like a shot with random outcomes = 1379.377 (mean of the two seeds; the exact expectation is the generator's toffolis_exp)
+text written, ops 24621 qubits 39
+final: <HOME>/qcc/ws/f9_i1/best/dq18c/invsqrt.kmb  sha c639a045edc88aed  carry 1  05:11:19Z (1054 s)
+== EXACT PROOF against the base, ALL inputs 05:11:19Z (1054 s)
+base b196lend: 3133452 inputs, 39 wires, x restored True, dirty wires [], Toffoli-like 1327.000 a shot (outcomes 0) [5 s]
+new, outcomes zero: x restored True, dirty wires [], phase differs from the base on 0 inputs, Toffoli-like 1327.000 a shot, 39 wires [5 s]
+new, outcomes one: x restored True, dirty wires [], phase differs from the base on 0 inputs, Toffoli-like 1425.000 a shot, 39 wires [8 s]
+new, outcomes rand seed 1: x restored True, dirty wires [], phase differs from the base on 0 inputs, Toffoli-like 1379.380 a shot, 39 wires [8 s]
+new, outcomes rand seed 2: x restored True, dirty wires [], phase differs from the base on 0 inputs, Toffoli-like 1379.374 a shot, 39 wires [7 s]
+CHECK PASS: Toffoli-like a shot with random outcomes = 1379.377 (mean of the two seeds; the exact expectation is the generator's toffolis_exp)
+== PROVED 05:11:53Z: wall-clock 1088 s from the program to the proved file <HOME>/qcc/ws/f9_i1/best/dq18c/invsqrt.kmb
