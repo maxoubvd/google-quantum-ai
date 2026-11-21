@@ -44,6 +44,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   - iterate on the fastest check that answers the question (static cost, reduced verifier run, the
     generators' own exact proofs); run the full official verifiers only at gates (before a
     submission or a final choice).
+- **`Analysis/PLAN.md` holds only the current plan.** When the plan is revised (new milestones, new
+  steps, a re-plan; not a mere status update of a step), first copy the version being replaced,
+  unchanged, to `Analysis/plan_history/PLAN_YYYY-MM-DD_<slug>.md` and add its row to
+  `Analysis/plan_history/README.md`; then rewrite `PLAN.md` so that it contains the new plan only, with
+  no superseded sections, old snapshots or struck-through steps (done work is summarised in a line or
+  two, with pointers to `changelog/`).
 - **Work step by step.** `Analysis/PLAN.md` splits the work into milestones (`M<phase>.<n>`, each one
   implementing and testing ideas from the ranked register `Analysis/IDEAS.md`, with a go/no-go
   criterion) and steps (`S<phase>.<n>`). Work on one step at a time, update its status in the plan
@@ -68,7 +74,8 @@ is "correct" when its verifier prints `"status": "PASS"`.
 - `Notebooks/` (versioned): our own notebooks, written here and usually run on Kaggle (CPU, or GPU
   for float64-heavy chemistry refits). Any notebook that reuses a public circuit pins it by SHA-256
   and credits its author and license.
-- `Analysis/PLAN.md`: our action plan and its phases. The dates are indicative and move with progress.
+- `Analysis/PLAN.md`: our current action plan and its phases. The dates are indicative and move with
+  progress. Earlier versions are in `Analysis/plan_history/`.
 - `Analysis/`: third-party analyses of the competition (PDF).
 - `Scientific Papers/`: the background papers. The competition paper itself is
   `google-verifiable-quantum-circuit-compilation/verifiable_circuit_compilation.pdf`.
