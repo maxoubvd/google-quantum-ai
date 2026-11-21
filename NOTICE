@@ -47,4 +47,10 @@ in third_party/PROVENANCE.md:
   Lera's table with maoxin123's CC0 loaders): not stored in this repository; pinned, with the authors'
   NOTICE and credits verbatim, in third_party/public-frontier-2026-11-19/.
 
+- Public frontier files used for the leaderboard submission of 2026-11-21 (board 33.10186; invsqrt by
+  Rithvik Redrouthu and dqi by Tony Li, both on Syed Asad Ali's line through Team ThemBones (Danish Ali) and
+  Almond Labs; chemistry table by Ertugrul Ozer on Almond Labs' and Team ThemBones' work, loaders by Rithvik
+  Redrouthu, rupam2020 and boristown chained by goodpjw2008): not stored in this repository; pinned, with the
+  authors' NOTICE and credits verbatim, in third_party/public-frontier-2026-11-21/.
+
 (Entries are added here as third-party work is included.)

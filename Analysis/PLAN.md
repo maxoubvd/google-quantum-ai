@@ -25,6 +25,12 @@ leaderboard and list the top notebooks with the Kaggle CLI); the numbers in it a
 
 ## 1. Where the competition stands (2026-11-17)
 
+**Snapshot of 21 Nov (supersedes the numbers below):** on 20 Nov team ThemBones (Danish Ali) published the circuits
+and generators of its 31.68 level (Apache-2.0); within a day the public frontier rose from 28.234 to **33.10186**
+(invsqrt 37 Q / 60,955; dqi 900 Q / 3.050e11; chemistry Q 405, brot 7 / 2.525e8) and the board top became a tie at
+about 33.10-33.13 (leader 33.348). Our 19 Nov submission (28.23444) fell far behind. Analysis:
+`Analysis/research/public_frontier_2026-11-21.md`.
+
 **Snapshot 2026-11-19 08:27 UTC (re-plan, 3,377 teams):** leader 31.74 (Z³C¹oherence); gold line (rank 16) 28.824;
 silver (rank 168) 28.2344; bronze (rank 337) 28.2316; plateau: 153 teams at 28.23162 and 53 at 28.23444. Public
 frontier 28.23445 (invsqrt `ecf908fe` 44 Q 74,383.70; dqi `e39b1396` 890 Q 3.4526e11; chemistry `6ef06081` with
@@ -224,7 +230,47 @@ into our generators, then goes beyond.
 | S1.9 | Research and idea register: our code (cost anatomy of each circuit) and the state of the art (papers, public notebooks, open-source tools), by four parallel research agents (invsqrt, dqi, chemistry, cross-cutting); merged into `Analysis/IDEAS.md`, as long a list as possible, by task and by category (A: improve our code; B: rewrite with a different technique), ranked by priority = P(success) × gain ÷ effort | `Analysis/research/*.md` and `Analysis/IDEAS.md` written | DONE (18 Nov): 128 ideas (INV 34, DQI 31, CHEM 31, GEN 32) in `Analysis/IDEAS.md`, details in `Analysis/research/` |
 | S1.10 | Plan refactor: phases 2–4 rewritten as milestones drawn from `IDEAS.md`, keeping every existing step | Plan refactored and reviewed with the user | DONE (18 Nov), pending the user's review |
 
-## 7. Phase 2 — public level, then exploration of new families (21 → 30 Nov)
+## 7. Phase 2 — public level, then the ThemBones source base (21 → 30 Nov)
+
+### Re-plan of 21 Nov (user decisions; supersedes the 19 Nov milestones M2.B–M2.D)
+
+What changed: the ThemBones source line is public and the public frontier is at 33.10 (see §1). The audit of
+21 Nov (`Analysis/research/public_frontier_2026-11-21.md`) shows that every gain is **in-family** (measured-out
+digits re-made in the undo, lent wires, B ≤ 128 at constant R·B, brot 7 by staged rounding, multi-output field
+kernels), and that four of our 19 Nov nulls or ceilings were true only on a restricted domain (§3 of the audit;
+corrections recorded in `experiments/NULLS.md`). Lesson for our paper studies: a null is quoted with its domain,
+and a ceiling is not a floor until the cheap check that would break it (e.g. a scorer grid) has been run.
+
+Decisions (user, 21 Nov):
+- **Third submission** of the 33.10 public set, credited and gated (S2.25); the user submits.
+- **New base for all three tasks: the ThemBones source line** (Apache-2.0, byte-for-byte rebuilds); our v12
+  generators are retired as bases, their tools carry over. Rebuild the public edits as generator passes, then
+  go beyond (37 Q invsqrt from source, dqi 890 Q).
+- **LLM search loop:** priced on paper (`Analysis/research/agent_loop_local_llm_2026-11-21.md`): a cheap API
+  proposer (Haiku, Sonnet escalation, hard spend cap, billed outside the subscription) beats a local model on
+  this laptop; fine-tuning is excluded before the deadline. A one-day go/no-go (M3.4a) decides it.
+
+| Milestone | Content | Expected gain | Time box | Go / no-go |
+|---|---|---|---|---|
+| M2.E Public level 33.10 | S2.25 | 28.23 → about 33.10 | 0.5 day | All gates PASS; the user submits |
+| M2.F ThemBones base from source | S2.26 (reproduce byte for byte), S2.27 (invsqrt public edits as passes), S2.29 (dqi public edits), S2.31 (chemistry chain) | prize-eligible source at the public level | 4–5 days | Each task rebuilt from our repo at or below its public cost |
+| M2.G Beyond the public set | S2.28 (invsqrt 39 → 37 Q from source), S2.30 (dqi 900 → 890 Q) | +0.5 to +2% | rest of Phase 2 | A task below its public file under the full gates |
+| M2.H Freeze before the break | S2.32 (former S2.22): `STATUS.md`, build commands, Phase 2 review | — | 0.5 day | A fresh session rebuilds and resubmits alone |
+
+| Step | Milestone | Goal | Done when | Status |
+|---|---|---|---|---|
+| S2.25 | M2.E | Adopt the 33.10 public set (goodpjw2008's output, 18 members), pins and credits (`third_party/public-frontier-2026-11-21/`), gate (8 salts + official verifiers), zip `artifacts/submissions/public-33102.zip` | all gates PASS | **DONE, READY** (21 Nov): all PASS; dqi fails 1–2 shots on 3 of 8 salts (projected 33.078 at the salt mean); the user submits |
+| S2.26 | M2.F | Reproduce the ThemBones line in `~/venvs/gqai313` (add numba): invsqrt `c639a045`, dqi file A `2c043a9a`, chemistry loaders and npz `e05fb18f`; record run time and memory | byte-for-byte SHA match per task (dqi: first independent rebuild) | TODO (next) |
+| S2.27 | M2.F | invsqrt from source to the public 39 Q level: LEND29, T-fusion, then tonylica's divider/carry ideas as passes (INV-A26) | ≤ 63,016 (then ≤ 61,696), exact proof on all inputs | TODO |
+| S2.28 | M2.G | invsqrt 39 → 38 → 37 Q from source (INV-A27): liveness diff of `d2148a7c` vs `c639a045`, cap-38/37 `game` DP; INV-B10 re-screen | 38 Q at C ≤ 1,604 or 37 Q at C ≤ 1,647 | TODO |
+| S2.29 | M2.F | dqi from source: Almond Labs' five edits, then tonylica's D16 formulas (DQI-A20) | ≤ 3.3248e11, then ≤ 3.05e11 on 16 salts, no more failures than the parent | TODO |
+| S2.30 | M2.G | dqi width 900 → 890 (DQI-A08/A09) | ≥ 4 qubits by 30 Nov (−0.22% each) | TODO |
+| S2.31 | M2.F | chemistry from source: dead-word criterion, our chain DP, table exchange; CHEM-A10 on the new loaders | 13,290 at λ ≤ 46.9182 from our repo | TODO |
+| S2.32 | M2.H | Freeze | a fresh session rebuilds and resubmits | TODO |
+
+Done before this re-plan (19–20 Nov, see the changelog): S2.17 (28.23444), S2.18, S2.19 (E1 GO), S2.21, S2.23
+(family studies on paper), S2.24 (DQI-B13 screen, parked). S2.20 (E2) is dropped with the v12 base; INV-B10 is
+re-screened inside S2.28.
 
 ### Re-plan of 19 Nov (user decisions)
 
@@ -335,18 +381,20 @@ clarifications), keep the Kaggle token valid, and, if the user wants it, let a s
 frontier watch (GEN-A06: list new public notebooks, re-verify, record what to port) so that January starts
 with a ready list.
 
-## 9. Phase 3 — catch-up, then the new families at full scale (around 4 → 16 Jan)
+## 9. Phase 3 — catch-up, then beyond the public set from source (around 4 → 16 Jan)
 
-Re-planned on 19 Nov; re-ranked at M3.1 from `IDEAS.md`, `STATUS.md` and the January board.
+Re-planned on 21 Nov on the ThemBones source base; re-ranked at M3.1 from `IDEAS.md`, `STATUS.md` and the January
+board.
 
 | Milestone | Content | Expected gain | Time box | Go / no-go |
 |---|---|---|---|---|
-| M3.1 Snapshot and catch-up | Read `changelog/` and `STATUS.md`; board and public notebooks (GEN-A06); resubmit the new public frontier if it moved | back to the plateau of the day | 1–2 days | Score at the plateau of the day |
-| M3.2 invsqrt: the best family at full scale | Our own invsqrt generator for the family retained in M2.B (former M3.4b), with the S2.7 tools (exact integer model, table search, angle refit, loader synthesis), the 43-qubit ideas (INV-A20–A25, GEN-B03, GEN-B04) where they apply | +1 to +5% | 4–6 days | Exact full-domain proof and gate; cost below the frontier |
-| M3.3 dqi: the best family at full scale | Prototype then full build of the M2.C family | +1 to +5% if it lands | 3–4 days | Multi-salt expected cost below the frontier, no worse failure rate |
-| M3.4 Evolutionary agent loop | GEN-B01 with GEN-B02 operators on the retained families (fresh subagent per iteration, MAP-Elites on (Q, T)) | +1 to +3% | alongside M3.2–M3.3 | A family beats its incumbent under the full gates; frozen after 3 rounds without gain |
-| M3.5 Chemistry family moves (P100) | CHEM-B10 (R = 7, C = 48–50), CHEM-B12 (C = 40), CHEM-B04/B08 retrains, CHEM-N11 codebook columns, CHEM-B05 budget optimiser; filters: rank R·min(B,C) ≥ ~290, B ≥ 129 | +0.5 to +2.5% | 2–3 days | All chemistry gates passed at a lower cost |
-| M3.6 Team decision (**before 13 Jan, hard deadline**) | — | — | — | Decision recorded |
+| M3.1 Snapshot and catch-up | Read `changelog/` and `STATUS.md`; board and public notebooks (GEN-A06); re-run S2.25 on whatever moved | back to the plateau of the day | 1–2 days | Score at the plateau of the day |
+| M3.2 invsqrt ≤ 36 Q | Search over per-block programs of the ThemBones generator under a wire cap, judged by the 5–8 s exact all-input check (INV-B01, GEN-B01); INV-B10 if it survives S2.28 | −2% to −5% on invsqrt | 3–4 days | Exact proof PASS below the board file |
+| M3.3 dqi kernels and width | Multi-output shared-operand bilinear formulas (flip graphs) at every field site (DQI-A20), 890 Q (DQI-A08/A09), failure guard (DQI-A07/A17); DQI-B13 only with a structured resynthesis | −3% to −8% on dqi | 3–4 days | 16+ salts below the board file, no worse failure rate |
+| M3.4a LLM loop go/no-go | GEN-B18 (Haiku/Sonnet API proposer, spend cap ≤ $25), GEN-B23 (exemplar bank), GEN-B20 (loader golf on a fixed truth table with an exact ms check, re-targeted to a ThemBones chemistry or invsqrt block since the K = 6 path is retired), raced against a non-LLM search of equal time | enabler | 1 day | ≥ 2 ANDs better than the non-LLM baseline within 600 proposals |
+| M3.4b LLM loop production | GEN-B01 with GEN-B02 operators on the blocks of M3.2/M3.3/M3.5, ≤ $100, only on a go; API diff proposals, Claude Code subagents only for ideation and gates | +0.3 to +1% | alongside M3.2–M3.5 | Frozen after 3 rounds without gain |
+| M3.5 Chemistry fit and loaders | CHEM-B23 scorer grid over (R, B, C, brot, J) first (1 min); rounding-aware, loader-aware fit at brot 7 / C 45 and a brot 6 attempt (CHEM-B24, GPU: Kaggle P100/T4 or the RTX 4060); CHEM-B19 non-bilinear loaders with dead-word don't-cares (CPU) | −1% to −5% on chemistry | 2–3 days | e1, e2 < 20 mHa with λ ≤ 46.95, cost below the board file |
+| M3.6 Team decision (**before 13 Jan, hard deadline**) | Includes asking the hosts early in January whether recovered assembly (KMX) counts as source for the prize | — | — | Decision recorded |
 
 ## 10. Phase 4 — final submission (17 → 20 Jan)
 
@@ -373,6 +421,8 @@ exploiting impossible x values is a recorded null (invsqrt.md N1: the verifier c
 
 | Risk | Mitigation |
 |---|---|
+| A paper null or ceiling is quoted outside its domain (four such errors found on 21 Nov) | Every null states its domain; run the cheap check (scorer grid, exact small case) before calling a ceiling |
+| LLM loop: API spend runaway, evaluator reward hacking, local LLM starving the evaluator | Provider-side spend cap; read-only SHA-pinned verifiers, final check on the untouched official verifier; LLM on Windows, evaluator in WSL |
 | One task fails on the private salt → the whole submission scores 0 | Exhaustive invsqrt proof; dqi and chemistry checked on many salts; final A is the safest portfolio |
 | Part not rebuildable from source → prize ineligible | Provenance table from day 1; replace any file without a generator |
 | The compiled-only frontier moves cannot be re-derived in our source (INV-A03 P = 0.5, DQI-A01 P = 0.55) | Time boxes; keep the links that work (e.g. INV-A02 + A04 without A03); move the rest to M3.1 |

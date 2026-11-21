@@ -71,7 +71,7 @@ Counts: 297 community rows; outcomes kill 172, null 96, partial 23, observation 
 | NR-0295 | Drop rotations (remove low-weight phase rotations) | public circuits (the authors say all three tasks;… | null | none published | Reported as a dead end; no numbers given. | Not stated by the authors. |  | crackercoder (Sazza… |
 | NR-0297 | Affine-residual measure-out: replace a CCX whose target holds a·b XOR (affine in other wi… | current 44 Q invsqrt 563d0583f736 (maoxin123 on S… | kill | 1,364 unconditional CCX; uniform 4,096-x screen 14 hits; exact all-x check under zero/7/1… | Every sampled hit failed at small x (1, 2, 16, 64) where leading-zero flags fire; uniform sampling almost nev… | A joint value/phase consumer rewrite or a schedule change for the 33-… |  | ours |
 
-### From our research (`Analysis/research/invsqrt.md`, 35 rows)
+### From our research (`Analysis/research/invsqrt.md`, 42 rows)
 
 | Ref | What was tried | Result | Source |
 |---|---|---|---|
@@ -110,6 +110,13 @@ Counts: 297 community rows; outcomes kill 172, null 96, partial 23, observation 
 | F6 | Logarithmic number system | two hard function evaluations instead of one: ≥ 55 Q, ≥ +120% | same |
 | F7 | Direct Boolean synthesis of the phase bits | ≥ +490% | same |
 | L5.2 | History-free rewrite of divider rows that take a dividend bit | impossible (no invariant interval when a bit is fed): feed rows must store their digits | same, lemma 5.2 |
+| CORR-1 | Correction of the S2.18 width floor ("43–44 owners at the divider endpoint", F1 "does not reach 43 Q") | holds only for dividers that store their digits: measured-out digits re-made in the undo and lent wires give … | `public_frontier_2026-11-21.md` §3 |
+| P21-1 | Second −0.5 T lend on the same affine relation as LEND29 (H1 row 7) | 1,417,293 failing shots | Almond Labs |
+| P21-2 | Drop one of the 33 rotations, or snap rotation 13 to the T grid (family-C datapath) | LP infeasible on all 33 | Almond Labs |
+| P21-3 | 5-AND zero-scratch rebuild of q18 (6 ANDs today) | UNSAT on the staged templates | Almond Labs |
+| P21-4 | Single-gate deletion on `c639a045` (five exact rewrite families) | 0 of 1,493 removable | Asterios Panoras |
+| P21-5 | Minimal deletion of the 39th wire of `c639a045` | +449 T against a 42.5 T break-even | Asterios Panoras |
+| P21-6 | CNOT-only width reduction on `d2148a7c` | full GF(2) rank 37 at 9,763 peak steps | goodpjw2008 |
 
 ## dqi
 
@@ -193,7 +200,7 @@ Counts: 297 community rows; outcomes kill 172, null 96, partial 23, observation 
 | NR-0292 | Failure-budget and measure-and-repay variants of the DQI decoder | public DQI decoders as of 8 Nov | null | none published | Reported as measured and closed; no counts given. | Not stated by the authors. |  | crackercoder (Sazza… |
 | NR-0296 | Add one clean wire (890 -> 891 Q) to GrantPrater's 575b043f DQI file to unlock blocked me… | public DQI pick 575b043f4fee (Syed Asad Ali v13 l… | kill | break-even ~826 fewer Toffolis per shot for +0.2249% width cost; one extra wire books 89 … | The 1,700 blocked sites have long overlapping intervals, so one wire serves about 89 of them; even with Grant… | A wire is found inside 890 Q (e.g. an order that brings the closing's… |  | ours |
 
-### From our research (`Analysis/research/dqi.md`, 32 rows)
+### From our research (`Analysis/research/dqi.md`, 38 rows)
 
 | Ref | What was tried | Result | Source |
 |---|---|---|---|
@@ -229,6 +236,12 @@ Counts: 297 community rows; outcomes kill 172, null 96, partial 23, observation 
 | DQI-B19 | Hold forward products across the mirror, MBU on the reverse copy | needs ≥ 267 products per held 24-qubit word | same, F7 |
 | DQI-B20 | Quartic-node CRT (GF(2^48) heads) | −51.8k queries but +48 Q and +10k inverses: −1.6% at best (cubic precedent +48k) | same, F8 |
 | law | Phase-oracle pricing | a per-position phase costs MC(f) Toffolis; an in-place map and its inverse cost the same | same, section 1 |
+| CORR-2 | Correction of the DQI-B08 / DQI-A19 pricing (≤ −1%, ≤ −0.5%) | priced on single products only: multi-output shared-operand kernels gave −6% (ThemBones) and −8% (tonylica D1… | `public_frontier_2026-11-21.md` §3 |
+| P21-7 | Trace-based root splitting instead of the Chien scan | 1.10M T against 159.8k | Almond Labs |
+| P21-8 | ≤ 19-AND GF(64) inverse; rank < 45 GF(16)[t]/t³ product (flip-graph neighbourhoods) | 20 ANDs and rank 45 hold | Almond Labs |
+| P21-9 | "Dead tail" removals on the 901 Q file | 12/18 and 20/14 value errors | Asterios Panoras |
+| P21-10 | CNOT-only width reduction on `4b572141` | full rank 900 at 3,208 of 3,925 peaks | goodpjw2008 |
+| P21-11 | Tickets (INFO_TAG re-rolls) as a cost lever | ±0.03 points; the board draw uses the secret salt | Asterios Panoras |
 
 ## Chemistry (dfthcsos)
 
@@ -389,7 +402,7 @@ Counts: 297 community rows; outcomes kill 172, null 96, partial 23, observation 
 | NR-0293 | Chemistry Lambda / Q-lock levers, loader decompositions and loader information bounds | public chemistry factorizations and loaders as of… | null | none published | Reported as measured and closed; no counts given. | Not stated by the authors. |  | crackercoder (Sazza… |
 | NR-0294 | Train the chemistry factorization with lambda_eff as the first objective | DF-THC chemistry factorization | null | none published | Reported as a dead end; no numbers given. | Not stated by the authors. |  | crackercoder (Sazza… |
 
-### From our research (`Analysis/research/chemistry.md`, 28 rows)
+### From our research (`Analysis/research/chemistry.md`, 36 rows)
 
 | Ref | What was tried | Result | Source |
 |---|---|---|---|
@@ -421,6 +434,14 @@ Counts: 297 community rows; outcomes kill 172, null 96, partial 23, observation 
 | S2.23-6 | Classical copy of the address | no Z-basis measurement in kickmix (only HMR and R) | same, §3 |
 | S2.23-7 | Random-condition Toffoli halving | no gadget computes an AND with expected < 1 counted Toffoli | same, §3 |
 | S2.23-8 | CHEM-B03 address-permutation gauge alone | ≤ about 110 rank units (−0.6%) by counting | same, F6 |
+| CORR-3 | Correction of "Q pinned at 427" (S2.23 F2) and of the k2 cliff "B ≤ 128 → Q +64%" | true only for B in [129, 256] at brot 8: at (9, 127, 46), brot 7, the inner temporary is 287 and Q 405 | `public_frontier_2026-11-21.md` §3 |
+| CORR-4 | Correction of NR-0124 / CHEM-B11 (brot 7 accuracy null, 27.1 mHa) | true for roundings of 8-bit-optimal fits; a staged rounding with refit at (9, 127, 46) passes at e1 19.9959 /… | `public_frontier_2026-11-21.md` §3 |
+| P21-12 | C 46 → 45 at 7 bits, fixed words | e2 21.6 mHa, λ > 48.2; discrete plateau 20.351 mHa | goodpjw2008, Almond Labs |
+| P21-13 | Refit of (W, H2_I) on the 13,290 words | no measurable gain (three active limits) | goodpjw2008 |
+| P21-14 | Loader exchange across 41 public families | −38 T is the limit (13,328 → 13,290) | goodpjw2008 |
+| P21-15 | Loader Toffolis writing only dead words; Toffolis replaceable by CNOTs | none of 1,856 | goodpjw2008 |
+| P21-16 | Cheaper public loaders at positions 6 and 14 that change live words | e2 58–1,448 mHa | goodpjw2008 |
+| P21-17 | 257-T k0 by a fake-carrier dead-cell rewrite | invalid on the reverse (involution) pass | Almond Labs |
 
 ## Cross-cutting and tooling
 

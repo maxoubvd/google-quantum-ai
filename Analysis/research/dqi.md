@@ -262,6 +262,18 @@ Nulls on paper from the family studies of 19 Nov (S2.18, S2.21):
 | DQI-B20 | Quartic-node CRT (GF(2^48) heads) | −51.8k queries but +48 Q and +10k inverses: −1.6% at best (cubic precedent +48k) | same, F8 |
 | law | Phase-oracle pricing | a per-position phase costs MC(f) Toffolis; an in-place map and its inverse cost the same | same, section 1 |
 
+
+Corrections and public nulls of 21 Nov (the corrected rows above stay, read with this domain):
+
+| # | Idea | Measured result | Source |
+|---|---|---|---|
+| CORR-2 | Correction of the DQI-B08 / DQI-A19 pricing (≤ −1%, ≤ −0.5%) | priced on single products only: multi-output shared-operand kernels gave −6% (ThemBones) and −8% (tonylica D16) | `public_frontier_2026-11-21.md` §3 |
+| P21-7 | Trace-based root splitting instead of the Chien scan | 1.10M T against 159.8k | Almond Labs |
+| P21-8 | ≤ 19-AND GF(64) inverse; rank < 45 GF(16)[t]/t³ product (flip-graph neighbourhoods) | 20 ANDs and rank 45 hold | Almond Labs |
+| P21-9 | "Dead tail" removals on the 901 Q file | 12/18 and 20/14 value errors | Asterios Panoras |
+| P21-10 | CNOT-only width reduction on `4b572141` | full rank 900 at 3,208 of 3,925 peaks | goodpjw2008 |
+| P21-11 | Tickets (INFO_TAG re-rolls) as a cost lever | ±0.03 points; the board draw uses the secret salt | Asterios Panoras |
+
 ## 5. Ideas
 
 Conventions. Gain = expected task-cost reduction in % (positive is better), against our v12 base unless the row says

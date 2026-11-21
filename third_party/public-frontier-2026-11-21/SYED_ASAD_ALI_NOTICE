@@ -1,0 +1,8 @@
+VQCC own-circuit portfolio
+Copyright 2026 Syed Asad Ali. Licensed under the Apache License, Version 2.0.
+The 46-qubit inverse-square-root generator, the 889-qubit DQI decoder generator (v12 and later),
+and all circuits built from them are the original work of Syed Asad Ali
+(Kaggle: syed3000; dataset syed3000/vqcc-own-circuit-portfolio).
+Any redistribution of these files, or of works derived from them at any number of steps removed,
+must include this NOTICE (or its full attribution text) in a readable place, and must name
+"Syed Asad Ali" as the original builder in its credit or lineage line, before any later contributors.

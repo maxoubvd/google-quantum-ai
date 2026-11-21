@@ -261,6 +261,20 @@ Nulls on paper from the family study of 19 Nov (S2.23):
 | S2.23-7 | Random-condition Toffoli halving | no gadget computes an AND with expected < 1 counted Toffoli | same, §3 |
 | S2.23-8 | CHEM-B03 address-permutation gauge alone | ≤ about 110 rank units (−0.6%) by counting | same, F6 |
 
+
+Corrections and public nulls of 21 Nov (the corrected rows above stay, read with this domain):
+
+| # | Idea | Measured result | Source |
+|---|---|---|---|
+| CORR-3 | Correction of "Q pinned at 427" (S2.23 F2) and of the k2 cliff "B ≤ 128 → Q +64%" | true only for B in [129, 256] at brot 8: at (9, 127, 46), brot 7, the inner temporary is 287 and Q 405 | `public_frontier_2026-11-21.md` §3 |
+| CORR-4 | Correction of NR-0124 / CHEM-B11 (brot 7 accuracy null, 27.1 mHa) | true for roundings of 8-bit-optimal fits; a staged rounding with refit at (9, 127, 46) passes at e1 19.9959 / e2 19.9992 mHa | `public_frontier_2026-11-21.md` §3 |
+| P21-12 | C 46 → 45 at 7 bits, fixed words | e2 21.6 mHa, λ > 48.2; discrete plateau 20.351 mHa | goodpjw2008, Almond Labs |
+| P21-13 | Refit of (W, H2_I) on the 13,290 words | no measurable gain (three active limits) | goodpjw2008 |
+| P21-14 | Loader exchange across 41 public families | −38 T is the limit (13,328 → 13,290) | goodpjw2008 |
+| P21-15 | Loader Toffolis writing only dead words; Toffolis replaceable by CNOTs | none of 1,856 | goodpjw2008 |
+| P21-16 | Cheaper public loaders at positions 6 and 14 that change live words | e2 58–1,448 mHa | goodpjw2008 |
+| P21-17 | 257-T k0 by a fake-carrier dead-cell rewrite | invalid on the reverse (involution) pass | Almond Labs |
+
 ## 5. Ideas
 
 Conventions. Gains are task-cost reductions against our base (296,635,968). Multiply by about 1/3 for the

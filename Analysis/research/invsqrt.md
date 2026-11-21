@@ -243,6 +243,19 @@ Nulls on paper from the family studies of 19 Nov (S2.18, S2.21):
 | F7 | Direct Boolean synthesis of the phase bits | ≥ +490% | same |
 | L5.2 | History-free rewrite of divider rows that take a dividend bit | impossible (no invariant interval when a bit is fed): feed rows must store their digits | same, lemma 5.2 |
 
+
+Corrections and public nulls of 21 Nov (the corrected rows above stay, read with this domain):
+
+| # | Idea | Measured result | Source |
+|---|---|---|---|
+| CORR-1 | Correction of the S2.18 width floor ("43–44 owners at the divider endpoint", F1 "does not reach 43 Q") | holds only for dividers that store their digits: measured-out digits re-made in the undo and lent wires give 39 Q (ThemBones) and 37 Q (Rithvik Redrouthu) | `public_frontier_2026-11-21.md` §3 |
+| P21-1 | Second −0.5 T lend on the same affine relation as LEND29 (H1 row 7) | 1,417,293 failing shots | Almond Labs |
+| P21-2 | Drop one of the 33 rotations, or snap rotation 13 to the T grid (family-C datapath) | LP infeasible on all 33 | Almond Labs |
+| P21-3 | 5-AND zero-scratch rebuild of q18 (6 ANDs today) | UNSAT on the staged templates | Almond Labs |
+| P21-4 | Single-gate deletion on `c639a045` (five exact rewrite families) | 0 of 1,493 removable | Asterios Panoras |
+| P21-5 | Minimal deletion of the 39th wire of `c639a045` | +449 T against a 42.5 T break-even | Asterios Panoras |
+| P21-6 | CNOT-only width reduction on `d2148a7c` | full GF(2) rank 37 at 9,763 peak steps | goodpjw2008 |
+
 ## 5. Ideas
 
 Units and conventions:
